@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Rumi Project.iml" filepath="$PROJECT_DIR$/.idea/Rumi Project.iml" />
+      <module fileurl="file://C:\Users\subha\Documents\GitHub\rumi-mobile\rumi\.idea\Rumi Project.iml" filepath="C:\Users\subha\Documents\GitHub\rumi-mobile\rumi\.idea\Rumi Project.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\subha\Documents\GitHub\rumi-mobile\rumi\app\app.iml" filepath="C:\Users\subha\Documents\GitHub\rumi-mobile\rumi\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/rumi.iml" filepath="$PROJECT_DIR$/rumi.iml" />
+      <module fileurl="file://C:\Users\subha\Documents\GitHub\rumi-mobile\rumi\rumi.iml" filepath="C:\Users\subha\Documents\GitHub\rumi-mobile\rumi\rumi.iml" />
     </modules>
   </component>
 </project>
