@@ -40,6 +40,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -49,8 +50,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 public class GoogleLoginActivity extends AppCompatActivity
 {
@@ -66,6 +65,8 @@ public class GoogleLoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_google_login);
 
         gButton = findViewById(R.id.sign_in_button);
+        FirebaseApp.initializeApp(this);
+
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -81,7 +82,7 @@ public class GoogleLoginActivity extends AppCompatActivity
         };
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+//                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .requestProfile()
                 .build();
