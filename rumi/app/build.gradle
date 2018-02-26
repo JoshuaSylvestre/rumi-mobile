@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
+
+
     defaultConfig {
         applicationId "com.poop.rumi.rumi"
         minSdkVersion 23
@@ -26,7 +28,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'com.google.firebase:firebase-auth:11.8.0'
-    implementation 'com.google.android.gms:play-services-auth:11.8.0'
+
+    compile 'com.google.android.gms:play-services-vision:9.4.0+'
+
+    //TODO: find out if any of the following interfere with app
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v4:24.2.0'
+    compile 'com.android.support:design:24.2.0'
+
 }
-apply plugin: 'com.google.gms.google-services'
+
