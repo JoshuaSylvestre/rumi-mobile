@@ -37,6 +37,7 @@ dependencies {
     //TODO: find out if any of the following interfere with app
 //    implementation 'com.android.support:support-v4:24.2.0'
 //    implementation 'com.android.support:design:24.2.0'
+    implementation 'com.android.support:cardview-v7:26.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

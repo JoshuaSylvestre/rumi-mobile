@@ -70,6 +70,9 @@ public class DashboardActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
+        if(id == R.id.action_logout){
+            startActivity(new Intent(DashboardActivity.this, LoginActivity.class));
+        }
 
         return super.onOptionsItemSelected(item);
     }
