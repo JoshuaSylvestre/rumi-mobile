@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,8 +31,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.mongodb.stitch.android.StitchClient;
+import com.mongodb.stitch.android.StitchClientFactory;
+import com.mongodb.stitch.android.auth.emailpass.EmailPasswordAuthProvider;
+import com.mongodb.stitch.android.services.mongodb.MongoClient;
+
+import org.w3c.dom.Document;
+
+import java.security.AuthProvider;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.security.auth.Subject;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.login.LoginException;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -46,16 +61,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final int REQUEST_READ_CONTACTS = 0;
 
     /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+
+    // DB references
+    private RumiStitchClient stitchClient;
+    private MongoClient.Collection usersCollection;
+    private List<org.bson.Document> foundUsers;
+    private boolean isRequesting = false;
 
     // UI references.
     private AutoCompleteTextView mUsernameView;
@@ -67,6 +81,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
         populateAutoComplete();
@@ -93,6 +108,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        // Initialize connection to Stitch
+        stitchClient = new RumiStitchClient(getApplicationContext());
+        usersCollection = stitchClient.getMongoDb().getCollection(getString(R.string.stitch_users_collection));
     }
 
     private void populateAutoComplete() {
@@ -173,7 +192,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             focusView = mUsernameView;
             cancel = true;
         } else if (!isUsernameValid(username)) {
-            mUsernameView.setError(getString(R.string.error_invalid_email));
+            mUsernameView.setError(getString(R.string.error_invalid_username));
             focusView = mUsernameView;
             cancel = true;
         }
@@ -193,7 +212,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isUsernameValid(String username) {
         //TODO: Replace this with your own logic
-        return username.length() > 1;
+
+        return username.length() > 0;
     }
 
     private boolean isPasswordValid(String password) {
@@ -312,23 +332,38 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
+            final org.bson.Document userDoc = new org.bson.Document();
+            userDoc.put("username", mUsername);
+
+            isRequesting = true;
+            usersCollection.find(userDoc, 1).addOnCompleteListener(new OnCompleteListener<List<org.bson.Document>>() {
+                @Override
+                public void onComplete(@NonNull Task<List<org.bson.Document>> task) {
+                    if (!task.isSuccessful()) {
+                        Log.e("Stitch", "Cannot find user");
+                        return;
+                    }
+
+                    foundUsers = task.getResult();
+                    isRequesting = false;
+                }
+            });
+
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
+
+                if(!isRequesting && foundUsers.size() > 0) {
+                    isRequesting = false;
+                    return true;
+                }
+
             } catch (InterruptedException e) {
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mUsername)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
             // TODO: register the new account here.
-            return true;
+            return false;
         }
 
         @Override
@@ -336,14 +371,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            Intent getMainActivity = new Intent(getApplicationContext(),DashboardActivity.class);
+            Intent getDashboardActivity = new Intent(getApplicationContext(),DashboardActivity.class);
 
             if (success) {
-                startActivity(getMainActivity);
+                startActivity(getDashboardActivity);
                 //finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                mUsernameView.setError(getString(R.string.error_invalid_username));
+                mUsernameView.requestFocus();
             }
         }
 

@@ -29,17 +29,24 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_google_login);
+        setContentView(R.layout.activity_main);
 
         gButton = findViewById(R.id.sign_in_button);
         setGooglePlusButtonText(gButton, "Sign in with Google");
 
         Button signInButton = findViewById(R.id.signInButton);
-
         signInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            }
+        });
+
+        Button registerButton = findViewById(R.id.registerButton);
+        registerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, RegisterActivity.class));
             }
         });
 
