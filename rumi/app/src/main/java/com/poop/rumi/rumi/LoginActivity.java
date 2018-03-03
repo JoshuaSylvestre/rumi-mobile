@@ -111,7 +111,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         // Initialize connection to Stitch
         stitchClient = new RumiStitchClient(getApplicationContext());
-        usersCollection = stitchClient.getMongoDb().getCollection(getString(R.string.stitch_users_collection));
     }
 
     private void populateAutoComplete() {
@@ -218,7 +217,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+
+        return password.length() > 0;
     }
 
     /**
@@ -330,10 +330,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
             final org.bson.Document userDoc = new org.bson.Document();
             userDoc.put("username", mUsername);
+
+            usersCollection = stitchClient.getMongoDb().getCollection(getString(R.string.stitch_users_collection));
 
             isRequesting = true;
             usersCollection.find(userDoc, 1).addOnCompleteListener(new OnCompleteListener<List<org.bson.Document>>() {
