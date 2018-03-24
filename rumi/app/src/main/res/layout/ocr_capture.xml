@@ -1,22 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/topLayout"
+<RelativeLayout     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:keepScreenOn="true">
+    tools:context="com.poop.rumi.rumi.ocr.OcrCaptureActivity">
+    <!--android:id="@+id/topLayout"-->
 
-    <com.poop.rumi.rumi.camera.CameraSourcePreview
-        android:id="@+id/preview"
+
+    <LinearLayout
+        android:id="@+id/topLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:keepScreenOn="true"
+        android:visibility="visible">
 
-        <com.poop.rumi.rumi.camera.GraphicOverlay
-            android:id="@+id/graphicOverlay"
+        <com.poop.rumi.rumi.camera.CameraSourcePreview
+            android:id="@+id/preview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
-    </com.poop.rumi.rumi.camera.CameraSourcePreview>
 
-</LinearLayout>
+            <com.poop.rumi.rumi.camera.GraphicOverlay
+                android:id="@+id/graphicOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </com.poop.rumi.rumi.camera.CameraSourcePreview>
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnCapturePicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:srcCompat="@drawable/ic_camera"
+        app:useCompatPadding="true"
+        android:visibility="visible"/>
+
+    <LinearLayout
+        android:id="@+id/bottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitCenter"/>
+
+        <!--TODO: add an 'x' button that goes back to ocr_capture incase captured image is unsatisfactory-->
+        <!--<Button-->
+        <!--android:id="@+id/button1"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"/>-->
+
+
+        <!--<CheckBox-->
+        <!--android:id="@+id/items_checkbox"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignStart="@+id/prices_checkbox"-->
+        <!--android:layout_marginBottom="33dp"-->
+        <!--android:checked="true"-->
+        <!--android:text="@string/choose_items"/>-->
+
+        <!--<CheckBox-->
+        <!--android:id="@+id/prices_checkbox"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:checked="false"-->
+        <!--android:text="@string/choose_prices"/>-->
+
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

@@ -4,7 +4,9 @@
     <!-- Strings related to ocr -->
     <string name="ok">OK</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
+    <string name="permission_storage_rationale">Access to storage is needed for application</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
+    <string name="no_storage_permission">This application cannot run because it does not have storage permission.  The application will now exit.</string>
     <string name="low_storage_error">Ocr dependencies cannot be downloaded due to low device storage</string>
     <string name="ocr_activity_main">Ocr Detector Sample</string>
     <string name="ocr_header">Click &quot;Detect Text&quot; to detect text</string>
@@ -14,6 +16,9 @@
     <string name="ocr_success">Text read successfully</string>
     <string name="ocr_failure">No text captured</string>
     <string name="ocr_error">"Error reading text: %1$s"</string>
+    <string name="picture_taken">Picture taken</string>
+    <string name="image_description">This ImageView holds most recently captured image to preview and validate it</string>
+
 
     <!-- Strings related to login/register -->
     <string name="prompt_first_name">First Name</string>
@@ -50,5 +55,7 @@
     <string name="stitch_db_name">RUMI</string>
     <string name="stitch_users_collection">users</string>
     <string name="title_activity_register">Register</string>
+    <string name="choose_items">Items</string>
+    <string name="choose_prices">Prices</string>
 
 </resources>

@@ -33,21 +33,24 @@ public class CameraSourcePreview extends ViewGroup {
     private static final String TAG = "CameraSourcePreview";
 
     private Context mContext;
+
     private SurfaceView mSurfaceView;
+    private CameraSource mCameraSource;
+    private GraphicOverlay mOverlay;
+
     private boolean mStartRequested;
     private boolean mSurfaceAvailable;
-    private CameraSource mCameraSource;
-
-    private GraphicOverlay mOverlay;
 
     public CameraSourcePreview(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        mStartRequested = false;
-        mSurfaceAvailable = false;
 
         mSurfaceView = new SurfaceView(context);
         mSurfaceView.getHolder().addCallback(new SurfaceCallback());
+
+        mStartRequested = false;
+        mSurfaceAvailable = false;
+
         addView(mSurfaceView);
     }
 

@@ -23,7 +23,9 @@ import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
@@ -38,22 +40,29 @@ import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 // Note: This requires Google Play Services 8.1 or higher, due to using indirect byte buffers for
 // storing images.
 
 /**
  * Manages the camera in conjunction with an underlying
- * {@link Detector}.  This receives preview frames from the camera at
+ * {@link com.google.android.gms.vision.Detector}.  This receives preview frames from the camera at
  * a specified rate, sending those frames to the detector as fast as it is able to process those
  * frames.
  * <p/>
@@ -78,6 +87,10 @@ public class CameraSource {
     public static final int CAMERA_FACING_FRONT = CameraInfo.CAMERA_FACING_FRONT;
 
     private static final String TAG = "OpenCameraSource";
+
+    //File path that stores image
+    // TODO: final?
+    private static String lastImageFilePath;
 
     /**
      * The dummy surface texture must be assigned a chosen name.  Since we never use an OpenGL
@@ -494,8 +507,13 @@ public class CameraSource {
      * @param jpeg    the callback for JPEG image data, or null
      */
     public void takePicture(ShutterCallback shutter, PictureCallback jpeg) {
+
+        Log.d("takePicture()", "\tBeginning");
+
         synchronized (mCameraLock) {
+
             if (mCamera != null) {
+
                 PictureStartCallback startCallback = new PictureStartCallback();
                 startCallback.mDelegate = shutter;
                 PictureDoneCallback doneCallback = new PictureDoneCallback();
@@ -503,6 +521,8 @@ public class CameraSource {
                 mCamera.takePicture(startCallback, null, null, doneCallback);
             }
         }
+
+        Log.d("takePicture()", "\tFinished");
     }
 
     /**
@@ -663,6 +683,11 @@ public class CameraSource {
         return true;
     }
 
+
+    public void setImageFilePath(String path) { lastImageFilePath = path; }
+
+    public String getImageFilePath() { return lastImageFilePath; }
+
     //==============================================================================================
     // Private
     //==============================================================================================
@@ -681,9 +706,13 @@ public class CameraSource {
 
         @Override
         public void onShutter() {
+            Log.d("PictureStartCallback()", "\tBeginning");
+
             if (mDelegate != null) {
                 mDelegate.onShutter();
             }
+
+            Log.d("PictureStartCallback()", "\tFinished");
         }
     }
 
@@ -696,14 +725,40 @@ public class CameraSource {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+
+            Log.d("PictureDoneCallback()", "\tBeginning ... Data length = "  + data.length);
+
+            File pictureFile = new File(lastImageFilePath);
+            if (pictureFile == null){
+                Log.d(TAG, "Error creating/getting media file, check storage permissions: ");
+                return;
+            }
+
+            String fp = pictureFile.getAbsolutePath();
+            Log.d("PictureDoneCallback()", "File path = " + fp);
+
+            try {
+                FileOutputStream fos = new FileOutputStream(pictureFile);
+                fos.write(data);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                Log.d(TAG, "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d(TAG, "Error accessing file: " + e.getMessage());
+            }
+
+
             if (mDelegate != null) {
                 mDelegate.onPictureTaken(data);
             }
+
             synchronized (mCameraLock) {
                 if (mCamera != null) {
                     mCamera.startPreview();
                 }
             }
+
+            Log.d("PictureDoneCallback()", "\tFinished");
         }
     }
 

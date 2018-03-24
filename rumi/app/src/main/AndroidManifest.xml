@@ -10,10 +10,17 @@
 
     <!-- To use camera -->
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- To use storage -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <!-- Internet Permission-->
+    <!-- To debug -->
+    <uses-permission android:name="android.permission.SET_DEBUG_APP" />
+
+    <!-- Internet Permission -->
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -34,14 +41,14 @@
 
         <activity
             android:name=".LoginActivity"
-            android:label="@string/app_name"></activity>
+            android:label="@string/app_name" />
         <activity
             android:name=".DashboardActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".OcrCaptureActivity"
-            android:label="@string/ocr_activity_main"></activity>
+            android:name=".ocr.OcrCaptureActivity"
+            android:label="@string/ocr_activity_main" />
         <activity
             android:name=".MainActivity"
             android:label="rumi">
@@ -53,7 +60,8 @@
         </activity>
         <activity
             android:name=".RegisterActivity"
-            android:label="@string/title_activity_register"></activity>
+            android:label="@string/title_activity_register" />
+
     </application>
 
 </manifest>
