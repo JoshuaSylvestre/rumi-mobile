@@ -30,7 +30,8 @@
     <string name="action_login_short">Login</string>
     <string name="action_register">Register</string>
     <string name="action_register_short">Register</string>
-    <string name="error_invalid_username">This user does not exist</string>
+    <string name="error_invalid_user">This user does not exist. Please check your credentials again!</string>
+    <string name="error_invalid_username">This username is not valid</string>
     <string name="error_invalid_email">Please provide a correct email</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>

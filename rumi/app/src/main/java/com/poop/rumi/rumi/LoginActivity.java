@@ -31,6 +31,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.mongodb.stitch.android.StitchClient;
@@ -38,8 +48,10 @@ import com.mongodb.stitch.android.StitchClientFactory;
 import com.mongodb.stitch.android.auth.emailpass.EmailPasswordAuthProvider;
 import com.mongodb.stitch.android.services.mongodb.MongoClient;
 
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 
+import java.io.UnsupportedEncodingException;
 import java.security.AuthProvider;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,11 +77,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private UserLoginTask mAuthTask = null;
 
-    // DB references
-    private RumiStitchClient stitchClient;
-    private MongoClient.Collection usersCollection;
-    private List<org.bson.Document> foundUsers;
+    // MLab
     private boolean isRequesting = false;
+    private RequestQueue requestQueue;
+    private String connectionURL;
+    private JSONObject responseJSON;
 
     // UI references.
     private AutoCompleteTextView mUsernameView;
@@ -81,6 +93,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        requestQueue = Volley.newRequestQueue(this);
+        connectionURL = "http://10.0.2.2:8080/login";
 
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
@@ -110,7 +125,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
 
         // Initialize connection to Stitch
-        stitchClient = new RumiStitchClient(getApplicationContext());
+//        stitchClient = new RumiStitchClient(getApplicationContext());
     }
 
     private void populateAutoComplete() {
@@ -330,32 +345,94 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            final org.bson.Document userDoc = new org.bson.Document();
-            userDoc.put("username", mUsername);
+//            final org.bson.Document userDoc = new org.bson.Document();
+//            userDoc.put("username", mUsername);
 
-            usersCollection = stitchClient.getMongoDb().getCollection(getString(R.string.stitch_users_collection));
+//            usersCollection = stitchClient.getMongoDb().getCollection(getString(R.string.stitch_users_collection));
 
             isRequesting = true;
-            usersCollection.find(userDoc, 1).addOnCompleteListener(new OnCompleteListener<List<org.bson.Document>>() {
-                @Override
-                public void onComplete(@NonNull Task<List<org.bson.Document>> task) {
-                    if (!task.isSuccessful()) {
-                        Log.e("Stitch", "Cannot find user");
-                        return;
+
+            try {
+                JSONObject jsonBody = new JSONObject();
+                jsonBody.put("username", this.mUsername);
+                jsonBody.put("password", this.mPassword);
+
+                final String requestBody = jsonBody.toString();
+
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, connectionURL, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i("VOLLEY", response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VOLLEY", error.toString());
+                    }
+                }) {
+                    @Override
+                    public String getBodyContentType() {
+                        return "application/json; charset=utf-8";
                     }
 
-                    foundUsers = task.getResult();
-                    isRequesting = false;
-                }
-            });
+                    @Override
+                    public byte[] getBody() throws AuthFailureError {
+                        try {
+                            return requestBody == null ? null : requestBody.getBytes("utf-8");
+                        } catch (UnsupportedEncodingException uee) {
+                            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                        String responseString = "";
+                        String responseBody;
+
+                        if (response != null) {
+                            responseString = String.valueOf(response.statusCode);
+
+                            try {
+                                responseBody = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                                responseJSON = new JSONObject(responseBody);
+
+                            } catch(Exception ex) {
+                                responseBody = new String(response.data);
+                                Log.i("VOLLEY", "Cannot create JSON");
+                            }
+
+                            Log.i("VOLLEY", responseBody);
+                            isRequesting = false;
+                        }
+
+
+                        return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                    }
+                };
+
+                requestQueue.add(stringRequest);
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
 
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
+                boolean success;
 
-                if(!isRequesting && foundUsers.size() > 0) {
+                if(!isRequesting && responseJSON != null) {
+
+                    try {
+                        success = responseJSON.getBoolean("success");
+                    } catch(Exception ex) {
+                        success = false;
+                        Log.i("LOGIN", "Bad login.");
+                    }
+
                     isRequesting = false;
-                    return true;
+
+                    return success;
                 }
 
             } catch (InterruptedException e) {
@@ -377,7 +454,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 startActivity(getDashboardActivity);
                 //finish();
             } else {
-                mUsernameView.setError(getString(R.string.error_invalid_username));
+                mUsernameView.setError(getString(R.string.error_invalid_user));
                 mUsernameView.requestFocus();
             }
         }
