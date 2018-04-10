@@ -22,7 +22,6 @@
     <string name="ocr_success">Text read successfully</string>
     <string name="ocr_failure">No text captured</string>
     <string name="ocr_error">"Error reading text: %1$s"</string>
-    <string name="picture_taken">Picture taken</string>
     <string name="image_description">This ImageView holds most recently captured image to preview and validate it</string>
 
 
@@ -61,8 +60,6 @@
     <string name="stitch_db_name">RUMI</string>
     <string name="stitch_users_collection">users</string>
     <string name="title_activity_register">Register</string>
-    <string name="choose_items">Items</string>
-    <string name="choose_prices">Prices</string>
     <string name="title_activity_roommate">RoommateActivity</string>
 
     <!-- Strings related to ROUTES -->
