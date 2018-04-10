@@ -12,10 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -36,20 +37,56 @@ public class DashboardActivity extends AppCompatActivity
 {
     private RecyclerView mRecyclerView;
     private RecycleViewAdapter adapter;
-    private ProgressBar progressBar;
+//    private ProgressBar progressBar;
     private List<TransactionFeed> feedsList;
+    private TextView sidebarName;
+    private TextView sidebarEmail;
 
+    // User values
+    private UserSession userSession;
+    private String currUser;
+    private String currUserToken;
+    private JSONObject currUserJSON;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        // Create a new session for the logged user and grab their data from the last intent
+        userSession = new UserSession(this);
+        currUser = getIntent().getStringExtra("user");
+        currUserToken = getIntent().getStringExtra("token");
+
+        try {
+            currUserJSON = new JSONObject(currUser);
+        } catch(Exception ex) {
+            Log.i("DASHBOARD", "Error creating JSON");
+        }
+        userSession.setUser(currUser);
+
+        // Get nested view from sidebar
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+
+        // Set user info in the sidebar
+        sidebarName = header.findViewById(R.id.sidebar_name);
+        sidebarEmail = header.findViewById(R.id.sidebar_email);
+
+        try {
+            sidebarName.setText(currUserJSON.getString("name"));
+            sidebarEmail.setText(currUserJSON.getString("email"));
+        } catch(Exception ex) {
+            Log.i("DASHBOARD", "Error setting sidebar info for user.");
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        progressBar = findViewById(R.id.progress_bar);
+//        progressBar = findViewById(R.id.app_bar_main_layout).findViewById(R.id.app_bar_main_layout).findViewById(R.id.progress_bar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -65,11 +102,9 @@ public class DashboardActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        String url = "http://stacktips.com/?json=get_category_posts&slug=news&count=30";
-        new DownloadTask().execute(url);
+//        String url = "http://stacktips.com/?json=get_category_posts&slug=news&count=30";
+//
+//        new DownloadTask().execute(url);
     }
 
     @Override
@@ -117,9 +152,15 @@ public class DashboardActivity extends AppCompatActivity
         {
             // Handle the camera action
         }
-        else if (id == R.id.nav_gallery)
+        else if (id == R.id.nav_roommates)
         {
+            Intent getRoommateActivity = new Intent(getApplicationContext(), RoommateActivity.class);
 
+            // Put the user info JSON in the intent to pass it to the next activity
+            getRoommateActivity.putExtra("user", currUser);
+            getRoommateActivity.putExtra("token", currUserToken);
+
+            startActivity(getRoommateActivity);
         }
         else if (id == R.id.nav_manage)
         {
@@ -143,7 +184,7 @@ public class DashboardActivity extends AppCompatActivity
 
         @Override
         protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
+//            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -176,7 +217,7 @@ public class DashboardActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(Integer result) {
-            progressBar.setVisibility(View.GONE);
+//            progressBar.setVisibility(View.GONE);
 
             if (result == 1) {
                 adapter = new RecycleViewAdapter(DashboardActivity.this, feedsList);

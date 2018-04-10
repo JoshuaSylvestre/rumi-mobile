@@ -21,8 +21,7 @@
 
 
     <!-- Strings related to login/register -->
-    <string name="prompt_first_name">First Name</string>
-    <string name="prompt_last_name">Last Name</string>
+    <string name="prompt_name">Name</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
@@ -58,5 +57,19 @@
     <string name="title_activity_register">Register</string>
     <string name="choose_items">Items</string>
     <string name="choose_prices">Prices</string>
+    <string name="title_activity_roommate">RoommateActivity</string>
+
+    <!-- Strings related to ROUTES -->
+    <string name="base_url">http://10.0.2.2:8080</string>
+    <string name="login_url">/login</string>
+    <string name="register_url">/register</string>
+    <string name="find_user_by_id_url">/get_user_by_id</string>
+    <string name="roommate_list_url">/user/friends</string>
+    <string name="roommate_add_url">/user/friends/add</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="add_roommate">Add roommate</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

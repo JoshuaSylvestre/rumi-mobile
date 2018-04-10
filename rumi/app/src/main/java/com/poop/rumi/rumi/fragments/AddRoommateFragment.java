@@ -1,0 +1,226 @@
+package com.poop.rumi.rumi.fragments;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.poop.rumi.rumi.R;
+import com.poop.rumi.rumi.RoommateActivity;
+
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * Created by dita on 4/9/18.
+ */
+
+public class AddRoommateFragment extends DialogFragment {
+
+    private EditText mFirstName;
+    private EditText mLastName;
+    private EditText mPreferredName;
+    private EditText mEmail;
+    private EditText mAddress;
+    private EditText mHomePhone;
+    private EditText mCellPhone;
+
+    private View dialogView;
+
+    private JSONObject currUserJSON;
+    private String currUserToken;
+    private RequestQueue requestQueue;
+    private AlertDialog alertDialog;
+
+    AddRoommateFragmentResult fragmentResult;
+    HashMap<String, String> newRoommateMap;
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        dialogView = inflater.inflate(R.layout.fragment_add_roommate, null);
+
+        String currUser = getArguments().getString("user");
+        currUserToken = getArguments().getString("token");
+        requestQueue = Volley.newRequestQueue(getContext());
+
+        try {
+            currUserJSON = new JSONObject(currUser);
+        } catch(Exception ex) {
+            Log.e("ADD-ROOMMATE", "Cannot create user JSON");
+        }
+
+        mFirstName = dialogView.findViewById(R.id.add_roommate_first_name);
+        mLastName = dialogView.findViewById(R.id.add_roommate_last_name);
+        mPreferredName = dialogView.findViewById(R.id.add_roommate_preferred_name);
+        mEmail = dialogView.findViewById(R.id.add_roommate_email);
+        mAddress = dialogView.findViewById(R.id.add_roommate_address);
+        mHomePhone = dialogView.findViewById(R.id.add_roommate_home_phone);
+        mCellPhone = dialogView.findViewById(R.id.add_roommate_cell_phone);
+
+        builder.setPositiveButton(R.string.add_roommate, null);
+        builder.setTitle("Add Roommate");
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(dialogView)
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        AddRoommateFragment.this.getDialog().cancel();
+                    }
+                });
+
+        alertDialog = builder.create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.RED);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+
+                Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                positiveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        addRoommate();
+                    }
+                });
+            }
+        });
+
+        return alertDialog;
+    }
+
+    private void addRoommate() {
+        String roommateAddUrl = getString(R.string.base_url) + getString(R.string.roommate_add_url);
+        JSONObject params = new JSONObject();
+
+        try {
+            params.put(RoommateActivity.FIRST_NAME, mFirstName.getText().toString());
+            params.put(RoommateActivity.LAST_NAME, mLastName.getText().toString());
+            params.put(RoommateActivity.PREFERRED_NAME, mPreferredName.getText().toString());
+            params.put(RoommateActivity.ADDRESS, mAddress.getText().toString());
+            params.put(RoommateActivity.EMAIL, mEmail.getText().toString());
+            params.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
+            params.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
+            params.put("date", (new SimpleDateFormat("EEE MMM dd YYYY", Locale.US)).format(new Date()));
+            params.put("user_id", currUserJSON.getString("id"));
+        } catch(Exception ex) {
+            Log.e("ADD-ROOMMATE", "Cannot create request params");
+
+            Snackbar currSnack = Snackbar.make(dialogView, "Failed adding new roommate", Snackbar.LENGTH_LONG);
+            currSnack.setAction("OK", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AddRoommateFragment.this.getDialog().cancel();
+                }
+            });
+            currSnack.show();
+//            AddRoommateFragment.this.getDialog().cancel();
+
+            return;
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, roommateAddUrl, params,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // Success callback
+                        Log.i("ADD-ROOMMATE", response.toString());
+
+                        try {
+                            boolean success = response.getBoolean("success");
+
+                            if(success) {
+                                // Alert user operation was a success
+                                Snackbar currSnack = Snackbar.make(dialogView, "Added new roommate!", Snackbar.LENGTH_LONG);
+                                currSnack.setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        AddRoommateFragment.this.getDialog().cancel();
+                                    }
+                                });
+                                currSnack.show();
+
+                                newRoommateMap = new HashMap<>();
+                                newRoommateMap.put(RoommateActivity.NAME, mFirstName.getText().toString() + " " + mLastName.getText().toString());
+                                newRoommateMap.put(RoommateActivity.PREFERRED_NAME, mPreferredName.getText().toString());
+                                newRoommateMap.put(RoommateActivity.ADDRESS, mAddress.getText().toString());
+                                newRoommateMap.put(RoommateActivity.EMAIL, mAddress.getText().toString());
+                                newRoommateMap.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
+                                newRoommateMap.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
+                                fragmentResult.finish(newRoommateMap);
+
+//                                AddRoommateFragment.this.getDialog().cancel();
+                            }
+                            else {
+                                Snackbar currSnack = Snackbar.make(dialogView, "Failed adding new roommate", Snackbar.LENGTH_LONG);
+                                currSnack.setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        AddRoommateFragment.this.getDialog().cancel();
+                                    }
+                                });
+                                currSnack.show();
+//                                AddRoommateFragment.this.getDialog().cancel();
+                            }
+
+                        } catch(Exception ex) {
+                            Log.e("ADD-ROOMMATE", "Failed parsing JSON response");
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        Log.e("ADD-ROOMMATE", error.toString());
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("Authorization", currUserToken);
+
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
+    }
+
+    public void setDialogResult(AddRoommateFragmentResult dialogResult) {
+        fragmentResult = dialogResult;
+    }
+
+    public interface AddRoommateFragmentResult {
+        void finish(HashMap<String, String> result);
+    }
+
+}

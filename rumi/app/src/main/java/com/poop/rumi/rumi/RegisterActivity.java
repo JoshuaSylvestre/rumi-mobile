@@ -4,32 +4,18 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
 
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -41,18 +27,10 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.mongodb.stitch.android.services.mongodb.MongoClient;
 
-import org.bson.Document;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -67,16 +45,13 @@ public class RegisterActivity extends AppCompatActivity {
     private View mRegisterFormView;
 
     // DB references
-//    private RumiStitchClient stitchClient;
-//    private MongoClient.Collection usersCollection;
     private Boolean isRequesting = false;
     private RequestQueue requestQueue;
-    private String connectionURL;
+    private String registerURL;
     private JSONObject responseJSON;
     private Boolean userExists = false;
 
-//    private Long userExists = Long.valueOf(0);
-//    private Document newUser;
+    private String newUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,10 +59,10 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         requestQueue = Volley.newRequestQueue(this);
-        connectionURL = "http://10.0.2.2:8080/register";
+        registerURL = getString(R.string.base_url) + getString(R.string.register_url);
 
         // Set up the register form.
-        mNameView = findViewById(R.id.first_name);
+        mNameView = findViewById(R.id.name);
         mEmailView = findViewById(R.id.email);
         mUsernameView = findViewById(R.id.username);
         mPasswordView = findViewById(R.id.password);
@@ -102,9 +77,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         mRegisterFormView = findViewById(R.id.register_form);
         mProgressView = findViewById(R.id.login_progress);
-
-        // Make Stitch client
-//        stitchClient = new RumiStitchClient(getApplicationContext());
     }
 
     private void attemptRegister() {
@@ -248,23 +220,18 @@ public class RegisterActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-//            Document newUserDoc = new Document();
-//            newUserDoc.put("firstName", this.firstName);
-//            newUserDoc.put("lastName", this.lastName);
-//            newUserDoc.put("username", this.username);
-//            newUserDoc.put("email", this.email);
-//            newUserDoc.put("password", this.password);
+
             try {
+                // Create the request JSON
                 JSONObject jsonBody = new JSONObject();
                 jsonBody.put("name", this.name);
                 jsonBody.put("email", this.email);
                 jsonBody.put("username", this.username);
                 jsonBody.put("password", this.password);
-
                 final String requestBody = jsonBody.toString();
 
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, connectionURL, new Response.Listener<String>() {
+                // Make POST request
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, registerURL, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.i("VOLLEY", response);
@@ -330,6 +297,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                     try {
                         success = responseJSON.getBoolean("success");
+                        newUser = responseJSON.toString();
+
                     } catch(Exception ex) {
                         success = false;
                         userExists = true;
@@ -352,7 +321,7 @@ public class RegisterActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
             Intent getDashboardActivity = new Intent(getApplicationContext(),DashboardActivity.class);
-
+            getDashboardActivity.putExtra("user", newUser);
 
             if (success) {
                 startActivity(getDashboardActivity);

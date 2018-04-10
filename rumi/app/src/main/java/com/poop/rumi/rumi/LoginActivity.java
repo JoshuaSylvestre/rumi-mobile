@@ -41,24 +41,12 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.mongodb.stitch.android.StitchClient;
-import com.mongodb.stitch.android.StitchClientFactory;
-import com.mongodb.stitch.android.auth.emailpass.EmailPasswordAuthProvider;
-import com.mongodb.stitch.android.services.mongodb.MongoClient;
 
 import org.json.JSONObject;
-import org.w3c.dom.Document;
 
 import java.io.UnsupportedEncodingException;
-import java.security.AuthProvider;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.security.auth.Subject;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.login.LoginException;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -76,12 +64,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+    private JSONObject userJSON;
 
     // MLab
     private boolean isRequesting = false;
     private RequestQueue requestQueue;
-    private String connectionURL;
     private JSONObject responseJSON;
+    private String loginURL;
+    private String userToken;
 
     // UI references.
     private AutoCompleteTextView mUsernameView;
@@ -95,7 +85,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         setContentView(R.layout.activity_login);
 
         requestQueue = Volley.newRequestQueue(this);
-        connectionURL = "http://10.0.2.2:8080/login";
+        loginURL = getString(R.string.base_url) + getString(R.string.login_url);
 
         // Set up the login form.
         mUsernameView = (AutoCompleteTextView) findViewById(R.id.username);
@@ -124,8 +114,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
 
-        // Initialize connection to Stitch
-//        stitchClient = new RumiStitchClient(getApplicationContext());
     }
 
     private void populateAutoComplete() {
@@ -345,21 +333,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-//            final org.bson.Document userDoc = new org.bson.Document();
-//            userDoc.put("username", mUsername);
-
-//            usersCollection = stitchClient.getMongoDb().getCollection(getString(R.string.stitch_users_collection));
-
             isRequesting = true;
 
             try {
+                // Create the request JSON
                 JSONObject jsonBody = new JSONObject();
                 jsonBody.put("username", this.mUsername);
                 jsonBody.put("password", this.mPassword);
-
                 final String requestBody = jsonBody.toString();
 
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, connectionURL, new Response.Listener<String>() {
+                // Make POST request
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, loginURL, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.i("VOLLEY", response);
@@ -394,8 +378,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             responseString = String.valueOf(response.statusCode);
 
                             try {
+                                // Create the JSON Object from the response with the correct header
                                 responseBody = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
                                 responseJSON = new JSONObject(responseBody);
+                                userToken = responseJSON.getString("token");
 
                             } catch(Exception ex) {
                                 responseBody = new String(response.data);
@@ -421,10 +407,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Thread.sleep(2000);
                 boolean success;
 
+                // Since this task is asynchronous, only get data from the JSON if the request is completed
                 if(!isRequesting && responseJSON != null) {
 
                     try {
                         success = responseJSON.getBoolean("success");
+
+                        if(success)
+                            userJSON = responseJSON.getJSONObject("user");
+
                     } catch(Exception ex) {
                         success = false;
                         Log.i("LOGIN", "Bad login.");
@@ -439,7 +430,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 return false;
             }
 
-            // TODO: register the new account here.
             return false;
         }
 
@@ -449,6 +439,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             Intent getDashboardActivity = new Intent(getApplicationContext(),DashboardActivity.class);
+
+            // Put the user info JSON in the intent to pass it to the next activity
+            getDashboardActivity.putExtra("user", userJSON.toString());
+            getDashboardActivity.putExtra("token", userToken);
 
             if (success) {
                 startActivity(getDashboardActivity);
