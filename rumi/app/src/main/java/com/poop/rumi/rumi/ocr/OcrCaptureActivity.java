@@ -47,11 +47,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 
 public class OcrCaptureActivity extends AppCompatActivity{
 
     private static final String TAG = "OcrCaptureActivity";
+
     private final Context mContext = this;
 
     // Intent request code to handle updating play services if needed.
@@ -83,6 +85,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
     //Capture Button
     private FloatingActionButton captureButton;
 
+
     // Helper objects for detecting taps
     private GestureDetector gestureDetector;
 
@@ -92,7 +95,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
     private int promptDialogStage = 0;
 
-
     /**
      * Initializes the UI and creates the detector pipeline.
      */
@@ -100,6 +102,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.ocr_capture);
+
 
         mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.graphicOverlay);
@@ -120,6 +123,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
         if(rd == PackageManager.PERMISSION_DENIED) {
             requestStoragePermission();
         }
+
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
 
@@ -152,6 +156,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
 
     }
+
 
     private void validateImgWithUser() {
 
@@ -213,6 +218,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
                         + IMAGE_DIRECTORY_NAME + " directory");
                 return null;
             }
+
             Log.d(IMAGE_DIRECTORY_NAME, "Directory doesn't exist, so it was created");
         }
 
@@ -220,7 +226,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
         File mediaFile;
-
         mediaFile = new File(mediaStorageDir.getPath() + File.separator
                 + "IMG_" + timeStamp + ".jpg");
 
@@ -341,8 +346,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
             xMark.setVisibility(View.INVISIBLE);
 
     }
-
-
     /**
      * Handles the requesting of the camera permission.  This includes
      * showing a "Snackbar" message of why the permission is needed then
@@ -410,7 +413,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
         return b || super.onTouchEvent(e);
     }
 
-
     /**
      * Creates and starts the camera.  Note that this uses a higher resolution in comparison
      * to other detection examples to enable the ocr detector to detect small text samples
@@ -469,7 +471,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
      */
     @Override
     protected void onResume() {
-
         Log.d("TESTING", "onResume");
         super.onResume();
         startCameraSource();
@@ -497,7 +498,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
      */
     @Override
     protected void onDestroy() {
-
         Log.d("TESTING", "onDestroy");
 
         super.onDestroy();
@@ -505,8 +505,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
             mPreview.release();
         }
     }
-
-
+  
     /**
      * Callback for the result from requesting permissions. This method
      * is invoked for every call on {@link #requestPermissions(String[], int)}.
@@ -550,6 +549,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
                 AlertDialog.Builder camBuilder = new AlertDialog.Builder(this);
                 camBuilder.setTitle("rumi")
+
                         .setMessage(R.string.no_camera_permission)
                         .setPositiveButton(R.string.ok, camListener)
                         .show();
@@ -570,6 +570,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
                 AlertDialog.Builder storageBuilder = new AlertDialog.Builder(this);
                 storageBuilder.setTitle("rumi")
+
                         .setMessage(R.string.no_storage_permission)
                         .setPositiveButton(R.string.ok, storageListener)
                         .show();
@@ -610,6 +611,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
             }
         }
     }
+
 
     private boolean onTap(float rawX, float rawY) {
 
@@ -675,5 +677,4 @@ public class OcrCaptureActivity extends AppCompatActivity{
             return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
         }
     }
-
 }

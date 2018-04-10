@@ -89,6 +89,10 @@ public class CameraSource {
 
     private static final String TAG = "CameraSource";
 
+    //File path that stores image
+    // TODO: final?
+    private static String lastImageFilePath;
+
     /**
      * The dummy surface texture must be assigned a chosen name.  Since we never use an OpenGL
      * context, we can choose any ID we want here.
@@ -545,7 +549,6 @@ public class CameraSource {
      * @param jpeg    the callback for JPEG image data, or null
      */
     public void takePicture(ShutterCallback shutter, PictureCallback jpeg) {
-
         //Log.d("takePicture()", "\tBeginning");
 
         synchronized (mCameraLock) {
@@ -559,9 +562,7 @@ public class CameraSource {
                 mCamera.takePicture(startCallback, null, null, doneCallback);
             }
         }
-
         //Log.d("takePicture()", "\tFinished");
-
     }
 
     public void saveImage(String imagePath){
@@ -597,7 +598,6 @@ public class CameraSource {
         } catch (IOException e) {
             Log.d(TAG, "Error accessing file: " + e.getMessage());
         }
-
     }
 
     /**
@@ -758,8 +758,6 @@ public class CameraSource {
         return true;
     }
 
-
-
     //==============================================================================================
     // Private
     //==============================================================================================
@@ -782,7 +780,6 @@ public class CameraSource {
             if (mDelegate != null) {
                 mDelegate.onShutter();
             }
-
         }
     }
 
@@ -795,8 +792,6 @@ public class CameraSource {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-
-
             // TAG: COMMENT_ABE
             // Saving the currently available data on the SurfaceView to tempImage for future use in
             // the case that user is satisfied with image leading to saving the image to the device
@@ -813,7 +808,6 @@ public class CameraSource {
             if (mDelegate != null) {
                 mDelegate.onPictureTaken(data);
             }
-
 
             // TAG: COMMENT_ABE
             // Not necessary for purposes of this app since mCamera.startPreview() will counter

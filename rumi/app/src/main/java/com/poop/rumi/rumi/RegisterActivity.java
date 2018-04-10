@@ -4,55 +4,40 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
 
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.mongodb.stitch.android.services.mongodb.MongoClient;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
-import org.bson.Document;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
+import java.io.UnsupportedEncodingException;
 
 public class RegisterActivity extends AppCompatActivity {
-
-    private final int USERNAME_EXISTS = 1;
-    private final int EMAIL_EXISTS = 2;
 
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private EditText mFirstNameView;
-    private EditText mLastNameView;
+    private EditText mNameView;
     private EditText mEmailView;
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -60,20 +45,24 @@ public class RegisterActivity extends AppCompatActivity {
     private View mRegisterFormView;
 
     // DB references
-    private RumiStitchClient stitchClient;
-    private MongoClient.Collection usersCollection;
     private Boolean isRequesting = false;
-    private Long userExists = Long.valueOf(0);
-    private Document newUser;
+    private RequestQueue requestQueue;
+    private String registerURL;
+    private JSONObject responseJSON;
+    private Boolean userExists = false;
+
+    private String newUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        requestQueue = Volley.newRequestQueue(this);
+        registerURL = getString(R.string.base_url) + getString(R.string.register_url);
+
         // Set up the register form.
-        mFirstNameView = findViewById(R.id.first_name);
-        mLastNameView = findViewById(R.id.last_name);
+        mNameView = findViewById(R.id.name);
         mEmailView = findViewById(R.id.email);
         mUsernameView = findViewById(R.id.username);
         mPasswordView = findViewById(R.id.password);
@@ -88,9 +77,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         mRegisterFormView = findViewById(R.id.register_form);
         mProgressView = findViewById(R.id.login_progress);
-
-        // Make Stitch client
-        stitchClient = new RumiStitchClient(getApplicationContext());
     }
 
     private void attemptRegister() {
@@ -99,15 +85,13 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         // Reset errors.
-        mFirstNameView.setError(null);
-        mLastNameView.setError(null);
+        mNameView.setError(null);
         mEmailView.setError(null);
         mUsernameView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String firstName = mFirstNameView.getText().toString();
-        String lastName = mLastNameView.getText().toString();
+        String name = mNameView.getText().toString();
         String email = mEmailView.getText().toString();
         String username = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
@@ -116,17 +100,9 @@ public class RegisterActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for valid first name
-        if(TextUtils.isEmpty(firstName)) {
-            mFirstNameView.setError(getString(R.string.error_field_required));
-            focusView = mFirstNameView;
-            cancel = true;
-        }
-
-        // Check for valid last name
-        if(TextUtils.isEmpty(lastName)) {
-            mLastNameView.setError(getString(R.string.error_field_required));
-            if(focusView == null)
-                focusView = mLastNameView;
+        if(TextUtils.isEmpty(name)) {
+            mNameView.setError(getString(R.string.error_field_required));
+            focusView = mNameView;
             cancel = true;
         }
 
@@ -171,7 +147,7 @@ public class RegisterActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(firstName, lastName, email, username, password);
+            mAuthTask = new UserLoginTask(name, email, username, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -230,15 +206,13 @@ public class RegisterActivity extends AppCompatActivity {
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String firstName;
-        private final String lastName;
+        private final String name;
         private final String username;
         private final String email;
         private final String password;
 
-        UserLoginTask(String firstName, String lastName, String email, String username, String password) {
-            this.firstName = firstName;
-            this.lastName = lastName;
+        UserLoginTask(String name, String email, String username, String password) {
+            this.name = name;
             this.email = email;
             this.username = username;
             this.password = password;
@@ -246,55 +220,93 @@ public class RegisterActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-            Document newUserDoc = new Document();
-            newUserDoc.put("firstName", this.firstName);
-            newUserDoc.put("lastName", this.lastName);
-            newUserDoc.put("username", this.username);
-            newUserDoc.put("email", this.email);
-            newUserDoc.put("password", this.password);
 
-            usersCollection = stitchClient.getMongoDb().getCollection(getString(R.string.stitch_users_collection));
+            try {
+                // Create the request JSON
+                JSONObject jsonBody = new JSONObject();
+                jsonBody.put("name", this.name);
+                jsonBody.put("email", this.email);
+                jsonBody.put("username", this.username);
+                jsonBody.put("password", this.password);
+                final String requestBody = jsonBody.toString();
 
-            isRequesting = true;
-            stitchClient.getStitchClient().executeFunction("userExists0", this.email, this.username).addOnCompleteListener(new OnCompleteListener<Object>() {
-                @Override
-                public void onComplete(@NonNull Task<Object> task) {
-                    if(!task.isSuccessful()) {
-                        Log.e("Stitch", "Cannot check if new user exists.");
-                        return;
+                // Make POST request
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, registerURL, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i("VOLLEY", response);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.e("VOLLEY", error.toString());
+                    }
+                }) {
+                    @Override
+                    public String getBodyContentType() {
+                        return "application/json; charset=utf-8";
                     }
 
-                    userExists = (Long) task.getResult();
-                    isRequesting = false;
-                }
-            });
-
-            // Insert a user only if they don't already exist
-            if(userExists == 0) {
-                isRequesting = true;
-                usersCollection.insertOne(newUserDoc).addOnCompleteListener(new OnCompleteListener<Document>() {
                     @Override
-                    public void onComplete(@NonNull Task<Document> task) {
-                        if (!task.isSuccessful()) {
-                            Log.e("Stitch", "Cannot insert new user into collection.");
-                            return;
+                    public byte[] getBody() throws AuthFailureError {
+                        try {
+                            return requestBody == null ? null : requestBody.getBytes("utf-8");
+                        } catch (UnsupportedEncodingException uee) {
+                            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                        String responseString = "";
+                        String responseBody;
+
+                        if (response != null) {
+                            responseString = String.valueOf(response.statusCode);
+
+                            try {
+                                responseBody = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                                responseJSON = new JSONObject(responseBody);
+
+                            } catch(Exception ex) {
+                                responseBody = new String(response.data);
+                                Log.i("VOLLEY", "Cannot create JSON");
+                            }
+
+                            Log.i("VOLLEY", responseBody);
+                            isRequesting = false;
                         }
 
-                        newUser = task.getResult();
-                        isRequesting = false;
+
+                        return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
                     }
-                });
+                };
+
+                requestQueue.add(stringRequest);
+            } catch(Exception ex) {
+                ex.printStackTrace();
             }
 
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
 
-                if(!isRequesting && newUser != null && userExists == 0) {
-                    userExists = Long.valueOf(0);
+                if(!isRequesting && responseJSON != null) {
+                    boolean success;
+
+                    try {
+                        success = responseJSON.getBoolean("success");
+                        newUser = responseJSON.toString();
+
+                    } catch(Exception ex) {
+                        success = false;
+                        userExists = true;
+                    }
+
                     isRequesting = false;
-                    return true;
+
+                    return success;
                 }
 
             } catch (InterruptedException e) {
@@ -309,17 +321,14 @@ public class RegisterActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
             Intent getDashboardActivity = new Intent(getApplicationContext(),DashboardActivity.class);
-
+            getDashboardActivity.putExtra("user", newUser);
 
             if (success) {
                 startActivity(getDashboardActivity);
 //                finish();
             } else {
 
-                if(userExists == USERNAME_EXISTS) {
-                    mUsernameView.setError("Account under this username already exists");
-                    mUsernameView.requestFocus();
-                } else if(userExists == EMAIL_EXISTS) {
+                if(userExists) {
                     mEmailView.setError("Account under this email already exists");
                     mEmailView.requestFocus();
                 }
