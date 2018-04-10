@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.poop.rumi.rumi;
+package com.poop.rumi.rumi.ocr;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
+import com.poop.rumi.rumi.R;
 import com.poop.rumi.rumi.camera.GraphicOverlay;
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
@@ -34,7 +35,8 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
     private int mId;
 
-    private static final int TEXT_COLOR = Color.WHITE;
+    private static final int BOX_COLOR = Color.WHITE;//Color.rgb(87, 188, 150); <- rumi theme color
+    private static final int TEXT_COLOR = Color.TRANSPARENT;
 
     private static Paint sRectPaint;
     private static Paint sTextPaint;
@@ -47,7 +49,7 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
 
         if (sRectPaint == null) {
             sRectPaint = new Paint();
-            sRectPaint.setColor(TEXT_COLOR);
+            sRectPaint.setColor(BOX_COLOR);
             sRectPaint.setStyle(Paint.Style.STROKE);
             sRectPaint.setStrokeWidth(4.0f);
         }

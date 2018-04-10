@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: org.mongodb:stitch-3.0.0">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/stitch-3.0.0.aar/3d222d0bd2076c42a368147ad3a82f08/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/stitch-3.0.0.aar/3d222d0bd2076c42a368147ad3a82f08/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mongodb/stitch/3.0.0/b7a895b321729a8cd2ed2f090573bb95e735e5f/stitch-3.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

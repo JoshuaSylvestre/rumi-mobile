@@ -20,10 +20,13 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.graphics.Picture;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresPermission;
@@ -38,22 +41,29 @@ import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.Frame;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 // Note: This requires Google Play Services 8.1 or higher, due to using indirect byte buffers for
 // storing images.
 
 /**
  * Manages the camera in conjunction with an underlying
- * {@link Detector}.  This receives preview frames from the camera at
+ * {@link com.google.android.gms.vision.Detector}.  This receives preview frames from the camera at
  * a specified rate, sending those frames to the detector as fast as it is able to process those
  * frames.
  * <p/>
@@ -77,7 +87,7 @@ public class CameraSource {
     @SuppressLint("InlinedApi")
     public static final int CAMERA_FACING_FRONT = CameraInfo.CAMERA_FACING_FRONT;
 
-    private static final String TAG = "OpenCameraSource";
+    private static final String TAG = "CameraSource";
 
     /**
      * The dummy surface texture must be assigned a chosen name.  Since we never use an OpenGL
@@ -143,7 +153,7 @@ public class CameraSource {
     // These instances need to be held onto to avoid GC of their underlying resources.  Even though
     // these aren't used outside of the method that creates them, they still must have hard
     // references maintained to them.
-    private SurfaceView mDummySurfaceView;
+
     private SurfaceTexture mDummySurfaceTexture;
 
     /**
@@ -159,6 +169,12 @@ public class CameraSource {
      * native code later (avoids a potential copy).
      */
     private Map<byte[], ByteBuffer> mBytesToByteBuffer = new HashMap<>();
+
+    // TAG: COMMENT_ABE
+    // Temporary byte array of image in case user decides to save image upon freezing
+    // the SurfaceTexture (mDummySurfaceTexture) when calling freeze()
+    private static byte [] tempImage;
+
 
     //==============================================================================================
     // Builder
@@ -343,13 +359,9 @@ public class CameraSource {
 
             // SurfaceTexture was introduced in Honeycomb (11), so if we are running and
             // old version of Android. fall back to use SurfaceView.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mDummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
-                mCamera.setPreviewTexture(mDummySurfaceTexture);
-            } else {
-                mDummySurfaceView = new SurfaceView(mContext);
-                mCamera.setPreviewDisplay(mDummySurfaceView.getHolder());
-            }
+            mDummySurfaceTexture = new SurfaceTexture(DUMMY_TEXTURE_NAME);
+            mCamera.setPreviewTexture(mDummySurfaceTexture);
+
             mCamera.startPreview();
 
             mProcessingThread = new Thread(mFrameProcessor);
@@ -421,17 +433,56 @@ public class CameraSource {
                     // SurfaceHolder.  If the developer doesn't want to display a preview we use a
                     // SurfaceTexture if we are running at least Honeycomb.
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                        mCamera.setPreviewTexture(null);
+                    mCamera.setPreviewTexture(null);
 
-                    } else {
-                        mCamera.setPreviewDisplay(null);
-                    }
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to clear camera preview: " + e);
                 }
                 mCamera.release();
                 mCamera = null;
+            }
+        }
+    }
+
+    public void freeze() {
+        synchronized (mCameraLock) {
+
+            // TAG: COMMENT_ABE
+            // Functionality of freeze still works even if the mFrameProcessor wasn't deactivated.
+            // But in either case, the processor wont have anything to process, so might as well
+            //  deactivate it.
+            mFrameProcessor.setActive(false);
+            if (mProcessingThread != null) {
+                try {
+                    // Wait for the thread to complete to ensure that we can't have multiple threads
+                    // executing at the same time (i.e., which would happen if we called start too
+                    // quickly after stop).
+                    mProcessingThread.join();
+                } catch (InterruptedException e) {
+                    Log.d(TAG, "Frame processing thread interrupted on release.");
+                }
+                mProcessingThread = null;
+            }
+
+            mBytesToByteBuffer.clear();
+
+
+            if (mCamera != null) {
+                mCamera.stopPreview();
+                mCamera.setPreviewCallbackWithBuffer(null);
+                try {
+                    // We want to be compatible back to Gingerbread, but SurfaceTexture
+                    // wasn't introduced until Honeycomb.  Since the interface cannot use a
+                    // SurfaceTexture, if the developer wants to display a preview we must use a
+                    // SurfaceHolder.  If the developer doesn't want to display a preview we use a
+                    // SurfaceTexture if we are running at least Honeycomb.
+
+                        mCamera.setPreviewTexture(null);
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to clear camera preview: " + e);
+                }
+
             }
         }
     }
@@ -494,8 +545,13 @@ public class CameraSource {
      * @param jpeg    the callback for JPEG image data, or null
      */
     public void takePicture(ShutterCallback shutter, PictureCallback jpeg) {
+
+        //Log.d("takePicture()", "\tBeginning");
+
         synchronized (mCameraLock) {
+
             if (mCamera != null) {
+
                 PictureStartCallback startCallback = new PictureStartCallback();
                 startCallback.mDelegate = shutter;
                 PictureDoneCallback doneCallback = new PictureDoneCallback();
@@ -503,6 +559,45 @@ public class CameraSource {
                 mCamera.takePicture(startCallback, null, null, doneCallback);
             }
         }
+
+        //Log.d("takePicture()", "\tFinished");
+
+    }
+
+    public void saveImage(String imagePath){
+
+        //Log.d("saveImage()", "Data length = "  + tempImage.length);
+
+        File pictureFile = new File(imagePath);
+        if (pictureFile == null){
+            Log.d(TAG, "Error creating/getting media file, check storage permissions: ");
+            return;
+        }
+
+        Log.d("saveImage()",  "File path = " +  pictureFile.getAbsolutePath());
+
+        try {
+            FileOutputStream fos = new FileOutputStream(pictureFile);
+
+            // TAG: COMMENT_ABE
+            // Normally, would call the following:   fos.write(data)   .. in onPictureTaken()
+            // But since image must be is frozen and approved/validated by user before being
+            // saved, will pass tempImage field instead. tempImage is initialized in
+            //  onPictureTaken() -> PictureDoneCallback() before freezing frame.
+
+            if(tempImage != null)
+                fos.write(tempImage);
+            else
+                Log.d("saveImage()", "tempImage is null");
+
+            fos.close();
+
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(TAG, "Error accessing file: " + e.getMessage());
+        }
+
     }
 
     /**
@@ -663,6 +758,8 @@ public class CameraSource {
         return true;
     }
 
+
+
     //==============================================================================================
     // Private
     //==============================================================================================
@@ -681,9 +778,11 @@ public class CameraSource {
 
         @Override
         public void onShutter() {
+
             if (mDelegate != null) {
                 mDelegate.onShutter();
             }
+
         }
     }
 
@@ -696,14 +795,37 @@ public class CameraSource {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+
+
+            // TAG: COMMENT_ABE
+            // Saving the currently available data on the SurfaceView to tempImage for future use in
+            // the case that user is satisfied with image leading to saving the image to the device
+
+            synchronized (mCameraLock) {
+                tempImage = data;
+
+                if (tempImage == null)
+                    Log.d("onPictureTaken()", "tempImage = data ...  is null");
+            }
+
+            freeze();
+
             if (mDelegate != null) {
                 mDelegate.onPictureTaken(data);
             }
-            synchronized (mCameraLock) {
-                if (mCamera != null) {
-                    mCamera.startPreview();
-                }
-            }
+
+
+            // TAG: COMMENT_ABE
+            // Not necessary for purposes of this app since mCamera.startPreview() will counter
+            // mCamera.stopPreview() that's called in freeze()
+
+//            synchronized (mCameraLock) {
+//                if (mCamera != null) {
+//                    mCamera.startPreview();
+//                }
+//            }
+
+           // Log.d("PictureDoneCallback()", "\tFinished");
         }
     }
 
@@ -1065,6 +1187,7 @@ public class CameraSource {
         public void onPreviewFrame(byte[] data, Camera camera) {
             mFrameProcessor.setNextFrame(data, camera);
         }
+
     }
 
     /**
@@ -1139,6 +1262,7 @@ public class CameraSource {
                 mPendingTimeMillis = SystemClock.elapsedRealtime() - mStartTimeMillis;
                 mPendingFrameId++;
                 mPendingFrameData = mBytesToByteBuffer.get(data);
+
 
                 // Notify the processor thread if it is waiting on the next frame (see below).
                 mLock.notifyAll();
