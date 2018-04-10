@@ -10,8 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.hardware.Camera;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
@@ -23,11 +21,20 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.ScaleGestureDetector;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.text.Text;
+import com.google.android.gms.vision.text.TextBlock;
+import com.poop.rumi.rumi.MainActivity;
+import com.poop.rumi.rumi.Receipt;
 import com.poop.rumi.rumi.camera.CameraSource;
 import com.poop.rumi.rumi.camera.CameraSourcePreview;
 import com.poop.rumi.rumi.camera.GraphicOverlay;
@@ -40,20 +47,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
-
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
+
 
 public class OcrCaptureActivity extends AppCompatActivity{
 
     private static final String TAG = "OcrCaptureActivity";
+
+    private final Context mContext = this;
 
     // Intent request code to handle updating play services if needed.
     private static final int RC_HANDLE_GMS = 9001;
 
     //
     private static final String IMAGE_DIRECTORY_NAME = "rumiImages";
-    private static final int IMAGE_PREVIEW_REQUEST = 2580;
-
 
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
@@ -62,28 +69,31 @@ public class OcrCaptureActivity extends AppCompatActivity{
     // Constants used to pass extra data in the intent
     public static final String AutoFocus = "AutoFocus";
     public static final String UseFlash = "UseFlash";
-    public static final String TextBlockObject = "String";
 
     //Camera & GraphicOverlay
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
 
-    //Viewing Captured Image
-    private ImageView imageView;
+    //Buttons for image validation
+    private ImageButton xMark;
+    private ImageButton tickMark;
+    // for purposes of making sure user taps either of the above buttons before being
+    // able to tap (and thus remove) TextBlocks
+    boolean validated = false;
 
     //Capture Button
     private FloatingActionButton captureButton;
 
 
-
-    // Helper objects for detecting taps and pinches.
-    private ScaleGestureDetector scaleGestureDetector;
+    // Helper objects for detecting taps
     private GestureDetector gestureDetector;
 
+    private String imagePath;
 
+    private Receipt mReceipt;
 
-
+    private int promptDialogStage = 0;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -93,12 +103,10 @@ public class OcrCaptureActivity extends AppCompatActivity{
         super.onCreate(icicle);
         setContentView(R.layout.ocr_capture);
 
-        mPreview = (CameraSourcePreview) findViewById(R.id.preview);
-        mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
 
-        imageView = (ImageView) findViewById(R.id.image_view);
+        mPreview = findViewById(R.id.preview);
+        mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
-        //TODO: add checkbox to allow user to specify these.
         boolean autoFocus = true;
         boolean useFlash = false;
 
@@ -116,71 +124,86 @@ public class OcrCaptureActivity extends AppCompatActivity{
             requestStoragePermission();
         }
 
-        captureButton = (FloatingActionButton)findViewById(R.id.btnCapturePicture);
+
+        gestureDetector = new GestureDetector(this, new CaptureGestureListener());
+
+        xMark = findViewById(R.id.xMark);
+        tickMark = findViewById(R.id.tickMark);
+
+        captureButton = findViewById(R.id.btnCapturePicture);
+
+        toDisplayButtons(true, false, false);
+        //displaySubmitAndSwitches(false);
+
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public synchronized void onClick(View v) {
                 Toast.makeText(mPreview.getContext(), R.string.picture_taken, Toast.LENGTH_SHORT)
                         .show();
 
-                String path = createUniqueFileForImage(MEDIA_TYPE_IMAGE).getAbsolutePath();
-                mCameraSource.setImageFilePath(path);
+                toDisplayButtons(false, true, true);
+
+                // TAG: COMMENT_ABE
+                // Doesn't save picture yet but instead saves byte [] to CameraSource field tempImage.
+                // Picture is saved upon user validation prompted through the tickMark button.
+                // takePicture() calls freeze() to freeze SurfaceView and TextDetector/GraphicOverlay
                 mCameraSource.takePicture(null, null);
 
-                Bitmap bm = screenShot(v);
+                validateImgWithUser();
 
-                findViewById(R.id.topLayout).setVisibility(View.GONE);
-                captureButton.setVisibility(View.GONE);
-                findViewById(R.id.bottomLayout).setVisibility(View.VISIBLE);
-
-                imageView.setImageBitmap(bm);
-
-                //Switching views (activity) to let user view recently captured image.
-
-                //TODO: startActivity() ==> startActivityForResult()  ... in case user unsatisfied with image
-                //Log.d(TAG, "Switching to 'ImageViewActivity' view!!");
-                Log.d(TAG, "\t\tQuick check that path exists: " + mCameraSource.getImageFilePath());
-
-                //TODO: deal with synchronization issue here ... synchronization or isTakingPicture() boolean
-                // more on isTakingPicture() implementation: declare boolean, set to false, set to true in takePicture(),
-                // set to false at end of PictureDoneCallBack.onPictureTaken()
-//                try {
-//                    Log.d(TAG, "WAITING...");
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                Intent intent = new Intent(v.getContext(), ImageViewActivity.class);
-//                intent.putExtra(ImageViewActivity.ImagePath, mCameraSource.getImageFilePath());
-//                startActivity(intent);
             }
         });
 
 
     }
 
-    private Bitmap takeScreenShot(View view) {
-        view.setDrawingCacheEnabled(true);
-        view.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-        view.buildDrawingCache();
-        if (view.getDrawingCache() == null)
-            return null;
-        Bitmap snapshot = Bitmap.createBitmap(view.getDrawingCache());
-        view.setDrawingCacheEnabled(false);
-        view.destroyDrawingCache();
-        return snapshot;
+
+    private void validateImgWithUser() {
+
+        tickMark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Toast.makeText(OcrCaptureActivity.this, "Tapped tick mark", Toast.LENGTH_SHORT).show();
+
+                // Create image file and save image
+                File fl = createUniqueFileForImage();
+
+                assert fl != null;
+                imagePath = fl.getAbsolutePath();
+
+                try {
+                    mCameraSource.saveImage(imagePath);
+                } catch(Exception ignored)
+                {
+                    Log.d(TAG, "Failed to save image.", ignored);
+                } finally {
+
+                    toDisplayButtons(false, true, false);
+
+                    startDialogSequence();
+
+                    //displaySubmitAndSwitches(true);
+                    validated = true;
+                }
+
+            }
+
+        });
+
+        xMark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Toast.makeText(OcrCaptureActivity.this, "Tapped x mark", Toast.LENGTH_SHORT).show();
+
+                recreate(); // .. this activity
+            }
+        });
     }
 
-    private Bitmap screenShot(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(),
-                view.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-        return bitmap;
-    }
 
-    private File createUniqueFileForImage(int type) {
+    private File createUniqueFileForImage() {
 
         // External sdcard location
         File mediaStorageDir = new File(
@@ -195,22 +218,133 @@ public class OcrCaptureActivity extends AppCompatActivity{
                         + IMAGE_DIRECTORY_NAME + " directory");
                 return null;
             }
-            Log.d(IMAGE_DIRECTORY_NAME, "File doesn't exist, so it was created");
+
+            Log.d(IMAGE_DIRECTORY_NAME, "Directory doesn't exist, so it was created");
         }
 
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
         File mediaFile;
-
-        if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                    + "IMG_" + timeStamp + ".jpg");
-        } else {
-            return null;
-        }
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator
+                + "IMG_" + timeStamp + ".jpg");
 
         return mediaFile;
+    }
+
+
+    // Begins prompting user to tap on items the prices by calling invokeDialog()
+    // Ideally, would include instructions to increase accuracy of parsing algorithms
+    // implemented in Receipt class
+    private void startDialogSequence(){
+
+        mReceipt = new Receipt();
+
+        // Would be nice to highlight words that change. eg, ITEMS, PRICES, etc.
+        final String [] promptMsg = {"TAP ON ITEMS PLS AND TAP TICK MARK WHEN FINISHED",
+                                     "TAP ON PRICES PLS AND TAP TICK MARK WHEN FINISHED",
+                                     "TAP ON STORE NAME PLS AND TAP TICK MARK WHEN FINISHED"};
+
+        invokeDialog(promptMsg[promptDialogStage++]);
+
+        if(promptDialogStage < 3) {
+            tickMark.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Toast.makeText(OcrCaptureActivity.this, "Tapped tick mark", Toast.LENGTH_SHORT).show();
+
+                    invokeDialog(promptMsg[promptDialogStage++]);
+
+
+                }
+
+            });
+        }
+
+        else
+        {
+            Toast.makeText(OcrCaptureActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+
+            //TODO: Push to next activity
+        }
+
+
+    }
+
+    private void invokeDialog(String msg){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(OcrCaptureActivity.this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.custom_alertdialog_view,null);
+
+        // Specify alert dialog is not cancelable/not ignorable
+        builder.setCancelable(false);
+
+        // Set the custom layout as alert dialog view
+        builder.setView(dialogView);
+
+        // Get the custom alert dialog view widgets reference
+        Button btn_positive = (Button) dialogView.findViewById(R.id.dialog_positive_btn);
+        Button btn_negative = (Button) dialogView.findViewById(R.id.dialog_negative_btn);
+
+        TextView dialog_message = (TextView) dialogView.findViewById(R.id.dialog_title);
+        dialog_message.setText(msg);
+        //        final EditText et_name = (EditText) dialogView.findViewById(R.id.et_name);
+
+        // Create the alert dialog
+        final AlertDialog dialog = builder.create();
+
+        // Set positive/yes button click listener
+        btn_positive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Dismiss the alert dialog
+                dialog.cancel();
+
+
+
+            }
+        });
+
+        // Set negative/no button click listener
+        btn_negative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Dismiss/cancel the alert dialog
+                //dialog.cancel();
+                dialog.dismiss();
+                recreate();
+
+                Toast.makeText(getApplication(),
+                        "No button clicked", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Display the custom alert dialog on interface
+        dialog.show();
+    }
+
+
+
+    private void toDisplayButtons(boolean displayCaptureButton, boolean displayTickMark, boolean displayXMark){
+
+        if(displayCaptureButton)
+            captureButton.setVisibility(View.VISIBLE);
+        else
+            captureButton.setVisibility(View.INVISIBLE);
+
+        if(displayTickMark)
+            tickMark.setVisibility(View.VISIBLE);
+        else
+            tickMark.setVisibility(View.INVISIBLE);
+
+        if(displayXMark)
+            xMark.setVisibility(View.VISIBLE);
+        else
+            xMark.setVisibility(View.INVISIBLE);
+
     }
     /**
      * Handles the requesting of the camera permission.  This includes
@@ -271,6 +405,13 @@ public class OcrCaptureActivity extends AppCompatActivity{
                 .show();
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+
+        boolean b = gestureDetector.onTouchEvent(e);
+
+        return b || super.onTouchEvent(e);
+    }
 
     /**
      * Creates and starts the camera.  Note that this uses a higher resolution in comparison
@@ -330,8 +471,11 @@ public class OcrCaptureActivity extends AppCompatActivity{
      */
     @Override
     protected void onResume() {
+        Log.d("TESTING", "onResume");
         super.onResume();
         startCameraSource();
+
+        toDisplayButtons(true, false, false);
     }
 
     /**
@@ -339,6 +483,9 @@ public class OcrCaptureActivity extends AppCompatActivity{
      */
     @Override
     protected void onPause() {
+
+        Log.d("TESTING", "onPause");
+
         super.onPause();
         if (mPreview != null) {
             mPreview.stop();
@@ -351,12 +498,14 @@ public class OcrCaptureActivity extends AppCompatActivity{
      */
     @Override
     protected void onDestroy() {
+        Log.d("TESTING", "onDestroy");
+
         super.onDestroy();
         if (mPreview != null) {
             mPreview.release();
         }
     }
-
+  
     /**
      * Callback for the result from requesting permissions. This method
      * is invoked for every call on {@link #requestPermissions(String[], int)}.
@@ -399,7 +548,8 @@ public class OcrCaptureActivity extends AppCompatActivity{
                 };
 
                 AlertDialog.Builder camBuilder = new AlertDialog.Builder(this);
-                camBuilder.setTitle("Multitracker sample")
+                camBuilder.setTitle("rumi")
+
                         .setMessage(R.string.no_camera_permission)
                         .setPositiveButton(R.string.ok, camListener)
                         .show();
@@ -419,7 +569,8 @@ public class OcrCaptureActivity extends AppCompatActivity{
                 };
 
                 AlertDialog.Builder storageBuilder = new AlertDialog.Builder(this);
-                storageBuilder.setTitle("Multitracker sample")
+                storageBuilder.setTitle("rumi")
+
                         .setMessage(R.string.no_storage_permission)
                         .setPositiveButton(R.string.ok, storageListener)
                         .show();
@@ -462,4 +613,68 @@ public class OcrCaptureActivity extends AppCompatActivity{
     }
 
 
+    private boolean onTap(float rawX, float rawY) {
+
+        if(validated && (tickMark.getVisibility() == View.INVISIBLE || xMark.getVisibility() == View.INVISIBLE)) {
+            OcrGraphic graphic = mGraphicOverlay.getGraphicAtLocation(rawX, rawY);
+
+            TextBlock text = null;
+            if (graphic != null) {
+                text = graphic.getTextBlock();
+
+                if (text != null && text.getValue() != null) {
+
+//                    Log.d(TAG, "TEXT TAPPED! : " + text.getValue());
+//                    Toast.makeText(mPreview.getContext(), text.getValue(), Toast.LENGTH_LONG)
+//                            .show();
+
+                    // Adding to items vs prices of mReceipt
+                    if(promptDialogStage == 1){
+                        mReceipt.addItems(text.getValue());
+
+                        if(mReceipt.numItems()!= 0)
+                            Toast.makeText(mPreview.getContext(), mReceipt.printItems(), Toast.LENGTH_LONG)
+                            .show();
+
+                    }
+                    else if(promptDialogStage == 2){
+                        mReceipt.addPrices(text.getValue());
+
+                        if(mReceipt.numPrices()!= 0)
+                            Toast.makeText(mPreview.getContext(), mReceipt.printPrices(), Toast.LENGTH_LONG)
+                                .show();
+                    }
+                    else{
+                        mReceipt.setStoreName(text.getValue());
+
+                       Toast.makeText(mPreview.getContext(), mReceipt.getStoreName(), Toast.LENGTH_LONG)
+                                    .show();
+                    }
+
+                    mGraphicOverlay.remove(graphic);
+
+                } else {
+                    Log.d(TAG, "text data is null");
+                }
+
+            } else {
+                Log.d(TAG, "no text detected");
+            }
+            return text != null;
+        }
+        else {
+            Toast.makeText(mPreview.getContext(), R.string.VerifyFirst, Toast.LENGTH_LONG)
+                    .show();
+            return false;
+        }
+    }
+
+    private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+//            Log.d("TAP LOCATION","("+ e.getRawX()+" , "+e.getRawY()+")");
+            return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
+        }
+    }
 }
