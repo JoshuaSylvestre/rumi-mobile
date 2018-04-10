@@ -63,7 +63,7 @@
     <string name="title_activity_roommate">RoommateActivity</string>
 
     <!-- Strings related to ROUTES -->
-    <string name="base_url">http://10.0.2.2:8080</string>
+    <string name="base_url">https://rumi-app.herokuapp.com</string>
     <string name="login_url">/login</string>
     <string name="register_url">/register</string>
     <string name="find_user_by_id_url">/get_user_by_id</string>
