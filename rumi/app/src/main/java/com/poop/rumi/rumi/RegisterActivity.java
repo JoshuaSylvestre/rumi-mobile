@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.AsyncTask;
@@ -12,10 +13,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -320,13 +323,20 @@ public class RegisterActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-            Intent getDashboardActivity = new Intent(getApplicationContext(),DashboardActivity.class);
-            getDashboardActivity.putExtra("user", newUser);
+            Intent getLoginActivity = new Intent(getApplicationContext(), LoginActivity.class);
+            getLoginActivity.putExtra("user", newUser);
 
             if (success) {
-                startActivity(getDashboardActivity);
+                Toast currToast = Toast.makeText(getApplicationContext(), "Registered! Please login.", Toast.LENGTH_LONG);
+                currToast.setGravity(Gravity.CENTER, 0 , 0);
+                currToast.show();
+
+                startActivity(getLoginActivity);
 //                finish();
             } else {
+                Toast currToast = Toast.makeText(getApplicationContext(), "Registered failed.", Toast.LENGTH_LONG);
+                currToast.setGravity(Gravity.CENTER, 0 , 0);
+                currToast.show();
 
                 if(userExists) {
                     mEmailView.setError("Account under this email already exists");
