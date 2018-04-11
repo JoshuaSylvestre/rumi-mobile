@@ -41,6 +41,9 @@ public class TransasctionActivity extends AppCompatActivity {
 
     Receipt mReceipt;
 
+    ArrayList<String> clean_input_items;
+    ArrayList<Float> clean_input_prices;
+
 //    String input_store_name =  getIntent().getStringExtra("ReceiptStoreName");
 
 
@@ -141,18 +144,6 @@ public class TransasctionActivity extends AppCompatActivity {
 
         ListView listViewItems = (ListView) findViewById(R.id.vertical_list_item_price_name);
 
-        Transaction step_fart_nee = new Transaction("banana", "step_fart_nee", Float.parseFloat("34.9") );
-        Transaction john = new Transaction("egg", "john", Float.parseFloat("3.9") );
-        Transaction steve = new Transaction("beer", "steve", Float.parseFloat("4.89") );
-        Transaction abe = new Transaction("steak", "abe", Float.parseFloat("5.93") );
-        Transaction dita = new Transaction("banana", "dita", Float.parseFloat("6.88") );
-        Transaction jordan = new Transaction("banana", "jordan", Float.parseFloat("23.4") );
-        Transaction joshua = new Transaction("steak", "joshua", Float.parseFloat("12.3") );
-        Transaction subhash = new Transaction("egg", "subhash", Float.parseFloat("6.7") );
-        Transaction steven = new Transaction("beer", "steven", Float.parseFloat("21.3") );
-        Transaction biem = new Transaction("banana", "biem", Float.parseFloat("43.2") );
-        Transaction no_name = new Transaction("steak", "no_name", Float.parseFloat("89.2") );
-
 // //     Objects with empty names:
 //        Transaction step_fart_nee = new Transaction("banana", "", "34.9");
 //        Transaction john = new Transaction("egg", "", "3.9");
@@ -169,19 +160,74 @@ public class TransasctionActivity extends AppCompatActivity {
 
         // Add transactions to the arraylist: take Transactions objects
         ArrayList<Transaction> transactionList = new ArrayList<>();
+        System.out.println("============================================");
+
+        String storeName = mReceipt.getStoreName();
+        String date = mReceipt.getDateOfCapture();
+        ArrayList<String> inputItems = mReceipt.getItems();
+        ArrayList<Float> inputPrices = mReceipt.getPrices();
+
+        System.out.println(storeName);
+        System.out.println(date);
+
+        System.out.println(inputItems);
+        System.out.println(inputPrices);
+
+        if(!storeName.equals(null))
+        {
+            int len = Math.min(inputItems.size(), inputPrices.size());
+            clean_input_items = new ArrayList<>();
+            clean_input_prices = new ArrayList<>();
+
+            for(int i = 0; i < len; i++){
+                if(!inputItems.get(i).toString().equals("") &&
+                        !inputItems.get(i).toString().toLowerCase().equals("subtotal")
+                        && !inputItems.get(i).toString().toLowerCase().equals("total")
+                        && !inputItems.get(i).toString().toLowerCase().equals("debit")
+                        && !inputItems.get(i).toString().toLowerCase().equals("debit tend")
+                        && !inputItems.get(i).toString().toLowerCase().equals("change")
+                        && !inputItems.get(i).toString().toLowerCase().equals("change due")
+                        && !inputItems.get(i).toString().toLowerCase().equals("debit")
+                        && !inputItems.get(i).toString().toLowerCase().equals("you saved")
+                        && !inputItems.get(i).toString().toLowerCase().equals("tax")
+                        && !inputItems.get(i).toString().toLowerCase().equals("tax 1")
+                        && !inputItems.get(i).toString().toLowerCase().equals("tax 2")
+                        && !inputItems.get(i).toString().toLowerCase().equals("order")
+                        && !inputItems.get(i).toString().toLowerCase().equals("order total")
+                        && !inputItems.get(i).toString().toLowerCase().equals("regular tax")
+                        && !inputItems.get(i).toString().toLowerCase().equals("food tax")
+                        && !inputItems.get(i).toString().toLowerCase().equals("grand total")
+                        && !inputItems.get(i).toString().toLowerCase().equals("payment")
+                        && !inputItems.get(i).toString().toLowerCase().equals("sales")
+                        && !inputItems.get(i).toString().toLowerCase().equals("sale total")
+                        && !inputItems.get(i).toString().toLowerCase().equals("ycu saved")
 
 
-        transactionList.add(step_fart_nee );
-        transactionList.add(john );
-        transactionList.add(steve );
-        transactionList.add(abe );
-        transactionList.add(dita );
-        transactionList.add(jordan );
-        transactionList.add(joshua );
-        transactionList.add(subhash );
-        transactionList.add(biem );
-        transactionList.add(no_name);
+                        )
+                {
+                    clean_input_items.add(inputItems.get(i));
+                }
 
+                if(!String.valueOf(inputPrices.get(i)).equals("")){
+                    clean_input_prices.add(inputPrices.get(i));
+                }
+            }
+
+            int clean_len = Math.min(clean_input_items.size(), clean_input_prices.size());
+
+            for(int i = 0; i < clean_len; i++)
+            {
+                transactionList.add(
+                        new Transaction(
+                                clean_input_items.get(i).toString(),
+                                "",
+                                Float.parseFloat(String.valueOf(clean_input_prices.get(i)))
+                        )
+
+                );
+            }
+
+        }
 
         // take in the context, custom layout that made, arraylist(which is transactionList)
         TransactionListAdapter adapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
