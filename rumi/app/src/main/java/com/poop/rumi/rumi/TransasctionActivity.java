@@ -2,7 +2,7 @@ package com.poop.rumi.rumi;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.poop.rumi.rumi.R;
+
 import com.poop.rumi.rumi.ocr.RecyclerViewAdapter;
 import com.poop.rumi.rumi.ocr.Transaction;
 import com.poop.rumi.rumi.ocr.TransactionListAdapter;
@@ -10,8 +10,6 @@ import com.poop.rumi.rumi.ocr.TransactionListAdapter;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
 import java.util.ArrayList;
 
@@ -22,13 +20,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class Trans extends AppCompatActivity {
+public class TransasctionActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "TransactionActivity";
 
     // vars:
     private ArrayList<String> mNames = new ArrayList<>();
@@ -48,9 +45,9 @@ public class Trans extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Trans.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(TransasctionActivity.this);
 
-                LayoutInflater inflater = LayoutInflater.from(Trans.this);
+                LayoutInflater inflater = LayoutInflater.from(TransasctionActivity.this);
                 final View dialogView = inflater.inflate(R.layout.add_person_layout,null);
 
                 builder.setView(dialogView);
@@ -104,7 +101,7 @@ public class Trans extends AppCompatActivity {
                         mImageUrls.add("");
                         mNames.add(editText_get_names.getText().toString());
 
-                        Toast.makeText(Trans.this , editText_get_names.getText().toString()+" added!" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TransasctionActivity.this , editText_get_names.getText().toString()+" added!" , Toast.LENGTH_SHORT).show();
 
                         editText_get_names.setText(null);
 
@@ -182,7 +179,7 @@ public class Trans extends AppCompatActivity {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager( Trans.this, LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager( TransasctionActivity.this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.horizontal_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mNames, mImageUrls);

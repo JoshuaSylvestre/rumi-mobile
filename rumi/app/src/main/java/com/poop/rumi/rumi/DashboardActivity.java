@@ -32,8 +32,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.poop.rumi.rumi.ocr.OcrCaptureActivity;
-
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
@@ -166,7 +164,8 @@ public class DashboardActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_manage)
         {
-
+            Intent getTransactionActivity = new Intent(getApplicationContext(), TransasctionActivity.class);
+            startActivity(getTransactionActivity);
         }
         else if (id == R.id.nav_request)
         {

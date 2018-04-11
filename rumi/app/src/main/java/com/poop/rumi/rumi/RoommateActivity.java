@@ -28,6 +28,7 @@ import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.poop.rumi.rumi.fragments.AddRoommateFragment;
 
 import org.json.JSONArray;
@@ -83,10 +84,11 @@ public class RoommateActivity extends AppCompatActivity {
                 new int[] {R.id.roommate_list_name, R.id.roommate_list_preferred_name, R.id.roommate_list_address,
                         R.id.roommate_list_email, R.id.roommate_list_cell_phone, R.id.roommate_list_home_phone});
 
+        // Set list of roommates to the view in UI
+        contentRoommateListView.setAdapter(roommateListAdapter);
+
         // TODO: RecycleView and onUpdateListener
         makeListRequest();
-
-//        contentRoommateListView.setAdapter(roommateListAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -102,12 +104,14 @@ public class RoommateActivity extends AppCompatActivity {
                 addRoommateFragment.setArguments(args);
 
                 addRoommateFragment.show(getFragmentManager(), "Add Roommate Fragment");
+
                 addRoommateFragment.setDialogResult(new AddRoommateFragment.AddRoommateFragmentResult() {
                     @Override
                     public void finish(HashMap<String, String> result) {
-//                        roommateArrayList.add(result);
+                        roommateArrayList.add(result);
+
                         Log.e("ROOMMATE", result.get(FIRST_NAME));
-//                        ((BaseAdapter)roommateListAdapter).notifyDataSetChanged();
+                        ((BaseAdapter)roommateListAdapter).notifyDataSetChanged();
                     }
                 });
             }
@@ -147,8 +151,8 @@ public class RoommateActivity extends AppCompatActivity {
                                 }
                             }
 
-                            // Set list of roommates to the view in UI
-                            contentRoommateListView.setAdapter(roommateListAdapter);
+                            ((BaseAdapter)roommateListAdapter).notifyDataSetChanged();
+
                         } catch(Exception ex) {
                             Log.e("ROOMMATE", "Error parsing JSON");
                         }

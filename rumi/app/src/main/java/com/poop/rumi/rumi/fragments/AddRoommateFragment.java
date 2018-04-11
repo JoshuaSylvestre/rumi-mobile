@@ -60,7 +60,7 @@ public class AddRoommateFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
         dialogView = inflater.inflate(R.layout.fragment_add_roommate, null);
@@ -100,8 +100,8 @@ public class AddRoommateFragment extends DialogFragment {
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.RED);
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary));
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
 
                 Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 positiveButton.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +175,7 @@ public class AddRoommateFragment extends DialogFragment {
                                 newRoommateMap.put(RoommateActivity.EMAIL, mAddress.getText().toString());
                                 newRoommateMap.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
                                 newRoommateMap.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
-                                fragmentResult.finish(newRoommateMap);
+//                                fragmentResult.finish(newRoommateMap);
 
 //                                AddRoommateFragment.this.getDialog().cancel();
                             }
@@ -213,6 +213,19 @@ public class AddRoommateFragment extends DialogFragment {
         };
 
         requestQueue.add(request);
+    }
+
+    private class AddRoommateFragmentResultListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            if(fragmentResult != null){
+                fragmentResult.finish(newRoommateMap);
+            }
+
+//            CustomDialog.this.dismiss();
+        }
+
     }
 
     public void setDialogResult(AddRoommateFragmentResult dialogResult) {

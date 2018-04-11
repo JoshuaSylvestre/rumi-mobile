@@ -324,9 +324,10 @@ public class RegisterActivity extends AppCompatActivity {
             mAuthTask = null;
             showProgress(false);
             Intent getLoginActivity = new Intent(getApplicationContext(), LoginActivity.class);
-            getLoginActivity.putExtra("user", newUser);
 
             if (success) {
+                getLoginActivity.putExtra("user", newUser);
+
                 Toast currToast = Toast.makeText(getApplicationContext(), "Registered! Please login.", Toast.LENGTH_LONG);
                 currToast.setGravity(Gravity.CENTER, 0 , 0);
                 currToast.show();

@@ -42,10 +42,10 @@
         android:textStyle="bold" />
 
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="match_parent"
-        android:layout_height="45dp" />
+    <!--<com.google.android.gms.common.SignInButton-->
+        <!--android:id="@+id/sign_in_button"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="45dp" />-->
 
 
     <ProgressBar

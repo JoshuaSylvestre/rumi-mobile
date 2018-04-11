@@ -8,8 +8,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/TextLabel">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/add_roommate_first_name"
@@ -24,8 +23,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/TextLabel">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/add_roommate_last_name"
@@ -38,8 +36,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/TextLabel">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/add_roommate_preferred_name"
@@ -53,8 +50,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/TextLabel">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/add_roommate_address"
@@ -68,8 +64,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/TextLabel">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/add_roommate_email"
@@ -83,8 +78,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/TextLabel">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/add_roommate_home_phone"
@@ -98,8 +92,7 @@
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/TextLabel">
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/add_roommate_cell_phone"

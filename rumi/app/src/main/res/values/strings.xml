@@ -70,7 +70,6 @@
     <string name="roommate_list_url">/user/friends</string>
     <string name="roommate_add_url">/user/friends/add</string>
 
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="add_roommate">Add roommate</string>
     <string name="cancel">Cancel</string>
