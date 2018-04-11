@@ -18,40 +18,38 @@
         android:background="@color/colorPrimary"
         android:textSize="15dp"
         android:textColor="@color/colorAccent"
-    />
+        />
 
     <!--https://stackoverflow.com/questions/4495511/how-to-pass-custom-component-parameters-in-java-and-xml-->
     <!--<if></if>-->
     <!--<EditText-->
-        <!--android:id="@+id/et_name"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:hint="Input your name."-->
-        <!--android:textSize="15dp"-->
-        <!--android:layout_below="@id/dialog_title"-->
-        <!--/>-->
+    <!--android:id="@+id/et_name"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:hint="Input your name."-->
+    <!--android:textSize="15dp"-->
+    <!--android:layout_below="@id/dialog_title"-->
+    <!--/>-->
 
     <Button
         android:id="@+id/dialog_positive_btn"
-        android:layout_width="183dp"
+        android:layout_width="145dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/dialog_title"
         android:layout_marginEnd="0dp"
         android:background="@color/colorPrimary"
         android:text="OK"
-        android:textColor= "@color/colorAccent"
-    />
+        android:textColor="@color/colorAccent" />
 
     <Button
         android:id="@+id/dialog_negative_btn"
-        android:layout_width="181dp"
+        android:layout_width="145dp"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/dialog_title"
         android:layout_below="@+id/dialog_title"
         android:background="@color/colorPrimary"
         android:text="Cancel"
-        android:textColor="@color/colorAccent"
-    />
+        android:textColor="@color/colorAccent" />
 
 </RelativeLayout>

@@ -4,9 +4,8 @@
     <!-- Strings related to ocr -->
     <string name="ok">OK</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
-    <string name="permission_storage_rationale">Access to storage is needed for application</string>
-    <string name="no_camera_permission">This application cannot run because it does not have the camera permission.  The application will now exit.</string>
-    <string name="no_storage_permission">This application cannot run because it does not have storage permission.  The application will now exit.</string>
+    <string name="permission_storage_write_rationale">Permission to write to storage is needed for application</string>
+    <string name="permissions_not_granted">This application cannot run because it does not have certain permissions. The application will now exit.</string>
     <string name="low_storage_error">Ocr dependencies cannot be downloaded due to low device storage</string>
     <string name="ocr_activity_main">OCR Receipt Parser</string>
     <string name="picture_taken">Picture taken</string>

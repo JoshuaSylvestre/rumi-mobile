@@ -12,14 +12,13 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.icu.text.SimpleDateFormat;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -27,15 +26,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
-import com.poop.rumi.rumi.MainActivity;
 import com.poop.rumi.rumi.Receipt;
 import com.poop.rumi.rumi.camera.CameraSource;
 import com.poop.rumi.rumi.camera.CameraSourcePreview;
@@ -49,7 +44,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
 
 public class OcrCaptureActivity extends AppCompatActivity{
@@ -64,18 +58,21 @@ public class OcrCaptureActivity extends AppCompatActivity{
     //
     private static final String IMAGE_DIRECTORY_NAME = "rumiImages";
 
-    // Permission request codes need to be < 256
-    private static final int RC_HANDLE_CAMERA_PERM = 2;
-    private static final int EXTERN_STORAGE_PERM = 3;
-
-    // Constants used to pass extra data in the intent
-    public static final String AutoFocus = "AutoFocus";
-    public static final String UseFlash = "UseFlash";
+    // Permission request codes need to be < 256.
+    // Permissions include: Camera, Storage-Read & Storage-Write
+    private static final int PERMISSIONS_REQ = 200;
+    private static  final int NUM_PERMS = 3;
 
     //Camera & GraphicOverlay
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
+
+    private final boolean autoFocus = true;
+    private final boolean useFlash = false;
+
+    //Capture Button
+    private FloatingActionButton captureButton;
 
     //Buttons for image validation
     private ImageButton xMark;
@@ -84,18 +81,16 @@ public class OcrCaptureActivity extends AppCompatActivity{
     // able to tap (and thus remove) TextBlocks
     boolean validated = false;
 
-    //Capture Button
-    private FloatingActionButton captureButton;
-
-
-    // Helper objects for detecting taps
+    // Helper object for detecting taps
     private GestureDetector gestureDetector;
 
     private String imagePath;
 
     private Receipt mReceipt;
 
+    private AlertDialog dialog;
     private int promptDialogStage = 0;
+
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -109,23 +104,8 @@ public class OcrCaptureActivity extends AppCompatActivity{
         mPreview = findViewById(R.id.preview);
         mGraphicOverlay = findViewById(R.id.graphicOverlay);
 
-        boolean autoFocus = true;
-        boolean useFlash = false;
-
-        // Check for the camera permission before accessing the camera.  If the
-        // permission is not granted yet, request permission.
-        int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
-        if (rc == PackageManager.PERMISSION_GRANTED) {
+        if(verifyPermissions())
             createCameraSource(autoFocus, useFlash);
-        } else {
-            requestCameraPermission();
-        }
-
-        int rd = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if(rd == PackageManager.PERMISSION_DENIED) {
-            requestStoragePermission();
-        }
-
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
 
@@ -163,7 +143,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
     private void validateImgWithUser() {
 
         tickMark.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
 
@@ -206,7 +185,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     private File createUniqueFileForImage() {
 
         // External sdcard location
@@ -246,36 +224,31 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
         // Would be nice to highlight words that change. eg, ITEMS, PRICES, etc.
         final String [] promptMsg = {"TAP ON ITEMS PLS AND TAP TICK MARK WHEN FINISHED",
-                                     "TAP ON PRICES PLS AND TAP TICK MARK WHEN FINISHED",
-                                     "TAP ON STORE NAME PLS AND TAP TICK MARK WHEN FINISHED"};
+                "TAP ON PRICES PLS AND TAP TICK MARK WHEN FINISHED",
+                "TAP ON STORE NAME PLS AND TAP TICK MARK WHEN FINISHED"};
 
         invokeDialog(promptMsg[promptDialogStage++]);
 
-        if(promptDialogStage < 3) {
-            tickMark.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                    Toast.makeText(OcrCaptureActivity.this, "Tapped tick mark", Toast.LENGTH_SHORT).show();
+        tickMark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                Toast.makeText(OcrCaptureActivity.this, "Tapped tick mark", Toast.LENGTH_SHORT).show();
+
+                if(promptDialogStage < 3) {
                     invokeDialog(promptMsg[promptDialogStage++]);
-
                 }
 
-            });
-        }
+                else
+                {
+                    Toast.makeText(OcrCaptureActivity.this, "SCANNING COMPLETE", Toast.LENGTH_SHORT).show();
 
-        else
-        {
-            Toast.makeText(OcrCaptureActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+                    //TODO: Push to next activity
+                }
+            }
 
-//            Intent i = new Intent(mContext, OcrCaptureActivity.class);
-//            i.putExtra("RECEIPT", mReceipt);
-
-
-            //TODO: Push to next activity
-        }
-
+        });
 
     }
 
@@ -301,7 +274,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
         //        final EditText et_name = (EditText) dialogView.findViewById(R.id.et_name);
 
         // Create the alert dialog
-        final AlertDialog dialog = builder.create();
+        dialog = builder.create();
 
         // Set positive/yes button click listener
         btn_positive.setOnClickListener(new View.OnClickListener() {
@@ -309,8 +282,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
             public void onClick(View v) {
                 // Dismiss the alert dialog
                 dialog.cancel();
-
-
 
             }
         });
@@ -334,7 +305,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
     }
 
 
-
     private void toDisplayButtons(boolean displayCaptureButton, boolean displayTickMark, boolean displayXMark){
 
         if(displayCaptureButton)
@@ -353,72 +323,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
             xMark.setVisibility(View.INVISIBLE);
 
     }
-    /**
-     * Handles the requesting of the camera permission.  This includes
-     * showing a "Snackbar" message of why the permission is needed then
-     * sending the request.
-     */
-    private void requestCameraPermission() {
-        Log.w(TAG, "Camera permission is not granted. Requesting permission");
 
-        final String[] permissions = new String[]{Manifest.permission.CAMERA};
-
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.CAMERA)) {
-            ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_CAMERA_PERM);
-            return;
-        }
-
-        final Activity thisActivity = this;
-
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityCompat.requestPermissions(thisActivity, permissions,
-                        RC_HANDLE_CAMERA_PERM);
-            }
-        };
-
-        Snackbar.make(mGraphicOverlay, R.string.permission_camera_rationale,
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.ok, listener)
-                .show();
-    }
-
-    private void requestStoragePermission() {
-        Log.w(TAG, "Storage permission is not granted. Requesting permission");
-
-        final String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(this, permissions, EXTERN_STORAGE_PERM);
-            return;
-        }
-
-        final Activity thisActivity = this;
-
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ActivityCompat.requestPermissions(thisActivity, permissions,
-                        EXTERN_STORAGE_PERM);
-            }
-        };
-
-        Snackbar.make(mGraphicOverlay, R.string.permission_storage_rationale,
-                Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.ok, listener)
-                .show();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent e) {
-
-        boolean b = gestureDetector.onTouchEvent(e);
-
-        return b || super.onTouchEvent(e);
-    }
 
     /**
      * Creates and starts the camera.  Note that this uses a higher resolution in comparison
@@ -474,124 +379,142 @@ public class OcrCaptureActivity extends AppCompatActivity{
     }
 
     /**
-     * Restarts the camera.
+     * Handles the requesting of the camera, storage-write and storage-read permissions.
+     * If any one permission isn't granted, an alert dialog will appear and the app will exit.
      */
-    @Override
-    protected void onResume() {
-        Log.d("TESTING", "onResume");
-        super.onResume();
-        startCameraSource();
+    private boolean verifyPermissions() {
 
-        toDisplayButtons(true, false, false);
-    }
+        Log.d(TAG, "verifyPermission() asking user for permissions");
 
-    /**
-     * Stops the camera.
-     */
-    @Override
-    protected void onPause() {
+        final Activity thisActivity = this;
 
-        Log.d("TESTING", "onPause");
+        final String[] permissions = new String[]{Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE};
 
-        super.onPause();
-        if (mPreview != null) {
-            mPreview.stop();
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[1]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this.getApplicationContext(),
+                permissions[2]) == PackageManager.PERMISSION_GRANTED) {
+
+            return true;
+
+        } else {
+            ActivityCompat.requestPermissions(thisActivity,
+                    permissions, PERMISSIONS_REQ);
+
+            return false;
         }
     }
 
-    /**
-     * Releases the resources associated with the camera source, the associated detectors, and the
-     * rest of the processing pipeline.
-     */
-    @Override
-    protected void onDestroy() {
-        Log.d("TESTING", "onDestroy");
-
-        super.onDestroy();
-        if (mPreview != null) {
-            mPreview.release();
-        }
-    }
-  
-    /**
-     * Callback for the result from requesting permissions. This method
-     * is invoked for every call on {@link #requestPermissions(String[], int)}.
-     * <p>
-     * <strong>Note:</strong> It is possible that the permissions request interaction
-     * with the user is interrupted. In this case you will receive empty permissions
-     * and results arrays which should be treated as a cancellation.
-     * </p>
-     *
-     * @param requestCode  The request code passed in {@link #requestPermissions(String[], int)}.
-     * @param permissions  The requested permissions. Never null.
-     * @param grantResults The grant results for the corresponding permissions
-     *                     which is either {@link PackageManager#PERMISSION_GRANTED}
-     *                     or {@link PackageManager#PERMISSION_DENIED}. Never null.
-     * @see #requestPermissions(String[], int)
-     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
 
-        switch (requestCode) {
-            case RC_HANDLE_CAMERA_PERM:
-                if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Camera permission granted - initialize the camera source");
-                    // We have permission, so create the camerasource
-                    boolean autoFocus = getIntent().getBooleanExtra(AutoFocus,false);
-                    boolean useFlash = getIntent().getBooleanExtra(UseFlash, false);
-                    createCameraSource(autoFocus, useFlash);
-                    return;
+        if (grantResults.length == NUM_PERMS
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                && grantResults[2] == PackageManager.PERMISSION_GRANTED){
+
+            Log.d(TAG, "All permissions granted- initializing the camera source");
+
+            createCameraSource(autoFocus, useFlash);
+        }else{
+
+            Log.w(TAG, "Permissions not granted. App will exit");
+            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    finish();
                 }
+            };
 
-                Log.e(TAG, "Permission not granted: results len = " + grantResults.length +
-                        " Result code = " + (grantResults.length > 0 ? grantResults[0] : "(empty)"));
+            AlertDialog.Builder camBuilder = new AlertDialog.Builder(this);
+            camBuilder.setTitle("rumi")
 
-                DialogInterface.OnClickListener camListener = new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                };
-
-                AlertDialog.Builder camBuilder = new AlertDialog.Builder(this);
-                camBuilder.setTitle("rumi")
-
-                        .setMessage(R.string.no_camera_permission)
-                        .setPositiveButton(R.string.ok, camListener)
-                        .show();
-                return;
-
-            case EXTERN_STORAGE_PERM:
-                if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e("value", "Permission Granted, Now you can use local drive .");
-                    return;
-                }
-
-                Log.e("value", "Permission Denied, You cannot use local drive .");
-                DialogInterface.OnClickListener storageListener = new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                };
-
-                AlertDialog.Builder storageBuilder = new AlertDialog.Builder(this);
-                storageBuilder.setTitle("rumi")
-
-                        .setMessage(R.string.no_storage_permission)
-                        .setPositiveButton(R.string.ok, storageListener)
-                        .show();
-                return;
-
-
-
-            default:
-                Log.d(TAG, "Got unexpected permission result: " + requestCode);
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-                return;
+                    .setMessage(R.string.permissions_not_granted)
+                    .setPositiveButton(R.string.ok, listener)
+                    .show();
         }
 
     }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+
+        boolean b = gestureDetector.onTouchEvent(e);
+
+        return b || super.onTouchEvent(e);
+    }
+
+    private boolean onTap(float rawX, float rawY) {
+
+        if(validated && (tickMark.getVisibility() == View.INVISIBLE || xMark.getVisibility() == View.INVISIBLE)) {
+            OcrGraphic graphic = mGraphicOverlay.getGraphicAtLocation(rawX, rawY);
+
+            TextBlock text = null;
+            if (graphic != null) {
+                text = graphic.getTextBlock();
+
+                if (text != null && text.getValue() != null) {
+
+//                    Log.d(TAG, "TEXT TAPPED! : " + text.getValue());
+//                    Toast.makeText(mPreview.getContext(), text.getValue(), Toast.LENGTH_LONG)
+//                            .show();
+
+                    // Adding to items vs prices of mReceipt
+                    if(promptDialogStage == 1){
+                        mReceipt.addItems(text.getValue());
+
+                        if(mReceipt.numItems()!= 0)
+                            Toast.makeText(mPreview.getContext(), mReceipt.printItems(), Toast.LENGTH_LONG)
+                                    .show();
+
+                    }
+                    else if(promptDialogStage == 2){
+                        mReceipt.addPrices(text.getValue());
+
+                        if(mReceipt.numPrices()!= 0)
+                            Toast.makeText(mPreview.getContext(), mReceipt.printPrices(), Toast.LENGTH_LONG)
+                                    .show();
+                    }
+                    else{
+                        mReceipt.setStoreName(text.getValue());
+
+                        Toast.makeText(mPreview.getContext(), mReceipt.getStoreName(), Toast.LENGTH_LONG)
+                                .show();
+                    }
+
+                    mGraphicOverlay.remove(graphic);
+
+                } else {
+                    Log.d(TAG, "text data is null");
+                }
+
+            } else {
+                Log.d(TAG, "no text detected");
+            }
+            return text != null;
+        }
+        else {
+            Toast.makeText(mPreview.getContext(), R.string.VerifyFirst, Toast.LENGTH_LONG)
+                    .show();
+            return false;
+        }
+    }
+
+    private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+//            Log.d("TAP LOCATION","("+ e.getRawX()+" , "+e.getRawY()+")");
+            return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
+        }
+    }
+
 
     /**
      * Starts or restarts the camera source, if it exists.  If the camera source doesn't exist yet
@@ -619,69 +542,44 @@ public class OcrCaptureActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * Restarts the camera.
+     */
+    @Override
+    protected void onResume() {
+        Log.d("TESTING", "onResume");
+        super.onResume();
+        startCameraSource();
 
-    private boolean onTap(float rawX, float rawY) {
+        toDisplayButtons(true, false, false);
 
-        if(validated && (tickMark.getVisibility() == View.INVISIBLE || xMark.getVisibility() == View.INVISIBLE)) {
-            OcrGraphic graphic = mGraphicOverlay.getGraphicAtLocation(rawX, rawY);
+    }
 
-            TextBlock text = null;
-            if (graphic != null) {
-                text = graphic.getTextBlock();
+    /**
+     * Stops the camera.
+     */
+    @Override
+    protected void onPause() {
 
-                if (text != null && text.getValue() != null) {
+        Log.d("TESTING", "onPause");
 
-//                    Log.d(TAG, "TEXT TAPPED! : " + text.getValue());
-//                    Toast.makeText(mPreview.getContext(), text.getValue(), Toast.LENGTH_LONG)
-//                            .show();
-
-                    // Adding to items vs prices of mReceipt
-                    if(promptDialogStage == 1){
-                        mReceipt.addItems(text.getValue());
-
-                        if(mReceipt.numItems()!= 0)
-                            Toast.makeText(mPreview.getContext(), mReceipt.printItems(), Toast.LENGTH_LONG)
-                            .show();
-
-                    }
-                    else if(promptDialogStage == 2){
-                        mReceipt.addPrices(text.getValue());
-
-                        if(mReceipt.numPrices()!= 0)
-                            Toast.makeText(mPreview.getContext(), mReceipt.printPrices(), Toast.LENGTH_LONG)
-                                .show();
-                    }
-                    else{
-                        mReceipt.setStoreName(text.getValue());
-
-                       Toast.makeText(mPreview.getContext(), mReceipt.getStoreName(), Toast.LENGTH_LONG)
-                                    .show();
-                    }
-
-                    mGraphicOverlay.remove(graphic);
-
-                } else {
-                    Log.d(TAG, "text data is null");
-                }
-
-            } else {
-                Log.d(TAG, "no text detected");
-            }
-            return text != null;
-        }
-        else {
-            Toast.makeText(mPreview.getContext(), R.string.VerifyFirst, Toast.LENGTH_LONG)
-                    .show();
-            return false;
+        super.onPause();
+        if (mPreview != null) {
+            mPreview.stop();
         }
     }
 
-    private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
+    /**
+     * Releases the resources associated with the camera source, the associated detectors, and the
+     * rest of the processing pipeline.
+     */
+    @Override
+    protected void onDestroy() {
+        Log.d("TESTING", "onDestroy");
 
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-//            Log.d("TAP LOCATION","("+ e.getRawX()+" , "+e.getRawY()+")");
-            return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
+        super.onDestroy();
+        if (mPreview != null) {
+            mPreview.release();
         }
     }
 }

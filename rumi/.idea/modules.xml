@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Steve\Desktop\New folder (4)\rumi-mobile\rumi\app\app.iml" filepath="C:\Users\Steve\Desktop\New folder (4)\rumi-mobile\rumi\app\app.iml" />
+      <module fileurl="file://C:/Users/Steve/Desktop/New folder (4)/rumi-mobile/rumi/app/app.iml" filepath="C:/Users/Steve/Desktop/New folder (4)/rumi-mobile/rumi/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/rumi.iml" filepath="$PROJECT_DIR$/rumi.iml" />
     </modules>
   </component>
