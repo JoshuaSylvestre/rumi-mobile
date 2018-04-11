@@ -12,9 +12,11 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -161,6 +163,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
     private void validateImgWithUser() {
 
         tickMark.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
 
@@ -203,6 +206,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private File createUniqueFileForImage() {
 
         // External sdcard location
@@ -256,7 +260,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
                     invokeDialog(promptMsg[promptDialogStage++]);
 
-
                 }
 
             });
@@ -265,6 +268,10 @@ public class OcrCaptureActivity extends AppCompatActivity{
         else
         {
             Toast.makeText(OcrCaptureActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+
+//            Intent i = new Intent(mContext, OcrCaptureActivity.class);
+//            i.putExtra("RECEIPT", mReceipt);
+
 
             //TODO: Push to next activity
         }

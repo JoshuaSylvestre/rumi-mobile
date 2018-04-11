@@ -17,7 +17,7 @@
     <!-- To use storage -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  
+
     <!-- To debug -->
     <uses-permission android:name="android.permission.SET_DEBUG_APP" />
 
@@ -52,24 +52,33 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ocr.OcrCaptureActivity"
-            android:parentActivityName=".DashboardActivity"
-            android:label="@string/ocr_activity_main" />
+            android:label="@string/ocr_activity_main"
+            android:parentActivityName=".DashboardActivity">
+
+        </activity>
         <activity
             android:name=".MainActivity"
             android:label="rumi">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity
+            android:name=".RoommateActivity"
+            android:label="@string/title_activity_roommate"
+            android:theme="@style/AppTheme"></activity>
+        <activity android:name=".Trans">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
-        <activity
-            android:name=".RegisterActivity"
-            android:label="@string/title_activity_register" />
-        <activity
-            android:name=".RoommateActivity"
-            android:label="@string/title_activity_roommate"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
