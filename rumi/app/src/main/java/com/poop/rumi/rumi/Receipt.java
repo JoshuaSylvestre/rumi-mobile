@@ -26,6 +26,8 @@ public class Receipt implements Serializable{
 
     private String dateOfCapture;
 
+    private String receiptImagePath;
+
     private ArrayList<String> items;
 
     private ArrayList<Float> prices;
@@ -40,15 +42,13 @@ public class Receipt implements Serializable{
 
     private static transient Matcher m = null;
 
-
-
-    String storeType;
-
     // Passing image file path allows for extracting the date the receipt was captured given the format
     // of the image file path
-     public Receipt() {
+    public Receipt(String imagePath) {
 
-        dateOfCapture = dateToString();
+        this.storeName = " ";
+        this.dateOfCapture = dateToString();
+        this.receiptImagePath = imagePath;
 
         Log.d(TAG, "dateOfCapture = " + dateOfCapture);
 
@@ -108,32 +108,26 @@ public class Receipt implements Serializable{
                 chk = true;
 //                Log.d(TAG, "FOUND SYMPTRN: " + str);
 
-                continue LINES;
+                continue;
+
 
             }
 
             // Looks for the term "you saved" in the case of publix receipts
-            boolean hasYouSaved = Pattern.compile(Pattern.quote("you saved"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasYouSaved = Pattern.compile(Pattern.quote("save"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasPromotion= Pattern.compile(Pattern.quote("promotion"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasSubtotal= Pattern.compile(Pattern.quote("subtotal"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasTotal= Pattern.compile(Pattern.quote("total"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasDebit= Pattern.compile(Pattern.quote("debit"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasChange= Pattern.compile(Pattern.quote("change"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasTax= Pattern.compile(Pattern.quote("tax"), Pattern.CASE_INSENSITIVE).matcher(str).find();
 
-            if(hasYouSaved || hasPromotion) {
+            if(hasYouSaved || hasPromotion || hasSubtotal || hasTotal || hasDebit || hasChange || hasTax) {
 
                 lines.remove(idx);
                 --idx;
 
                 continue;
-            }
-
-
-            // Contains 2 integers in the same line
-            if(containsTwoDigits(str)){
-
-                lines.remove(idx);
-                --idx;
-                chk = true;
-
-                continue;
-
             }
 
 //            Log.d(TAG, "AT STRING: " + str);
@@ -187,11 +181,6 @@ public class Receipt implements Serializable{
 
     }
 
-    private boolean containsTwoDigits(String str){
-
-         return false;
-    }
-
     public void addPrices(String pricesIn) {
 
 
@@ -208,18 +197,6 @@ public class Receipt implements Serializable{
             str = lines.get(idx);
 
             Log.d(TAG, "PRICE WAS: " + str);
-//
-//            m = dgtPttrn.matcher(str);
-//
-//            if (m.find())
-//                str = str.substring(11, str.length());
-//
-//            // must maintain space after "..A-Z" to get rid of spaces
-//            str = str.replaceAll("[$a-zA-Z ]", "");
-
-//            str = str.replaceAll("[ ]*[0-9]{12,}[ ]*", "");
-//            str = str.replaceAll("[A-Za-z][ ]*[$]", "");
-//            str = str.replaceAll("[A-Za-z]", "");
 
             str = str.replaceAll("[ ]*[0-9]{12,}[ ]*", "")
                     .replaceAll("[A-Za-z][ ]*[$]", "")
@@ -263,10 +240,12 @@ public class Receipt implements Serializable{
         return dateOfCapture;
     }
 
+    public String getReceiptImagePath() { return receiptImagePath; }
+
+
     public ArrayList<String> getItems() {
         return items;
     }
-
 
     public ArrayList<Float> getPrices() {
         return prices;

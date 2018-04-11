@@ -222,7 +222,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
     // implemented in Receipt class
     private void startDialogSequence(){
 
-        mReceipt = new Receipt();
+        mReceipt = new Receipt(imagePath);
 
         // Would be nice to highlight words that change. eg, ITEMS, PRICES, etc.
         final String [] promptMsg = {"TAP ON ITEMS PLS AND TAP TICK MARK WHEN FINISHED",
