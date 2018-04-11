@@ -38,11 +38,35 @@ public class TransasctionActivity extends AppCompatActivity {
     TextView store_restaurant;
     EditText edit_store_restaurant_name;
 
+//    String input_store_name =  getIntent().getStringExtra("ReceiptStoreName");
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trans);
         Log.d(TAG, "onCreate: Started onCreate!");
+
+        Intent intent = getIntent();
+//        String input_store_name = intent.getStringExtra(OcrCaptureActivity.EXTRA_TEXT);
+//        String input_date = intent.getStringExtra(OcrCaptureActivity.EXTRA_DATE);
+
+
+        String input_store_name = getIntent().getStringExtra("STORENAME");
+        String input_date = getIntent().getStringExtra("DATE");
+        ArrayList<String> inputItems = (ArrayList<String>)getIntent().getSerializableExtra("ITEMS");
+        ArrayList<String> inputPrices = (ArrayList<String>)getIntent().getSerializableExtra("PRICES");
+
+        System.out.println("==============================================");
+        System.out.println(input_store_name);
+        System.out.println(input_date);
+        System.out.println(inputItems);
+        System.out.println(inputPrices);
+        System.out.println("==============================================");
+
+
 
         initImageBitmaps();
 
@@ -58,9 +82,6 @@ public class TransasctionActivity extends AppCompatActivity {
                 builder.setView(dialogView);
 
                 builder.setTitle("Add Person");
-
-
-
 
 
                 // Set the positive button
@@ -147,6 +168,8 @@ public class TransasctionActivity extends AppCompatActivity {
 
         // Add transactions to the arraylist: take Transactions objects
         ArrayList<Transaction> transactionList = new ArrayList<>();
+
+
         transactionList.add(step_fart_nee );
         transactionList.add(john );
         transactionList.add(steve );
@@ -156,7 +179,8 @@ public class TransasctionActivity extends AppCompatActivity {
         transactionList.add(joshua );
         transactionList.add(subhash );
         transactionList.add(biem );
-        transactionList.add(no_name );
+        transactionList.add(no_name);
+
 
         // take in the context, custom layout that made, arraylist(which is transactionList)
         TransactionListAdapter adapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
@@ -181,7 +205,7 @@ public class TransasctionActivity extends AppCompatActivity {
         });
 
         store_restaurant = findViewById(R.id.store_restaurant);
-        store_restaurant.setText("Dummy Value");
+        store_restaurant.setText(input_store_name);
 
         store_restaurant.setOnClickListener(new View.OnClickListener() {
             @Override

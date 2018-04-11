@@ -245,7 +245,9 @@ public class OcrCaptureActivity extends AppCompatActivity{
                 {
                     Toast.makeText(OcrCaptureActivity.this, "SCANNING COMPLETE", Toast.LENGTH_SHORT).show();
 
-                    //TODO: Push to next activity
+                    //TODO: Push to next activity(already done by Steve =D )
+                    // where are my data homie(Solved)
+
                     openTransactionActivity();
                 }
             }
@@ -255,7 +257,13 @@ public class OcrCaptureActivity extends AppCompatActivity{
     }
 
     public void openTransactionActivity() {
+
         Intent intent = new Intent(this, TransasctionActivity.class);
+        intent.putExtra("DATE", mReceipt.getDateOfCapture().toString());
+        intent.putExtra("ITEMS", mReceipt.getItems());
+        intent.putExtra("PRICES", mReceipt.getPrices());
+        intent.putExtra("STORENAME", mReceipt.getStoreName().toString());
+
         startActivity(intent);
     }
 
