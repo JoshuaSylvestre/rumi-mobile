@@ -43,6 +43,7 @@ import com.poop.rumi.rumi.R;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
 
@@ -248,6 +249,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
                     //TODO: Push to next activity(already done by Steve =D )
                     // where are my data homie(Solved)
 
+                    promptDialogStage = 0;
                     openTransactionActivity();
                 }
             }
@@ -258,12 +260,10 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
     public void openTransactionActivity() {
 
-        Intent intent = new Intent(this, TransasctionActivity.class);
-        intent.putExtra("DATE", mReceipt.getDateOfCapture().toString());
-        intent.putExtra("ITEMS", mReceipt.getItems());
-        intent.putExtra("PRICES", mReceipt.getPrices());
-        intent.putExtra("STORENAME", mReceipt.getStoreName().toString());
+        mReceipt.finalize();
 
+        Intent intent = new Intent(this, TransasctionActivity.class);
+        intent.putExtra("RECEIPT", mReceipt);
         startActivity(intent);
     }
 

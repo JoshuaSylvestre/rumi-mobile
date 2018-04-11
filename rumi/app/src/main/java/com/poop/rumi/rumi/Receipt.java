@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Receipt {
+public class Receipt implements Serializable{
 
 
     public final String TAG = "ReceiptClass";
@@ -37,7 +38,7 @@ public class Receipt {
     // include  2 chars (`KF`) at the end of the code
     private final Pattern dgtPttrn = Pattern.compile("[0-9]{12,}");
 
-    private Matcher m;
+    private static transient Matcher m = null;
 
 
 
@@ -89,6 +90,8 @@ public class Receipt {
         boolean chk = false;
 
         // Discarding items with symbols
+
+        LINES:
         for (int idx = 0; idx < lines.size(); ++idx) {
 
             Log.d(TAG, "CHECK = " + (chk? "flipped" : "" ));
@@ -105,12 +108,37 @@ public class Receipt {
                 chk = true;
 //                Log.d(TAG, "FOUND SYMPTRN: " + str);
 
+                continue LINES;
+
+            }
+
+            // Looks for the term "you saved" in the case of publix receipts
+            boolean hasYouSaved = Pattern.compile(Pattern.quote("you saved"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasPromotion= Pattern.compile(Pattern.quote("promotion"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+
+            if(hasYouSaved || hasPromotion) {
+
+                lines.remove(idx);
+                --idx;
+
+                continue;
+            }
+
+
+            // Contains 2 integers in the same line
+            if(containsTwoDigits(str)){
+
+                lines.remove(idx);
+                --idx;
+                chk = true;
+
                 continue;
 
             }
 
 //            Log.d(TAG, "AT STRING: " + str);
 
+            int numInts = 0;
             spaces = new ArrayList<>(Arrays.asList(str.split(" ")));
 
             for(int i = 0; i < spaces.size(); i++)
@@ -125,6 +153,15 @@ public class Receipt {
                     spaces.remove(i--);
 
 //                    Log.d(TAG, "FOUND DIGITPTRN: "+ str);
+
+                }
+
+                if(str.matches("[\\d]") && (++numInts > 1))
+                {
+                    lines.remove(idx);
+                    --idx;
+
+                    continue LINES;
 
                 }
 
@@ -145,11 +182,14 @@ public class Receipt {
             str = sb.toString().trim();
 
             if(!str.equals(""))
-                lines.set(idx, str);
-
-            items.add(str);
+                items.add(str);
         }
 
+    }
+
+    private boolean containsTwoDigits(String str){
+
+         return false;
     }
 
     public void addPrices(String pricesIn) {
@@ -168,27 +208,50 @@ public class Receipt {
             str = lines.get(idx);
 
             Log.d(TAG, "PRICE WAS: " + str);
+//
+//            m = dgtPttrn.matcher(str);
+//
+//            if (m.find())
+//                str = str.substring(11, str.length());
+//
+//            // must maintain space after "..A-Z" to get rid of spaces
+//            str = str.replaceAll("[$a-zA-Z ]", "");
 
-            m = dgtPttrn.matcher(str);
+//            str = str.replaceAll("[ ]*[0-9]{12,}[ ]*", "");
+//            str = str.replaceAll("[A-Za-z][ ]*[$]", "");
+//            str = str.replaceAll("[A-Za-z]", "");
 
-            if (m.find())
-                str = str.substring(11, str.length());
+            str = str.replaceAll("[ ]*[0-9]{12,}[ ]*", "")
+                    .replaceAll("[A-Za-z][ ]*[$]", "")
+                    .replaceAll("[A-Za-z]", "");
 
-            // must maintain space after "..A-Z" to get rid of spaces
-            str = str.replaceAll("[$a-zA-Z ]", "");
 
             Log.d(TAG, "STRING BECOMING: " + str);
 
             DecimalFormat df = new DecimalFormat("#.00");
 
-            Float fl = Float.parseFloat(str);
+            Float fl;
+            try {
 
-            df.format(fl);
+                fl = Float.parseFloat(str);
+                df.format(fl);
+                Log.d(TAG, "PRICE IS: " + String.valueOf(fl));
 
-            Log.d(TAG, "PRICE IS: " + String.valueOf(fl));
+                prices.add(fl);
+            }
+            catch (Exception e){
+                Log.w(TAG, "Can't convert passed string to float");
+            }
 
-            prices.add(fl);
+
+
+
         }
+
+    }
+
+    public void finalize(){
+
 
     }
 

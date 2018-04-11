@@ -1,6 +1,7 @@
 package com.poop.rumi.rumi;
 
 import android.content.Intent;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -38,6 +39,8 @@ public class TransasctionActivity extends AppCompatActivity {
     TextView store_restaurant;
     EditText edit_store_restaurant_name;
 
+    Receipt mReceipt;
+
 //    String input_store_name =  getIntent().getStringExtra("ReceiptStoreName");
 
 
@@ -49,22 +52,20 @@ public class TransasctionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trans);
         Log.d(TAG, "onCreate: Started onCreate!");
 
-        Intent intent = getIntent();
+        Intent intent = new Intent(this, OcrCaptureActivity.class);
 //        String input_store_name = intent.getStringExtra(OcrCaptureActivity.EXTRA_TEXT);
 //        String input_date = intent.getStringExtra(OcrCaptureActivity.EXTRA_DATE);
 
+        Log.d("TEST", "HERE");
 
-        String input_store_name = getIntent().getStringExtra("STORENAME");
-        String input_date = getIntent().getStringExtra("DATE");
-        ArrayList<String> inputItems = (ArrayList<String>)getIntent().getSerializableExtra("ITEMS");
-        ArrayList<String> inputPrices = (ArrayList<String>)getIntent().getSerializableExtra("PRICES");
+        mReceipt = (Receipt) getIntent().getSerializableExtra("RECEIPT");
 
-        System.out.println("==============================================");
-        System.out.println(input_store_name);
-        System.out.println(input_date);
-        System.out.println(inputItems);
-        System.out.println(inputPrices);
-        System.out.println("==============================================");
+
+        Log.d("TEST 2" ,"==============================================");
+        Log.d("TEST 2" ,mReceipt.getStoreName());
+        Log.d("TEST 2" ,mReceipt.printItems());
+        Log.d("TEST 2" ,mReceipt.printPrices());
+        Log.d("TEST 2" ,"==============================================");
 
 
 
@@ -200,12 +201,12 @@ public class TransasctionActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openOcrCaptureActivity();
+                finish();
             }
         });
 
         store_restaurant = findViewById(R.id.store_restaurant);
-        store_restaurant.setText(input_store_name);
+        store_restaurant.setText(mReceipt.getStoreName());
 
         store_restaurant.setOnClickListener(new View.OnClickListener() {
             @Override
