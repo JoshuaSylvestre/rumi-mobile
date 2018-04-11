@@ -328,16 +328,12 @@ public class RegisterActivity extends AppCompatActivity {
             if (success) {
                 getLoginActivity.putExtra("user", newUser);
 
-                Toast currToast = Toast.makeText(getApplicationContext(), "Registered! Please login.", Toast.LENGTH_LONG);
-                currToast.setGravity(Gravity.CENTER, 0 , 0);
-                currToast.show();
+                MessagePopups.showToast(getApplicationContext(), "Registered! Please login.");
+                getLoginActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                 startActivity(getLoginActivity);
-//                finish();
             } else {
-                Toast currToast = Toast.makeText(getApplicationContext(), "Registered failed.", Toast.LENGTH_LONG);
-                currToast.setGravity(Gravity.CENTER, 0 , 0);
-                currToast.show();
+                MessagePopups.showToast(getApplicationContext(), "Registered failed.");
 
                 if(userExists) {
                     mEmailView.setError("Account under this email already exists");

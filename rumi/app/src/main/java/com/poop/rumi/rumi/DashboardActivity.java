@@ -19,6 +19,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.poop.rumi.rumi.fragments.AddRoommateFragment;
+import com.poop.rumi.rumi.fragments.UserSettingsFragment;
 import com.poop.rumi.rumi.ocr.OcrCaptureActivity;
 
 import org.json.JSONArray;
@@ -47,6 +49,8 @@ public class DashboardActivity extends AppCompatActivity
     private String currUser;
     private String currUserToken;
     private JSONObject currUserJSON;
+
+    private UserSettingsFragment userSettingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,10 +137,20 @@ public class DashboardActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            userSettingsFragment = new UserSettingsFragment();
+            Bundle args = new Bundle();
+            args.putString("user", currUser);
+            args.putString("token", currUserToken);
+            userSettingsFragment.setArguments(args);
+
+            userSettingsFragment.show(getFragmentManager(), "Add Roommate Fragment");
         }
         if(id == R.id.action_logout){
-            startActivity(new Intent(DashboardActivity.this, LoginActivity.class));
+            Intent logoutIntent = new Intent(DashboardActivity.this, LoginActivity.class);
+            logoutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            MessagePopups.showToast(this, "Logged out!");
+            startActivity(logoutIntent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -162,7 +176,7 @@ public class DashboardActivity extends AppCompatActivity
 
             startActivity(getRoommateActivity);
         }
-        else if (id == R.id.nav_manage)
+        else if (id == R.id.nav_transactions)
         {
             Intent getTransactionActivity = new Intent(getApplicationContext(), TransasctionActivity.class);
             startActivity(getTransactionActivity);

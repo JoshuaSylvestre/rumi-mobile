@@ -26,6 +26,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.poop.rumi.rumi.MessagePopups;
 import com.poop.rumi.rumi.R;
 import com.poop.rumi.rumi.RoommateActivity;
 
@@ -136,7 +137,7 @@ public class AddRoommateFragment extends DialogFragment {
         } catch(Exception ex) {
             Log.e("ADD-ROOMMATE", "Cannot create request params");
 
-            showToastError();
+            MessagePopups.showToast(AddRoommateFragment.this.getContext(), "Failed adding new roommate.");
 
             return;
         }
@@ -161,12 +162,11 @@ public class AddRoommateFragment extends DialogFragment {
                                 newRoommateMap.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
                                 newRoommateMap.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
                                 mListener.onComplete(newRoommateMap);
-
-                                showToastSuccess();
+                                MessagePopups.showToast(AddRoommateFragment.this.getContext(), "Added new roommate!");
                                 AddRoommateFragment.this.getDialog().cancel();
                             }
                             else {
-                                showToastError();
+                                MessagePopups.showToast(AddRoommateFragment.this.getContext(), "Failed adding new roommate.");
                                 AddRoommateFragment.this.getDialog().cancel();
                             }
 
@@ -192,18 +192,6 @@ public class AddRoommateFragment extends DialogFragment {
         };
 
         requestQueue.add(request);
-    }
-
-    private void showToastError() {
-        Toast currToast = Toast.makeText(AddRoommateFragment.this.getContext(), "Failed adding new roommate.", Toast.LENGTH_LONG);
-        currToast.setGravity(Gravity.CENTER, 0 , 0);
-        currToast.show();
-    }
-
-    private void showToastSuccess() {
-        Toast currToast = Toast.makeText(AddRoommateFragment.this.getContext(), "Added new roommate!", Toast.LENGTH_LONG);
-        currToast.setGravity(Gravity.CENTER, 0 , 0);
-        currToast.show();
     }
 
     public interface OnCompleteListener {

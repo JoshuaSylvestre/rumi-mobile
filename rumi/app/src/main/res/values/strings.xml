@@ -69,6 +69,7 @@
     <string name="find_user_by_id_url">/get_user_by_id</string>
     <string name="roommate_list_url">/user/friends</string>
     <string name="roommate_add_url">/user/friends/add</string>
+    <string name="change_password_url">/user/setting/changepassword</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="add_roommate">Add roommate</string>

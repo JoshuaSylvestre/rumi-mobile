@@ -445,6 +445,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 // Put the user info JSON in the intent to pass it to the next activity
                 getDashboardActivity.putExtra("user", userJSON.toString());
                 getDashboardActivity.putExtra("token", userToken);
+                getDashboardActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                 startActivity(getDashboardActivity);
                 //finish();
