@@ -1,14 +1,17 @@
 package com.poop.rumi.rumi.fragments;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -55,8 +58,8 @@ public class AddRoommateFragment extends DialogFragment {
     private RequestQueue requestQueue;
     private AlertDialog alertDialog;
 
-    AddRoommateFragmentResult fragmentResult;
     HashMap<String, String> newRoommateMap;
+    private OnCompleteListener mListener;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -133,15 +136,7 @@ public class AddRoommateFragment extends DialogFragment {
         } catch(Exception ex) {
             Log.e("ADD-ROOMMATE", "Cannot create request params");
 
-            Snackbar currSnack = Snackbar.make(dialogView, "Failed adding new roommate", Snackbar.LENGTH_LONG);
-            currSnack.setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    AddRoommateFragment.this.getDialog().cancel();
-                }
-            });
-            currSnack.show();
-//            AddRoommateFragment.this.getDialog().cancel();
+            showToastError();
 
             return;
         }
@@ -158,16 +153,6 @@ public class AddRoommateFragment extends DialogFragment {
                             boolean success = response.getBoolean("success");
 
                             if(success) {
-                                // Alert user operation was a success
-                                Snackbar currSnack = Snackbar.make(dialogView, "Added new roommate!", Snackbar.LENGTH_LONG);
-                                currSnack.setAction("OK", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        AddRoommateFragment.this.getDialog().cancel();
-                                    }
-                                });
-                                currSnack.show();
-
                                 newRoommateMap = new HashMap<>();
                                 newRoommateMap.put(RoommateActivity.NAME, mFirstName.getText().toString() + " " + mLastName.getText().toString());
                                 newRoommateMap.put(RoommateActivity.PREFERRED_NAME, mPreferredName.getText().toString());
@@ -175,20 +160,14 @@ public class AddRoommateFragment extends DialogFragment {
                                 newRoommateMap.put(RoommateActivity.EMAIL, mAddress.getText().toString());
                                 newRoommateMap.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
                                 newRoommateMap.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
-//                                fragmentResult.finish(newRoommateMap);
+                                mListener.onComplete(newRoommateMap);
 
-//                                AddRoommateFragment.this.getDialog().cancel();
+                                showToastSuccess();
+                                AddRoommateFragment.this.getDialog().cancel();
                             }
                             else {
-                                Snackbar currSnack = Snackbar.make(dialogView, "Failed adding new roommate", Snackbar.LENGTH_LONG);
-                                currSnack.setAction("OK", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        AddRoommateFragment.this.getDialog().cancel();
-                                    }
-                                });
-                                currSnack.show();
-//                                AddRoommateFragment.this.getDialog().cancel();
+                                showToastError();
+                                AddRoommateFragment.this.getDialog().cancel();
                             }
 
                         } catch(Exception ex) {
@@ -215,25 +194,33 @@ public class AddRoommateFragment extends DialogFragment {
         requestQueue.add(request);
     }
 
-    private class AddRoommateFragmentResultListener implements View.OnClickListener {
+    private void showToastError() {
+        Toast currToast = Toast.makeText(AddRoommateFragment.this.getContext(), "Failed adding new roommate.", Toast.LENGTH_LONG);
+        currToast.setGravity(Gravity.CENTER, 0 , 0);
+        currToast.show();
+    }
 
-        @Override
-        public void onClick(View v) {
-            if(fragmentResult != null){
-                fragmentResult.finish(newRoommateMap);
-            }
+    private void showToastSuccess() {
+        Toast currToast = Toast.makeText(AddRoommateFragment.this.getContext(), "Added new roommate!", Toast.LENGTH_LONG);
+        currToast.setGravity(Gravity.CENTER, 0 , 0);
+        currToast.show();
+    }
 
-//            CustomDialog.this.dismiss();
+    public interface OnCompleteListener {
+        void onComplete(HashMap<String, String> newRoommate);
+    }
+
+    // make sure the Activity implemented it
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            this.mListener = (OnCompleteListener)context;
         }
-
-    }
-
-    public void setDialogResult(AddRoommateFragmentResult dialogResult) {
-        fragmentResult = dialogResult;
-    }
-
-    public interface AddRoommateFragmentResult {
-        void finish(HashMap<String, String> result);
+        catch (final ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement OnCompleteListener");
+        }
     }
 
 }

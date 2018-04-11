@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RoommateActivity extends AppCompatActivity {
+public class RoommateActivity extends AppCompatActivity implements AddRoommateFragment.OnCompleteListener{
 
     private String roommateListUrl;
     private String currUserToken;
@@ -104,16 +104,6 @@ public class RoommateActivity extends AppCompatActivity {
                 addRoommateFragment.setArguments(args);
 
                 addRoommateFragment.show(getFragmentManager(), "Add Roommate Fragment");
-
-                addRoommateFragment.setDialogResult(new AddRoommateFragment.AddRoommateFragmentResult() {
-                    @Override
-                    public void finish(HashMap<String, String> result) {
-                        roommateArrayList.add(result);
-
-                        Log.e("ROOMMATE", result.get(FIRST_NAME));
-                        ((BaseAdapter)roommateListAdapter).notifyDataSetChanged();
-                    }
-                });
             }
         });
     }
@@ -178,5 +168,9 @@ public class RoommateActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
+    public void onComplete(HashMap<String, String> newRoommate) {
+        roommateArrayList.add(newRoommate);
+        ((BaseAdapter)roommateListAdapter).notifyDataSetChanged();
+    }
 }
 
