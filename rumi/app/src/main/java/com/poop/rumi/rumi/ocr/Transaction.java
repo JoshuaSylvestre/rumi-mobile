@@ -7,10 +7,10 @@ package com.poop.rumi.rumi.ocr;
 public class Transaction {
     private String names;// figure out a way to make an array out of this
     private String item;
-    private String price;
+    private Float price;
 
     // Alt + Insert/Constructor/Select all to make the constructor
-    public Transaction(String item, String names, String price) {
+    public Transaction(String item, String names, Float price) {
         this.names = names;
         this.item = item;
         this.price = price;
@@ -34,11 +34,11 @@ public class Transaction {
         this.item = item;
     }
 
-    public String getPrice() {
+    public Float getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Float price) {
         this.price = price;
     }
 }

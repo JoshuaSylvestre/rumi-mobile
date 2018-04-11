@@ -12,14 +12,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="*Enter Name/Nickname"
-
+        android:background="#4286f4"
+        android:textColor="#000000"
         />
     <Button
         android:id="@+id/button_keep_adding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="#000000"
+        android:background="#41f4a6"
         />
 
 </LinearLayout>

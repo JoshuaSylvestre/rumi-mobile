@@ -117,17 +117,17 @@ public class Trans extends AppCompatActivity {
 
         ListView listViewItems = (ListView) findViewById(R.id.vertical_list_item_price_name);
 
-        Transaction step_fart_nee = new Transaction("banana", "step_fart_nee", "$34.9");
-        Transaction john = new Transaction("egg", "john", "$3.9");
-        Transaction steve = new Transaction("beer", "steve", "$4.89");
-        Transaction abe = new Transaction("steak", "abe", "$5.93");
-        Transaction dita = new Transaction("banana", "dita", "$6.88");
-        Transaction jordan = new Transaction("banana", "jordan", "$23.4");
-        Transaction joshua = new Transaction("steak", "joshua", "$12.3");
-        Transaction subhash = new Transaction("egg", "subhash", "$6.7");
-        Transaction steven = new Transaction("beer", "steven", "$21.3");
-        Transaction biem = new Transaction("banana", "biem", "$43.2");
-        Transaction no_name = new Transaction("steak", "no_name", "$89.2");
+        Transaction step_fart_nee = new Transaction("banana", "step_fart_nee", Float.parseFloat("34.9") );
+        Transaction john = new Transaction("egg", "john", Float.parseFloat("3.9") );
+        Transaction steve = new Transaction("beer", "steve", Float.parseFloat("4.89") );
+        Transaction abe = new Transaction("steak", "abe", Float.parseFloat("5.93") );
+        Transaction dita = new Transaction("banana", "dita", Float.parseFloat("6.88") );
+        Transaction jordan = new Transaction("banana", "jordan", Float.parseFloat("23.4") );
+        Transaction joshua = new Transaction("steak", "joshua", Float.parseFloat("12.3") );
+        Transaction subhash = new Transaction("egg", "subhash", Float.parseFloat("6.7") );
+        Transaction steven = new Transaction("beer", "steven", Float.parseFloat("21.3") );
+        Transaction biem = new Transaction("banana", "biem", Float.parseFloat("43.2") );
+        Transaction no_name = new Transaction("steak", "no_name", Float.parseFloat("89.2") );
 
 // //     Objects with empty names:
 //        Transaction step_fart_nee = new Transaction("banana", "", "34.9");

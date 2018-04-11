@@ -88,7 +88,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         // Get transaction information
         final String item = getItem(position).getItem();
         final String names = getItem(position).getNames();
-        final String price = getItem(position).getPrice();
+        final Float price = getItem(position).getPrice();
 
 
 
@@ -135,8 +135,14 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                 editText_item_name = (EditText) dialogView.findViewById(R.id.edit_item_name);
                 editText_item_price = (EditText) dialogView.findViewById(R.id.edit_item_price);
 
+                editText_item_name.setSelection(editText_item_name.getText().length());
+
                 editText_item_name.setText(item);
-                editText_item_price.setText(price);
+                editText_item_price.setText(price.toString());
+//                editText_item_price.setText(String.valueOf(price));
+
+
+
 
                 // Set the positive button
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
@@ -145,7 +151,10 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         System.out.println("Item Name: "+editText_item_name.getText().toString());
                         System.out.println("Price: "+editText_item_price.getText().toString());
                         arrayList.get(position).setItem(editText_item_name.getText().toString());
-                        arrayList.get(position).setPrice(editText_item_price.getText().toString());
+
+//                        Float.parseFloat(editText_item_price.getText().toString());
+
+                        arrayList.get(position).setPrice(Float.parseFloat(editText_item_price.getText().toString()));
                     }
                 });
 
@@ -176,7 +185,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         // Set the text for the TextView
         tvItem.setText(item);
         tvNames.setText(names);
-        tvPrice.setText(price);
+//        tvPrice.setText("$"+String.valueOf(price));
+        tvPrice.setText("$"+price.toString());
 
 
 
