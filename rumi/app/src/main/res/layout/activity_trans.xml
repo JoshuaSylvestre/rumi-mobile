@@ -13,7 +13,47 @@ android:background="#feef"
 
     >
 
+    <!--<LinearLayout-->
+        <!--android:id="@+id/topPanelButtons"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:orientation="horizontal"-->
+        <!--&gt;-->
+
+        <!--<Button-->
+            <!--android:id="@+id/button_back"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="<-"-->
+            <!--android:textSize="20dp"-->
+            <!--android:textColor="#000"-->
+
+            <!--/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/store_restaurant"-->
+            <!--android:layout_width="202dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_gravity="fill_horizontal"-->
+            <!--android:gravity="center"-->
+            <!--android:hint="Store/Restaurant"-->
+            <!--android:textAlignment="center"-->
+
+            <!--/>-->
+
+        <!--<Button-->
+            <!--android:id="@+id/button_next"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="->"-->
+            <!--android:textSize="20dp"-->
+            <!--android:textColor="#000"-->
+            <!--/>-->
+
+    <!--</LinearLayout>-->
+
 <ListView
+
     android:id="@+id/vertical_list_item_price_name"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

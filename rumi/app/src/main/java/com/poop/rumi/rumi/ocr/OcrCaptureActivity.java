@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.vision.text.TextBlock;
 import com.poop.rumi.rumi.Receipt;
+import com.poop.rumi.rumi.TransasctionActivity;
 import com.poop.rumi.rumi.camera.CameraSource;
 import com.poop.rumi.rumi.camera.CameraSourcePreview;
 import com.poop.rumi.rumi.camera.GraphicOverlay;
@@ -245,11 +246,17 @@ public class OcrCaptureActivity extends AppCompatActivity{
                     Toast.makeText(OcrCaptureActivity.this, "SCANNING COMPLETE", Toast.LENGTH_SHORT).show();
 
                     //TODO: Push to next activity
+                    openTransactionActivity();
                 }
             }
 
         });
 
+    }
+
+    public void openTransactionActivity() {
+        Intent intent = new Intent(this, TransasctionActivity.class);
+        startActivity(intent);
     }
 
     private void invokeDialog(String msg){

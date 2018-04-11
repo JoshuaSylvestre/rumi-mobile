@@ -70,7 +70,9 @@
         <activity
             android:name=".RoommateActivity"
             android:label="@string/title_activity_roommate"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme">
+
+        </activity>
 
         <activity android:name=".TransasctionActivity">
             <!--<intent-filter>-->
