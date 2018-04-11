@@ -23,6 +23,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class TransasctionActivity extends AppCompatActivity {
@@ -34,6 +35,8 @@ public class TransasctionActivity extends AppCompatActivity {
     private ArrayList<String> mImageUrls = new ArrayList<>();
 
     EditText editText_get_names;
+    TextView store_restaurant;
+    EditText edit_store_restaurant_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +163,7 @@ public class TransasctionActivity extends AppCompatActivity {
         listViewItems.setAdapter(adapter);
 
 
+
         Button nextButton = (Button)findViewById(R.id.button_next);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,6 +180,61 @@ public class TransasctionActivity extends AppCompatActivity {
             }
         });
 
+        store_restaurant = findViewById(R.id.store_restaurant);
+        store_restaurant.setText("Dummy Value");
+
+        store_restaurant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                openEditStoreNameDialog();
+
+            }
+        });
+
+    }
+
+    public void openEditStoreNameDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(TransasctionActivity.this);
+
+        LayoutInflater inflater = LayoutInflater.from(TransasctionActivity.this);
+        final View dialogView = inflater.inflate(R.layout.store_restaurant_dialog,null);
+
+        builder.setView(dialogView);
+
+        builder.setTitle("Edit");
+
+        edit_store_restaurant_name = (EditText)dialogView.findViewById(R.id.edit_store_restaurant_name);
+
+        // Set the positive button
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                store_restaurant.setText(edit_store_restaurant_name.getText().toString());
+            }
+        });
+
+        // Set the negative button
+        builder.setNegativeButton("Cancel", null);
+
+        // Create the alert dialog
+        AlertDialog dialog = builder.create();
+
+        // Finally, display the alert dialog
+        dialog.show();
+
+        // Get the alert dialog buttons reference
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+
+        // Change the alert dialog buttons text and background color
+        positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
+        positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
+
+        negativeButton.setTextColor(Color.parseColor("#FFFF0400"));
+        negativeButton.setBackgroundColor(Color.parseColor("#FFFCB9B7"));
+
     }
 
 
@@ -183,11 +242,27 @@ public class TransasctionActivity extends AppCompatActivity {
 
         Log.d(TAG, "initImageBitmaps: preparing bitmaps.");
 
-//        mImageUrls.add("");
-//        mNames.add("Steve");
-//
-//        mImageUrls.add("");
-//        mNames.add("Abe");
+        mImageUrls.add("");
+        mNames.add("Steve");
+
+        mImageUrls.add("");
+        mNames.add("Abe");
+
+        mImageUrls.add("");
+        mNames.add("Dita");
+
+        mImageUrls.add("");
+        mNames.add("Alana");
+
+        mImageUrls.add("");
+        mNames.add("Joshua");
+
+        mImageUrls.add("");
+        mNames.add("John");
+
+        mImageUrls.add("");
+        mNames.add("Subhash");
+
 
         initRecyclerView();
 

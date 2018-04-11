@@ -44,7 +44,10 @@ android:background="#feef"
             android:layout_gravity="fill_horizontal"
             android:gravity="center"
             android:hint="Store/Restaurant"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="25dp"
+
+            />
 
         <Button
             android:id="@+id/button_next"
