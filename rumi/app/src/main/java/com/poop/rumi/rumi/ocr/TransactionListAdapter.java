@@ -10,6 +10,8 @@ package com.poop.rumi.rumi.ocr;
  * Created by Steve on 4/10/2018.
  */
 import com.poop.rumi.rumi.R;
+
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -59,6 +61,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     int mResource;
     ArrayList<Transaction> arrayList;
 
+    RecyclerViewAdapter nameListAdapter;
+
 
     public TransactionListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Transaction> objects) {
         super(context, resource, objects);
@@ -74,18 +78,20 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     // Create a transaction object to hold these strings
     // LayoutInflater inflater = LayoutInflater.from(mContext);
 
+    @SuppressLint("SetTextI18n")
     @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
+
         // Get transaction information
         final String item = getItem(position).getItem();
-        final String names = getItem(position).getNames();
+        final ArrayList<String> names = getItem(position).getNames();
         final Float price = getItem(position).getPrice();
 
 
-
         // Create a transaction object to hold these strings
-        Transaction transaction = new Transaction(item, names, price);
+        Transaction transaction = new Transaction(item, price);
 
         // Create layoutinflatter, take convertView from the getView
         LayoutInflater inflater = LayoutInflater.from(mContext);
@@ -98,10 +104,21 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         TextView tvNames = (TextView) convertView.findViewById(R.id.textView2);
 
         LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.parent_layout_item_price);
+
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Toast.makeText(mContext, arrayList.get(position).getItem()+", "+arrayList.get(position).getPrice() , Toast.LENGTH_SHORT).show();
+
+                if(nameListAdapter.getPosOfName() != -1){
+
+                    Toast.makeText(mContext, "Tryna add name: " + nameListAdapter.getLastNameTapped(), Toast.LENGTH_SHORT).show();
+
+                    arrayList.get(position).addName(nameListAdapter.getLastNameTapped());
+                }
+
+
             }
         });
 
@@ -115,7 +132,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             @Override
             public void onClick(View v) {
 
-                //TODO: create function for this instead
+                // TODO: create function for this instead
+                // openEditItemDialog();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
@@ -146,14 +164,14 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
                         System.out.println("Item Name: "+editText_item_name.getText().toString());
                         System.out.println("Price: "+editText_item_price.getText().toString());
+
                         arrayList.get(position).setItem(editText_item_name.getText().toString());
-
-//                        Float.parseFloat(editText_item_price.getText().toString());
-
                         arrayList.get(position).setPrice(Float.parseFloat(editText_item_price.getText().toString()));
 
                         tvItem.setText(editText_item_name.getText().toString());
-                        tvPrice.setText(editText_item_price.getText().toString());
+                        tvPrice.setText("$" + editText_item_price.getText().toString());
+
+
 
                         dialog.dismiss();
                     }
@@ -169,15 +187,21 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
         // Set the text for the TextView
         tvItem.setText(item);
-        tvNames.setText(names);
-//        tvPrice.setText("$"+String.valueOf(price));
-        tvPrice.setText("$"+price.toString());
+        tvPrice.setText("$" + price.toString());
+        tvNames.setText(names.toString());
 
 
 
         return convertView;
     }
 
+    private void openEditItemDialog() {
+    }
 
+    public void setRecyclerViewAdapter(RecyclerViewAdapter nameListAdapter){
+
+        this.nameListAdapter = nameListAdapter;
+
+    }
 
 }

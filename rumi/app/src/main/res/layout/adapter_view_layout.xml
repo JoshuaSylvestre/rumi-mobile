@@ -21,7 +21,7 @@ android:id="@+id/parent_layout_item_price"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:gravity="left"
-        android:text="TextView1"
+        android:text="Item"
         android:textSize="25dp"
 
         />
@@ -31,7 +31,7 @@ android:id="@+id/parent_layout_item_price"
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:gravity="left"
-        android:text="TextView2"
+        android:text="namesArray"
         android:textSize="15dp"
 
         />
@@ -50,7 +50,7 @@ android:id="@+id/parent_layout_item_price"
         android:layout_height="60dp"
         android:gravity="center"
         android:textAlignment="center"
-        android:text="TextView3"
+        android:text="$Price"
         android:layout_weight="30"
         android:textSize="25dp"
 

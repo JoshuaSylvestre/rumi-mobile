@@ -27,6 +27,10 @@ public class TransasctionActivity extends AppCompatActivity {
 
     private static final String TAG = "TransactionActivity";
 
+    private RecyclerViewAdapter nameListAdapter;
+    private TransactionListAdapter transListAdapter;
+    private ArrayList<Transaction> transactionList;
+
     // vars:
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
@@ -34,17 +38,8 @@ public class TransasctionActivity extends AppCompatActivity {
     TextView store_restaurant;
 
     Receipt mReceipt;
-
     ArrayList<String> clean_input_items;
     ArrayList<Float> clean_input_prices;
-
-
-    ArrayList<Transaction> transactionList;
-
-
-//    String input_store_name =  getIntent().getStringExtra("ReceiptStoreName");
-
-
 
 
     @Override
@@ -64,36 +59,21 @@ public class TransasctionActivity extends AppCompatActivity {
         Log.d("TEST 2" ,"==============================================");
 
 
-
-        initImageBitmaps();
-
-
         ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
-
-//        list=(ListView)findViewById(R.id.list);
-//
-//        FrameLayout footerLayout = (FrameLayout) getLayoutInflater().inflate(R.layout.footerview,null);
-//        btnPostYourEnquiry = (Button) footerLayout.findViewById(R.id.btnGetMoreResults);
-//
-//        list.addFooterView(footerLayout);
-
-//        FrameLayout footerLayout = (FrameLayout)getLayoutInflater().inflate(R.layout.transaction_add_item_price_button_layout);
-
 
         // Add transactions to the arraylist: take Transactions objects
         transactionList = new ArrayList<>();
-        System.out.println("============================================");
 
         String storeName = mReceipt.getStoreName();
         String date = mReceipt.getDateOfCapture();
         ArrayList<String> inputItems = mReceipt.getItems();
         ArrayList<Float> inputPrices = mReceipt.getPrices();
 
-        System.out.println(storeName);
-        System.out.println(date);
-
-        System.out.println(inputItems);
-        System.out.println(inputPrices);
+//        System.out.println(storeName);
+//        System.out.println(date);
+//
+//        System.out.println(inputItems);
+//        System.out.println(inputPrices);
 
         if(!storeName.equals(null))
         {
@@ -142,7 +122,6 @@ public class TransasctionActivity extends AppCompatActivity {
                 transactionList.add(
                         new Transaction(
                                 clean_input_items.get(i).toString(),
-                                "",
                                 Float.parseFloat(String.valueOf(clean_input_prices.get(i)))
                         )
 
@@ -152,35 +131,20 @@ public class TransasctionActivity extends AppCompatActivity {
         }
 
 
-//        ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
-
-//        list=(ListView)findViewById(R.id.list);
-//
-//        FrameLayout footerLayout = (FrameLayout) getLayoutInflater().inflate(R.layout.footerview,null);
-//        btnPostYourEnquiry = (Button) footerLayout.findViewById(R.id.btnGetMoreResults);
-//
-//        list.addFooterView(footerLayout);
-
-//        FrameLayout footerLayout = (FrameLayout)getLayoutInflater().inflate(R.layout.transaction_add_item_price_button_layout);
-
+        initRecyclerView();
 
         // take in the context, custom layout that made, arraylist(which is transactionList)
-        TransactionListAdapter adapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
-        listViewItems.setAdapter(adapter);
+        transListAdapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
+        transListAdapter.setRecyclerViewAdapter(nameListAdapter);
 
+        listViewItems.setAdapter(transListAdapter);
 
         store_restaurant = findViewById(R.id.store_restaurant);
         store_restaurant.setText(mReceipt.getStoreName());
 
         store_restaurant.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-
-                openEditStoreNameDialog();
-
-            }
-        });
-
+            public void onClick(View v) { openEditStoreNameDialog();} });
 
         Button nextButton = (Button)findViewById(R.id.button_next);
         nextButton.setOnClickListener(new View.OnClickListener() {
@@ -242,6 +206,7 @@ public class TransasctionActivity extends AppCompatActivity {
         keep_adding.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 System.out.println("====== Keep adding button clicked!! ========== ");
                 System.out.println(editText_get_names.getText().toString());
                 System.out.println("====== Keep adding button clicked!! ========== ");
@@ -286,7 +251,6 @@ public class TransasctionActivity extends AppCompatActivity {
 
                 transactionList.add(new Transaction(
                         editText_item_name.getText().toString(),
-                        "",
                         Float.parseFloat(editText_item_price.getText().toString())
                         ));
 
@@ -337,42 +301,40 @@ public class TransasctionActivity extends AppCompatActivity {
 
         Log.d(TAG, "initImageBitmaps: preparing bitmaps.");
 
-        mImageUrls.add("");
-        mNames.add("Steve");
+//        mImageUrls.add("");
+//        mNames.add("Steve");
+//
+//        mImageUrls.add("");
+//        mNames.add("Abe");
+//
+//        mImageUrls.add("");
+//        mNames.add("Dita");
+//
+//        mImageUrls.add("");
+//        mNames.add("Alana");
+//
+//        mImageUrls.add("");
+//        mNames.add("Joshua");
+//
+//        mImageUrls.add("");
+//        mNames.add("John");
+//
+//        mImageUrls.add("");
+//        mNames.add("Subhash");
 
-        mImageUrls.add("");
-        mNames.add("Abe");
 
-        mImageUrls.add("");
-        mNames.add("Dita");
-
-        mImageUrls.add("");
-        mNames.add("Alana");
-
-        mImageUrls.add("");
-        mNames.add("Joshua");
-
-        mImageUrls.add("");
-        mNames.add("John");
-
-        mImageUrls.add("");
-        mNames.add("Subhash");
-
-
-        initRecyclerView();
+        //initRecyclerView();
 
     }
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
-
         LinearLayoutManager layoutManager = new LinearLayoutManager( TransasctionActivity.this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.horizontal_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mNames, mImageUrls);
-        recyclerView.setAdapter(adapter);
-
+        nameListAdapter = new RecyclerViewAdapter(this, mNames, mImageUrls);
+        recyclerView.setAdapter(nameListAdapter);
 
     }
 
