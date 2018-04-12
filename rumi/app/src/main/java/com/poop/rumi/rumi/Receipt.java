@@ -114,7 +114,8 @@ public class Receipt implements Serializable{
             }
 
             // Looks for the term "you saved" in the case of publix receipts
-            boolean hasYouSaved = Pattern.compile(Pattern.quote("save"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasSave = Pattern.compile(Pattern.quote("save"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasSaving = Pattern.compile(Pattern.quote("saving"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasPromotion= Pattern.compile(Pattern.quote("promotion"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasSubtotal= Pattern.compile(Pattern.quote("subtotal"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasTotal= Pattern.compile(Pattern.quote("total"), Pattern.CASE_INSENSITIVE).matcher(str).find();
@@ -122,7 +123,7 @@ public class Receipt implements Serializable{
             boolean hasChange= Pattern.compile(Pattern.quote("change"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasTax= Pattern.compile(Pattern.quote("tax"), Pattern.CASE_INSENSITIVE).matcher(str).find();
 
-            if(hasYouSaved || hasPromotion || hasSubtotal || hasTotal || hasDebit || hasChange || hasTax) {
+            if(hasSave || hasSaving || hasPromotion || hasSubtotal || hasTotal || hasDebit || hasChange || hasTax) {
 
                 lines.remove(idx);
                 --idx;

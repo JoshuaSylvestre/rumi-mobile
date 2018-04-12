@@ -1,18 +1,14 @@
 package com.poop.rumi.rumi;
 
 import android.content.Intent;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.poop.rumi.rumi.ocr.OcrCaptureActivity;
 import com.poop.rumi.rumi.ocr.RecyclerViewAdapter;
 import com.poop.rumi.rumi.ocr.Transaction;
 import com.poop.rumi.rumi.ocr.TransactionListAdapter;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Color;
 
 import java.util.ArrayList;
 
@@ -35,18 +31,12 @@ public class TransasctionActivity extends AppCompatActivity {
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
 
-    EditText editText_get_names;
     TextView store_restaurant;
-    EditText edit_store_restaurant_name;
 
     Receipt mReceipt;
 
     ArrayList<String> clean_input_items;
     ArrayList<Float> clean_input_prices;
-
-//    String input_store_name =  getIntent().getStringExtra("ReceiptStoreName");
-
-
 
 
     @Override
@@ -55,7 +45,6 @@ public class TransasctionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trans);
         Log.d(TAG, "onCreate: Started onCreate!");
 
-        Intent intent = new Intent(this, OcrCaptureActivity.class);
 //        String input_store_name = intent.getStringExtra(OcrCaptureActivity.EXTRA_TEXT);
 //        String input_date = intent.getStringExtra(OcrCaptureActivity.EXTRA_DATE);
 
@@ -78,66 +67,7 @@ public class TransasctionActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(TransasctionActivity.this);
-
-                LayoutInflater inflater = LayoutInflater.from(TransasctionActivity.this);
-                final View dialogView = inflater.inflate(R.layout.add_person_layout,null);
-
-                builder.setView(dialogView);
-
-                builder.setTitle("Add Person");
-
-
-                // Set the positive button
-                builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-                // Set the negative button
-                builder.setNegativeButton("Cancel", null);
-
-                // Create the alert dialog
-                AlertDialog dialog = builder.create();
-
-                // Finally, display the alert dialog
-                dialog.show();
-
-                // Get the alert dialog buttons reference
-                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-
-                // Change the alert dialog buttons text and background color
-                positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
-                positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
-
-                negativeButton.setTextColor(Color.parseColor("#FFFF0400"));
-                negativeButton.setBackgroundColor(Color.parseColor("#FFFCB9B7"));
-
-
-                editText_get_names = (EditText)dialogView.findViewById(R.id.editText_add_name);
-
-                Button keep_adding = (Button)dialogView.findViewById(R.id.button_keep_adding);
-                keep_adding.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        System.out.println("====== Keep adding button clicked!! ========== ");
-                        System.out.println(editText_get_names.getText().toString());
-                        System.out.println("====== Keep adding button clicked!! ========== ");
-
-                        mImageUrls.add("");
-                        mNames.add(editText_get_names.getText().toString());
-
-                        Toast.makeText(TransasctionActivity.this , editText_get_names.getText().toString()+" added!" , Toast.LENGTH_SHORT).show();
-
-                        editText_get_names.setText(null);
-
-                    }
-                });
-
+                openAddPersonDialog();
             }
         });
 
@@ -234,7 +164,6 @@ public class TransasctionActivity extends AppCompatActivity {
         listViewItems.setAdapter(adapter);
 
 
-
         Button nextButton = (Button)findViewById(R.id.button_next);
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -265,46 +194,72 @@ public class TransasctionActivity extends AppCompatActivity {
 
     }
 
-    public void openEditStoreNameDialog(){
+    public void openAddPersonDialog(){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(TransasctionActivity.this);
 
         LayoutInflater inflater = LayoutInflater.from(TransasctionActivity.this);
-        final View dialogView = inflater.inflate(R.layout.store_restaurant_dialog,null);
+
+        final View dialogView = inflater.inflate(R.layout.add_person_dialog,null);
 
         builder.setView(dialogView);
 
-        builder.setTitle("Edit");
-
-        edit_store_restaurant_name = (EditText)dialogView.findViewById(R.id.edit_store_restaurant_name);
-
-        // Set the positive button
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                store_restaurant.setText(edit_store_restaurant_name.getText().toString());
-            }
-        });
-
-        // Set the negative button
-        builder.setNegativeButton("Cancel", null);
-
         // Create the alert dialog
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
 
         // Finally, display the alert dialog
         dialog.show();
 
-        // Get the alert dialog buttons reference
-        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        final EditText editText_get_names = (EditText)dialogView.findViewById(R.id.editText_add_name);
+
+        Button keep_adding = (Button)dialogView.findViewById(R.id.button_keep_adding);
+        keep_adding.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("====== Keep adding button clicked!! ========== ");
+                System.out.println(editText_get_names.getText().toString());
+                System.out.println("====== Keep adding button clicked!! ========== ");
+
+                mImageUrls.add("");
+                mNames.add(editText_get_names.getText().toString());
+
+                Toast.makeText(TransasctionActivity.this , editText_get_names.getText().toString()+" added!" , Toast.LENGTH_SHORT).show();
+
+                editText_get_names.setText(null);
+
+            }
+        });
+
+    }
+
+    public void openEditStoreNameDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(TransasctionActivity.this);
+
+        LayoutInflater inflater = LayoutInflater.from(TransasctionActivity.this);
+
+        final View dialogView = inflater.inflate(R.layout.edit_store_name_dialog,null);
+
+        builder.setView(dialogView);
+
+        final EditText edit_store_restaurant_name = (EditText)dialogView.findViewById(R.id.edit_store_name);
+        Button btn_positive = (Button) dialogView.findViewById(R.id.dialog_positive_btn);
+
+        // Create the alert dialog
+        final AlertDialog dialog = builder.create();
 
 
-        // Change the alert dialog buttons text and background color
-        positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
-        positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
+        // Set positive/yes button click listener
+        btn_positive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        negativeButton.setTextColor(Color.parseColor("#FFFF0400"));
-        negativeButton.setBackgroundColor(Color.parseColor("#FFFCB9B7"));
+                store_restaurant.setText(edit_store_restaurant_name.getText().toString());
+            }
+        });
+
+        // Finally, display the alert dialog
+        dialog.show();
 
     }
 
@@ -354,11 +309,6 @@ public class TransasctionActivity extends AppCompatActivity {
 
     public void openSummaryActivity() {
         Intent intent = new Intent(this, SummaryActivity.class);
-        startActivity(intent);
-    }
-
-    public void openOcrCaptureActivity(){
-        Intent intent = new Intent(this, OcrCaptureActivity.class);
         startActivity(intent);
     }
 

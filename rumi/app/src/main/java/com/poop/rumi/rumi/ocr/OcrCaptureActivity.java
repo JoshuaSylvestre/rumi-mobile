@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -43,7 +42,6 @@ import com.poop.rumi.rumi.R;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
 
@@ -272,7 +270,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
         AlertDialog.Builder builder = new AlertDialog.Builder(OcrCaptureActivity.this);
 
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.custom_alertdialog_view,null);
+        View dialogView = inflater.inflate(R.layout.prompt_user_taps_dialog,null);
 
         // Specify alert dialog is not cancelable/not ignorable
         builder.setCancelable(false);
