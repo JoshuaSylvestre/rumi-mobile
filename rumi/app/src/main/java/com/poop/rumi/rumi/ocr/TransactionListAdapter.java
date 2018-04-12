@@ -59,7 +59,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     private static final String TAG = "TransactionListAdapter";
     private Context mContext;
     int mResource;
-    ArrayList<Transaction> arrayList;
+    ArrayList<Transaction> transactionList;
 
     RecyclerViewAdapter nameListAdapter;
 
@@ -68,7 +68,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
-        arrayList =  objects;
+        transactionList =  objects;
     }
 
 
@@ -101,7 +101,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         // In Main: don't need to call the View, but in here yes: convertView
         final TextView tvItem = (TextView) convertView.findViewById(R.id.textView1);
         final TextView tvPrice = (TextView) convertView.findViewById(R.id.textView3);
-        TextView tvNames = (TextView) convertView.findViewById(R.id.textView2);
+        final TextView tvNames = (TextView) convertView.findViewById(R.id.textView2);
 
         LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.parent_layout_item_price);
 
@@ -109,15 +109,18 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(mContext, arrayList.get(position).getItem()+", "+arrayList.get(position).getPrice() , Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, transactionList.get(position).getItem()+", "+transactionList.get(position).getPrice() , Toast.LENGTH_SHORT).show();
 
-                if(nameListAdapter.getPosOfName() != -1){
+                if(nameListAdapter.getPosOfName() != -1) {
 
                     Toast.makeText(mContext, "Tryna add name: " + nameListAdapter.getLastNameTapped(), Toast.LENGTH_SHORT).show();
 
-                    arrayList.get(position).addName(nameListAdapter.getLastNameTapped());
-                }
 
+                        transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
+
+                        tvNames.setText(names.toString());
+
+                }
 
             }
         });
@@ -165,8 +168,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         System.out.println("Item Name: "+editText_item_name.getText().toString());
                         System.out.println("Price: "+editText_item_price.getText().toString());
 
-                        arrayList.get(position).setItem(editText_item_name.getText().toString());
-                        arrayList.get(position).setPrice(Float.parseFloat(editText_item_price.getText().toString()));
+                        transactionList.get(position).setItem(editText_item_name.getText().toString());
+                        transactionList.get(position).setPrice(Float.parseFloat(editText_item_price.getText().toString()));
 
                         tvItem.setText(editText_item_name.getText().toString());
                         tvPrice.setText("$" + editText_item_price.getText().toString());

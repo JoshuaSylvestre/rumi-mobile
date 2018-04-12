@@ -21,9 +21,6 @@ public class Transaction {
 
         names = new ArrayList<>();
 
-        names.add("abe");
-        names.add("steve");
-
     }
 
     // Alt + Insert/Setter and Getter/Select all to make the constructor
