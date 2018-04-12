@@ -68,6 +68,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
 
 
+
+
     public TransactionListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Transaction> objects) {
         super(context, resource, objects);
         mContext = context;
@@ -103,7 +105,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         // In Main: don't need to call the View, but in here yes: convertView
         final TextView tvItem = (TextView) convertView.findViewById(R.id.textView1);
         TextView tvNames = (TextView) convertView.findViewById(R.id.textView2);
-        TextView tvPrice = (TextView) convertView.findViewById(R.id.textView3);
+        final TextView tvPrice = (TextView) convertView.findViewById(R.id.textView3);
 
         LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.parent_layout_item_price);
         linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -155,6 +157,10 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 //                        Float.parseFloat(editText_item_price.getText().toString());
 
                         arrayList.get(position).setPrice(Float.parseFloat(editText_item_price.getText().toString()));
+                        tvItem.setText(editText_item_name.getText().toString());
+                        tvPrice.setText(editText_item_price.getText().toString());
+
+
                     }
                 });
 

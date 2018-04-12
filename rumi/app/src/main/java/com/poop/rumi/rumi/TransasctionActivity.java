@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +45,12 @@ public class TransasctionActivity extends AppCompatActivity {
     ArrayList<String> clean_input_items;
     ArrayList<Float> clean_input_prices;
 
+    EditText edit_add_item;
+    EditText edit_add_price;
+
+    ArrayList<Transaction> transactionList;
+
+
 //    String input_store_name =  getIntent().getStringExtra("ReceiptStoreName");
 
 
@@ -55,9 +62,7 @@ public class TransasctionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trans);
         Log.d(TAG, "onCreate: Started onCreate!");
 
-        Intent intent = new Intent(this, OcrCaptureActivity.class);
-//        String input_store_name = intent.getStringExtra(OcrCaptureActivity.EXTRA_TEXT);
-//        String input_date = intent.getStringExtra(OcrCaptureActivity.EXTRA_DATE);
+//        Intent intent = new Intent(this, OcrCaptureActivity.class);
 
         Log.d("TEST", "HERE");
 
@@ -142,24 +147,20 @@ public class TransasctionActivity extends AppCompatActivity {
         });
 
 
-        ListView listViewItems = (ListView) findViewById(R.id.vertical_list_item_price_name);
+        ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
 
-// //     Objects with empty names:
-//        Transaction step_fart_nee = new Transaction("banana", "", "34.9");
-//        Transaction john = new Transaction("egg", "", "3.9");
-//        Transaction steve = new Transaction("beer", "", "4.89");
-//        Transaction abe = new Transaction("steak", "", "5.93");
-//        Transaction dita = new Transaction("banana", "", "6.88");
-//        Transaction jordan = new Transaction("banana", "", "23.4");
-//        Transaction joshua = new Transaction("steak", "", "12.3");
-//        Transaction subhash = new Transaction("egg", "", "6.7");
-//        Transaction steven = new Transaction("beer", "", "21.3");
-//        Transaction biem = new Transaction("banana", "", "43.2");
-//        Transaction no_name = new Transaction("steak", "", "89.2");
+//        list=(ListView)findViewById(R.id.list);
+//
+//        FrameLayout footerLayout = (FrameLayout) getLayoutInflater().inflate(R.layout.footerview,null);
+//        btnPostYourEnquiry = (Button) footerLayout.findViewById(R.id.btnGetMoreResults);
+//
+//        list.addFooterView(footerLayout);
+
+//        FrameLayout footerLayout = (FrameLayout)getLayoutInflater().inflate(R.layout.transaction_add_item_price_button_layout);
 
 
         // Add transactions to the arraylist: take Transactions objects
-        ArrayList<Transaction> transactionList = new ArrayList<>();
+        transactionList = new ArrayList<>();
         System.out.println("============================================");
 
         String storeName = mReceipt.getStoreName();
@@ -229,10 +230,24 @@ public class TransasctionActivity extends AppCompatActivity {
 
         }
 
+
+//        ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
+
+//        list=(ListView)findViewById(R.id.list);
+//
+//        FrameLayout footerLayout = (FrameLayout) getLayoutInflater().inflate(R.layout.footerview,null);
+//        btnPostYourEnquiry = (Button) footerLayout.findViewById(R.id.btnGetMoreResults);
+//
+//        list.addFooterView(footerLayout);
+
+//        FrameLayout footerLayout = (FrameLayout)getLayoutInflater().inflate(R.layout.transaction_add_item_price_button_layout);
+
+
         // take in the context, custom layout that made, arraylist(which is transactionList)
         TransactionListAdapter adapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
         listViewItems.setAdapter(adapter);
 
+        // Adapter
 
 
         Button nextButton = (Button)findViewById(R.id.button_next);
@@ -262,6 +277,70 @@ public class TransasctionActivity extends AppCompatActivity {
 
             }
         });
+
+
+        // Add Item/Price Button
+        Button add_item_price = (Button)findViewById(R.id.button_add_more_item_price);
+        add_item_price.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddItemPriceDialog();
+
+            }
+        });
+
+    }
+
+    public void  openAddItemPriceDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(TransasctionActivity.this);
+
+        LayoutInflater inflater = LayoutInflater.from(TransasctionActivity.this);
+        final View dialogView = inflater.inflate(R.layout.transaction_add_item_price,null);
+
+        builder.setView(dialogView);
+
+        builder.setTitle("Edit");
+
+        edit_add_item = (EditText)dialogView.findViewById(R.id.edit_add_item);
+        edit_add_price = (EditText)dialogView.findViewById(R.id.edit_add_price);
+
+        // Set the positive button
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                System.out.println("Item: **** "+edit_add_item.getText().toString());
+                System.out.println("Price: **** "+edit_add_price.getText().toString());
+
+                transactionList.add(new Transaction(
+                        edit_add_item.getText().toString(),
+                        "",
+                        Float.parseFloat(edit_add_price.getText().toString())
+                        ));
+
+            }
+        });
+
+        // Set the negative button
+        builder.setNegativeButton("Cancel", null);
+
+        // Create the alert dialog
+        AlertDialog dialog = builder.create();
+
+        // Finally, display the alert dialog
+        dialog.show();
+
+        // Get the alert dialog buttons reference
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+
+        // Change the alert dialog buttons text and background color
+        positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
+        positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
+
+        negativeButton.setTextColor(Color.parseColor("#FFFF0400"));
+        negativeButton.setBackgroundColor(Color.parseColor("#FFFCB9B7"));
 
     }
 
