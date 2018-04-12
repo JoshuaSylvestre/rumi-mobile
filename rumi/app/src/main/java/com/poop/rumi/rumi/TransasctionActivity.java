@@ -211,12 +211,21 @@ public class TransasctionActivity extends AppCompatActivity {
                 System.out.println(editText_get_names.getText().toString());
                 System.out.println("====== Keep adding button clicked!! ========== ");
 
-                mImageUrls.add("");
-                mNames.add(editText_get_names.getText().toString());
 
-                Toast.makeText(TransasctionActivity.this , editText_get_names.getText().toString()+" added!" , Toast.LENGTH_SHORT).show();
+                if(mNames.contains(editText_get_names.getText().toString())) {
 
-                editText_get_names.setText(null);
+                    Toast.makeText(TransasctionActivity.this, "Name already exists, please try a different name.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+
+                    mImageUrls.add("");
+                    mNames.add(editText_get_names.getText().toString());
+
+                    Toast.makeText(TransasctionActivity.this, editText_get_names.getText().toString() + " added!", Toast.LENGTH_SHORT).show();
+
+                    editText_get_names.setText(null);
+                }
+
 
             }
         });

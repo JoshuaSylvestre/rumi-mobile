@@ -46,6 +46,11 @@ public class Transaction {
         names.add(name);
     }
 
+    public void removeName(String name){
+
+        names.remove(name);
+    }
+
     public String getItem() {
         return item;
     }

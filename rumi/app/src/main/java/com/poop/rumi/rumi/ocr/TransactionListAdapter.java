@@ -116,9 +116,18 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     Toast.makeText(mContext, "Tryna add name: " + nameListAdapter.getLastNameTapped(), Toast.LENGTH_SHORT).show();
 
 
-                        transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
+                    if (names.contains(nameListAdapter.getLastNameTapped())) {
 
+                        transactionList.get(position).removeName(nameListAdapter.getLastNameTapped());
                         tvNames.setText(names.toString());
+
+                    }
+                    else{
+
+                        transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
+                        tvNames.setText(names.toString());
+
+                    }
 
                 }
 
@@ -204,7 +213,6 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     public void setRecyclerViewAdapter(RecyclerViewAdapter nameListAdapter){
 
         this.nameListAdapter = nameListAdapter;
-
     }
 
 }
