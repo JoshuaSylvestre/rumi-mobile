@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.poop.rumi.rumi.TransasctionActivity"
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="com.poop.rumi.rumi.TransasctionActivity"
 
-    android:orientation="vertical"
-    android:background="#feef"
+android:orientation="vertical"
+android:background="#feef"
 
     >
 
@@ -60,15 +61,8 @@
 
     </RelativeLayout>
 
-    <ListView
 
-        android:id="@+id/vertical_list_item_price_name"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        >
-
-        <LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="500dp"
         android:orientation="vertical"
@@ -103,52 +97,51 @@
         </RelativeLayout>
 
 
-        </LinearLayout>
+    </LinearLayout>
     
 
-    </ListView>
 
-    <View
-        android:background="@color/colorPrimaryDark"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        />
+<View
+    android:background="@color/colorPrimaryDark"
+    android:layout_width="match_parent"
+    android:layout_height="3dp"
+    />
 
-    <LinearLayout
-        android:id="@+id/linear_layout_add_splitters"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+<LinearLayout
+    android:id="@+id/linear_layout_add_splitters"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
 
-        >
-
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/horizontal_recycler_view"
-            android:layout_width="296dp"
-            android:layout_height="70dp"
-            android:background="#feef"
-            android:orientation="horizontal"
-            android:paddingTop="5dp"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp">
+    >
 
 
-        </android.support.v7.widget.RecyclerView>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/horizontal_recycler_view"
+        android:layout_width="296dp"
+        android:layout_height="70dp"
+        android:background="#feef"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
 
-        <Button
-            android:id="@+id/button_add_person"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Add +"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20dp"
+    </android.support.v7.widget.RecyclerView>
 
 
-            tools:layout_editor_absoluteX="296dp"
-            tools:layout_editor_absoluteY="0dp" />
+    <Button
+        android:id="@+id/button_add_person"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="Add +"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20dp"
 
-    </LinearLayout>
+
+        tools:layout_editor_absoluteX="296dp"
+        tools:layout_editor_absoluteY="0dp" />
+
+</LinearLayout>
 
 
 

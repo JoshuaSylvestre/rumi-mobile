@@ -12,8 +12,6 @@ package com.poop.rumi.rumi.ocr;
 import com.poop.rumi.rumi.R;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -123,17 +121,19 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             @Override
             public void onClick(View v) {
 
+                //TODO: create function for this instead
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
                 LayoutInflater inflater = LayoutInflater.from(mContext);
 
-                final View dialogView = inflater.inflate(R.layout.edit_item_dialog,null);
+                final View dialogView = inflater.inflate(R.layout.add_or_edit_item_dialog,null);
 
                 builder.setView(dialogView);
 
 
-                editText_item_name = (EditText) dialogView.findViewById(R.id.edit_item_name);
-                editText_item_price = (EditText) dialogView.findViewById(R.id.edit_item_price);
+                final EditText editText_item_name = (EditText) dialogView.findViewById(R.id.edit_item_name);
+                final EditText editText_item_price = (EditText) dialogView.findViewById(R.id.edit_item_price);
 
                 editText_item_name.setSelection(editText_item_name.getText().length());
 
@@ -149,6 +149,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                 btn_positive.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         System.out.println("Item Name: "+editText_item_name.getText().toString());
                         System.out.println("Price: "+editText_item_price.getText().toString());
                         arrayList.get(position).setItem(editText_item_name.getText().toString());
@@ -157,11 +158,10 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
                         arrayList.get(position).setPrice(Float.parseFloat(editText_item_price.getText().toString()));
 
-                        dialog.dismiss();
-
                         tvItem.setText(editText_item_name.getText().toString());
                         tvPrice.setText(editText_item_price.getText().toString());
 
+                        dialog.dismiss();
                     }
                 });
 
@@ -171,6 +171,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
             }
         });
+
 
         // Set the text for the TextView
         tvItem.setText(item);
@@ -186,23 +187,3 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

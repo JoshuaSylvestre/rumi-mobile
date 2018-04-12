@@ -98,7 +98,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        setContentView(R.layout.ocr_capture);
+        setContentView(R.layout.activity_ocr_capture);
 
 
         mPreview = findViewById(R.id.preview);
