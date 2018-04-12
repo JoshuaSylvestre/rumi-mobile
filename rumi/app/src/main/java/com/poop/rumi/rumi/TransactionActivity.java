@@ -26,7 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TransasctionActivity extends AppCompatActivity {
+public class TransactionActivity extends AppCompatActivity {
 
     private static final String TAG = "TransactionActivity";
 
@@ -74,9 +74,9 @@ public class TransasctionActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(TransasctionActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
 
-                LayoutInflater inflater = LayoutInflater.from(TransasctionActivity.this);
+                LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
                 final View dialogView = inflater.inflate(R.layout.add_person_layout,null);
 
                 builder.setView(dialogView);
@@ -127,7 +127,7 @@ public class TransasctionActivity extends AppCompatActivity {
                         mImageUrls.add("");
                         mNames.add(editText_get_names.getText().toString());
 
-                        Toast.makeText(TransasctionActivity.this , editText_get_names.getText().toString()+" added!" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TransactionActivity.this , editText_get_names.getText().toString()+" added!" , Toast.LENGTH_SHORT).show();
 
                         editText_get_names.setText(null);
 
@@ -219,9 +219,9 @@ public class TransasctionActivity extends AppCompatActivity {
     }
 
     public void openEditStoreNameDialog(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(TransasctionActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
 
-        LayoutInflater inflater = LayoutInflater.from(TransasctionActivity.this);
+        LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
         final View dialogView = inflater.inflate(R.layout.store_restaurant_dialog,null);
 
         builder.setView(dialogView);
@@ -296,7 +296,7 @@ public class TransasctionActivity extends AppCompatActivity {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager( TransasctionActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager( TransactionActivity.this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.horizontal_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mNames, mImageUrls);

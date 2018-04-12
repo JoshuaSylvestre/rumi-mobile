@@ -81,7 +81,7 @@ public class UserSettingsFragment extends DialogFragment {
         mChangePasswordButton = dialogView.findViewById(R.id.change_password_button);
         mChangePasswordRow = dialogView.findViewById(R.id.change_password_table_row);
 
-        mNewPasswordRow.setVisibility(View.INVISIBLE);
+        mNewPasswordRow.setVisibility(View.GONE);
 
         try {
             mName.setText(currUserJSON.getString("name"));
@@ -155,7 +155,7 @@ public class UserSettingsFragment extends DialogFragment {
 
                             if(success) {
                                 MessagePopups.showToast(UserSettingsFragment.this.getContext(), "Updated password");
-                                mNewPasswordRow.setVisibility(View.INVISIBLE);
+                                mNewPasswordRow.setVisibility(View.GONE);
                                 mChangePasswordRow.setVisibility(View.VISIBLE);
                             }
                             else {

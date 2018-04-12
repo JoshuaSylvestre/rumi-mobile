@@ -1,5 +1,6 @@
 package com.poop.rumi.rumi;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,51 +17,73 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.poop.rumi.rumi.fragments.AddRoommateFragment;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.poop.rumi.rumi.fragments.UserSettingsFragment;
+import com.poop.rumi.rumi.models.DashboardContentModel;
+import com.poop.rumi.rumi.models.ReceiptModel;
+import com.poop.rumi.rumi.models.RoommateModel;
+import com.poop.rumi.rumi.models.TransactionModel;
 import com.poop.rumi.rumi.ocr.OcrCaptureActivity;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
     private RecyclerView mRecyclerView;
     private RecycleViewAdapter adapter;
-//    private ProgressBar progressBar;
-    private List<TransactionFeed> feedsList;
+    private ProgressBar progressBar;
     private TextView sidebarName;
     private TextView sidebarEmail;
 
     // User values
     private UserSession userSession;
+    private RequestQueue requestQueue;
     private String currUser;
     private String currUserToken;
     private JSONObject currUserJSON;
+    private Boolean success = false;
+
+    private ArrayList<TransactionModel> transactionsList;
+    private ArrayList<RoommateModel> roommatesList;
+    private ArrayList<ReceiptModel> receiptsList;
+    private List<DashboardContentModel> dashboardList;
 
     private UserSettingsFragment userSettingsFragment;
+
+    private int MAX_DASHBOARD_ITEMS = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        transactionsList = new ArrayList<>();
+        roommatesList = new ArrayList<>();
+        receiptsList = new ArrayList<>();
+
         // Create a new session for the logged user and grab their data from the last intent
         userSession = new UserSession(this);
         currUser = getIntent().getStringExtra("user");
         currUserToken = getIntent().getStringExtra("token");
+        requestQueue = Volley.newRequestQueue(getApplicationContext());
 
         try {
             currUserJSON = new JSONObject(currUser);
@@ -68,6 +91,14 @@ public class DashboardActivity extends AppCompatActivity
             Log.i("DASHBOARD", "Error creating JSON");
         }
         userSession.setUser(currUser);
+
+        mRecyclerView = findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        progressBar = findViewById(R.id.progress_bar);
+
+        dashboardList = new ArrayList<>();
+        adapter = new RecycleViewAdapter(getApplicationContext(), dashboardList);
+        mRecyclerView.setAdapter(adapter);
 
         // Get nested view from sidebar
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -88,9 +119,7 @@ public class DashboardActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mRecyclerView = findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        progressBar = findViewById(R.id.app_bar_main_layout).findViewById(R.id.app_bar_main_layout).findViewById(R.id.progress_bar);
+        new DashboardTask().execute((Void) null);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -178,7 +207,7 @@ public class DashboardActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_transactions)
         {
-            Intent getTransactionActivity = new Intent(getApplicationContext(), TransasctionActivity.class);
+            Intent getTransactionActivity = new Intent(getApplicationContext(), TransactionActivity.class);
             startActivity(getTransactionActivity);
         }
         else if (id == R.id.nav_request)
@@ -195,69 +224,124 @@ public class DashboardActivity extends AppCompatActivity
         return true;
     }
 
-    public class DownloadTask extends AsyncTask<String, Void, Integer> {
+    @TargetApi(24)
+    private void prepareDashboardList() {
+        int max = MAX_DASHBOARD_ITEMS;
+
+        this.dashboardList.addAll(roommatesList);
+        this.dashboardList.addAll(receiptsList);
+        this.dashboardList.addAll(transactionsList);
+
+        dashboardList.sort(new Comparator<DashboardContentModel>() {
+            @Override
+            public int compare(DashboardContentModel dashboardContentModel, DashboardContentModel t1) {
+                return t1.getDate().compareTo(dashboardContentModel.getDate());
+            }
+        });
+
+        if(dashboardList.size() < max)
+            max = dashboardList.size();
+
+        this.dashboardList = dashboardList.subList(0, max);
+    }
+
+    private void getDashboard() {
+        String dashboardUrl = getString(R.string.base_url) + getString(R.string.dashboard_url);
+
+        try {
+            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, dashboardUrl,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.i("DASHBOARD", response.toString());
+
+                            try {
+                                success = response.getBoolean("success");
+
+                                if(success) {
+                                    JSONArray transactions = response.getJSONArray("transactions");
+                                    JSONArray receipts = response.getJSONArray("receipts");
+                                    JSONArray roommates = response.getJSONArray("roommates");
+
+                                    int lenTrans = transactions.length();
+                                    int lenRec = receipts.length();
+                                    int lenRoom = roommates.length();
+
+                                    for(int i = 0; i < lenTrans; i++)
+                                        transactionsList.add(new TransactionModel(transactions.getJSONObject(i)));
+
+                                    for(int i = 0; i < lenRec; i++)
+                                        receiptsList.add(new ReceiptModel(receipts.getJSONObject(i)));
+
+                                    for(int i = 0; i < lenRoom; i++)
+                                        roommatesList.add(new RoommateModel(roommates.getJSONObject(i)));
+                                }
+                            } catch(Exception ex) {
+                                Log.e("DASHBOARD", "Failed parsing response: " + ex.getMessage());
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            //Failure Callback
+                            success = false;
+                            Log.e("DASHBOARD", "Failed to retrieve dashboard.");
+                            MessagePopups.showToast(getApplicationContext(), "Failed to retrieve dashboard.");
+                        }
+                    }) {
+
+                    @Override
+                    public Map<String, String> getHeaders() throws AuthFailureError {
+                        HashMap<String, String> headers = new HashMap<>();
+                        headers.put("Authorization", currUserToken);
+
+                        return headers;
+                    }
+                };
+
+            requestQueue.add(request);
+
+        } catch(Exception ex) {
+            success = false;
+            Log.e("DASHBOARD", "Error parsing response.");
+        }
+
+    }
+
+    public class DashboardTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected void onPreExecute() {
-//            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
-        protected Integer doInBackground(String... params) {
-            Integer result = 0;
-            HttpURLConnection urlConnection;
+        protected Boolean doInBackground(Void... params) {
+            getDashboard();
+
             try {
-                URL url = new URL(params[0]);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                int statusCode = urlConnection.getResponseCode();
+                Thread.sleep(2000);
 
-                // 200 represents HTTP OK
-                if (statusCode == 200) {
-                    BufferedReader r = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = r.readLine()) != null) {
-                        response.append(line);
-                    }
-                    parseResult(response.toString());
-                    result = 1; // Successful
-                } else {
-                    result = 0; //"Failed to fetch data!";
-                }
-            } catch (Exception e) {
-                //Log.d(TAG, e.getLocalizedMessage());
+                prepareDashboardList();
+
+            } catch(Exception ex) {
+                Log.e("DASHBOARD", "Error fetching dashboard: " + ex.getMessage());
             }
-            return result; //"Failed to fetch data!";
+
+            return success;
         }
 
         @Override
-        protected void onPostExecute(Integer result) {
-//            progressBar.setVisibility(View.GONE);
+        protected void onPostExecute(Boolean success) {
+            progressBar.setVisibility(View.GONE);
 
-            if (result == 1) {
-                adapter = new RecycleViewAdapter(DashboardActivity.this, feedsList);
-                mRecyclerView.setAdapter(adapter);
+            if (success) {
+                adapter.notifyDataSetChanged();
             } else {
+                adapter.notifyDataSetChanged();
                 Toast.makeText(DashboardActivity.this, "Failed to fetch data!", Toast.LENGTH_SHORT).show();
             }
-        }
-    }
-
-    private void parseResult(String result) {
-        try {
-            JSONObject response = new JSONObject(result);
-            JSONArray posts = response.optJSONArray("posts");
-            feedsList = new ArrayList<>();
-
-            for (int i = 0; i < posts.length(); i++) {
-                JSONObject post = posts.optJSONObject(i);
-                TransactionFeed item = new TransactionFeed();
-                item.setTitle(post.optString("title"));
-                item.setThumbnail(post.optString("thumbnail"));
-                feedsList.add(item);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 }

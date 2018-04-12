@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +31,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.vision.text.TextBlock;
 import com.poop.rumi.rumi.Receipt;
-import com.poop.rumi.rumi.TransasctionActivity;
+import com.poop.rumi.rumi.TransactionActivity;
 import com.poop.rumi.rumi.camera.CameraSource;
 import com.poop.rumi.rumi.camera.CameraSourcePreview;
 import com.poop.rumi.rumi.camera.GraphicOverlay;
@@ -258,7 +257,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
     public void openTransactionActivity() {
 
-        Intent intent = new Intent(this, TransasctionActivity.class);
+        Intent intent = new Intent(this, TransactionActivity.class);
         intent.putExtra("DATE", mReceipt.getDateOfCapture().toString());
         intent.putExtra("ITEMS", mReceipt.getItems());
         intent.putExtra("PRICES", mReceipt.getPrices());
