@@ -8,15 +8,19 @@
     tools:context=".ocr.OcrCaptureActivity"
     android:background="@color/colorPrimary"
     >
+
     <TextView
         android:id="@+id/dialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Prompt"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="3dp"
         android:gravity="center"
+        android:text="Prompt"
+        android:textSize="20dp"
         android:padding="5dp"
         android:background="@color/colorPrimary"
-        android:textSize="15dp"
         android:textColor="@color/colorAccent"
         />
 

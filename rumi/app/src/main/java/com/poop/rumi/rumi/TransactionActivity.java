@@ -4,14 +4,11 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.poop.rumi.rumi.ocr.OcrCaptureActivity;
 import com.poop.rumi.rumi.ocr.RecyclerViewAdapter;
 import com.poop.rumi.rumi.ocr.Transaction;
 import com.poop.rumi.rumi.ocr.TransactionListAdapter;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Color;
 
 import java.util.ArrayList;
 
@@ -30,17 +27,19 @@ public class TransactionActivity extends AppCompatActivity {
 
     private static final String TAG = "TransactionActivity";
 
+    private RecyclerViewAdapter nameListAdapter;
+    private TransactionListAdapter transListAdapter;
+    private ArrayList<Transaction> transactionList;
+
     // vars:
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
 
-    EditText editText_get_names;
     TextView store_restaurant;
-    EditText edit_store_restaurant_name;
 
-//    String input_store_name =  getIntent().getStringExtra("ReceiptStoreName");
-
-
+    Receipt mReceipt;
+    ArrayList<String> clean_input_items;
+    ArrayList<Float> clean_input_prices;
 
 
     @Override
@@ -49,144 +48,103 @@ public class TransactionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_trans);
         Log.d(TAG, "onCreate: Started onCreate!");
 
-        Intent intent = getIntent();
-//        String input_store_name = intent.getStringExtra(OcrCaptureActivity.EXTRA_TEXT);
-//        String input_date = intent.getStringExtra(OcrCaptureActivity.EXTRA_DATE);
+
+        mReceipt = (Receipt) getIntent().getSerializableExtra("RECEIPT");
 
 
-        String input_store_name = getIntent().getStringExtra("STORENAME");
-        String input_date = getIntent().getStringExtra("DATE");
-        ArrayList<String> inputItems = (ArrayList<String>)getIntent().getSerializableExtra("ITEMS");
-        ArrayList<String> inputPrices = (ArrayList<String>)getIntent().getSerializableExtra("PRICES");
-
-        System.out.println("==============================================");
-        System.out.println(input_store_name);
-        System.out.println(input_date);
-        System.out.println(inputItems);
-        System.out.println(inputPrices);
-        System.out.println("==============================================");
+        Log.d("TEST 2" ,"==============================================");
+        Log.d("TEST 2" ,mReceipt.getStoreName());
+        Log.d("TEST 2" ,mReceipt.printItems());
+        Log.d("TEST 2" ,mReceipt.printPrices());
+        Log.d("TEST 2" ,"==============================================");
 
 
-
-        initImageBitmaps();
-
-        Button addButton = (Button)findViewById(R.id.button_add_person);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
-
-                LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
-                final View dialogView = inflater.inflate(R.layout.add_person_layout,null);
-
-                builder.setView(dialogView);
-
-                builder.setTitle("Add Person");
-
-
-                // Set the positive button
-                builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-
-                // Set the negative button
-                builder.setNegativeButton("Cancel", null);
-
-                // Create the alert dialog
-                AlertDialog dialog = builder.create();
-
-                // Finally, display the alert dialog
-                dialog.show();
-
-                // Get the alert dialog buttons reference
-                Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-
-                // Change the alert dialog buttons text and background color
-                positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
-                positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
-
-                negativeButton.setTextColor(Color.parseColor("#FFFF0400"));
-                negativeButton.setBackgroundColor(Color.parseColor("#FFFCB9B7"));
-
-
-                editText_get_names = (EditText)dialogView.findViewById(R.id.editText_add_name);
-
-                Button keep_adding = (Button)dialogView.findViewById(R.id.button_keep_adding);
-                keep_adding.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        System.out.println("====== Keep adding button clicked!! ========== ");
-                        System.out.println(editText_get_names.getText().toString());
-                        System.out.println("====== Keep adding button clicked!! ========== ");
-
-                        mImageUrls.add("");
-                        mNames.add(editText_get_names.getText().toString());
-
-                        Toast.makeText(TransactionActivity.this , editText_get_names.getText().toString()+" added!" , Toast.LENGTH_SHORT).show();
-
-                        editText_get_names.setText(null);
-
-                    }
-                });
-
-            }
-        });
-
-
-        ListView listViewItems = (ListView) findViewById(R.id.vertical_list_item_price_name);
-
-        Transaction step_fart_nee = new Transaction("banana", "step_fart_nee", Float.parseFloat("34.9") );
-        Transaction john = new Transaction("egg", "john", Float.parseFloat("3.9") );
-        Transaction steve = new Transaction("beer", "steve", Float.parseFloat("4.89") );
-        Transaction abe = new Transaction("steak", "abe", Float.parseFloat("5.93") );
-        Transaction dita = new Transaction("banana", "dita", Float.parseFloat("6.88") );
-        Transaction jordan = new Transaction("banana", "jordan", Float.parseFloat("23.4") );
-        Transaction joshua = new Transaction("steak", "joshua", Float.parseFloat("12.3") );
-        Transaction subhash = new Transaction("egg", "subhash", Float.parseFloat("6.7") );
-        Transaction steven = new Transaction("beer", "steven", Float.parseFloat("21.3") );
-        Transaction biem = new Transaction("banana", "biem", Float.parseFloat("43.2") );
-        Transaction no_name = new Transaction("steak", "no_name", Float.parseFloat("89.2") );
-
-// //     Objects with empty names:
-//        Transaction step_fart_nee = new Transaction("banana", "", "34.9");
-//        Transaction john = new Transaction("egg", "", "3.9");
-//        Transaction steve = new Transaction("beer", "", "4.89");
-//        Transaction abe = new Transaction("steak", "", "5.93");
-//        Transaction dita = new Transaction("banana", "", "6.88");
-//        Transaction jordan = new Transaction("banana", "", "23.4");
-//        Transaction joshua = new Transaction("steak", "", "12.3");
-//        Transaction subhash = new Transaction("egg", "", "6.7");
-//        Transaction steven = new Transaction("beer", "", "21.3");
-//        Transaction biem = new Transaction("banana", "", "43.2");
-//        Transaction no_name = new Transaction("steak", "", "89.2");
-
+        ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
 
         // Add transactions to the arraylist: take Transactions objects
-        ArrayList<Transaction> transactionList = new ArrayList<>();
+        transactionList = new ArrayList<>();
+
+        String storeName = mReceipt.getStoreName();
+        String date = mReceipt.getDateOfCapture();
+        ArrayList<String> inputItems = mReceipt.getItems();
+        ArrayList<Float> inputPrices = mReceipt.getPrices();
+
+//        System.out.println(storeName);
+//        System.out.println(date);
+//
+//        System.out.println(inputItems);
+//        System.out.println(inputPrices);
+
+        if(!storeName.equals(null))
+        {
+            int len = Math.min(inputItems.size(), inputPrices.size());
+            clean_input_items = new ArrayList<>();
+            clean_input_prices = new ArrayList<>();
+
+            for(int i = 0; i < len; i++){
+                if(!inputItems.get(i).toString().equals("") &&
+                        !inputItems.get(i).toString().toLowerCase().equals("subtotal")
+                        && !inputItems.get(i).toString().toLowerCase().equals("total")
+                        && !inputItems.get(i).toString().toLowerCase().equals("debit")
+                        && !inputItems.get(i).toString().toLowerCase().equals("debit tend")
+                        && !inputItems.get(i).toString().toLowerCase().equals("change")
+                        && !inputItems.get(i).toString().toLowerCase().equals("change due")
+                        && !inputItems.get(i).toString().toLowerCase().equals("debit")
+                        && !inputItems.get(i).toString().toLowerCase().equals("you saved")
+                        && !inputItems.get(i).toString().toLowerCase().equals("tax")
+                        && !inputItems.get(i).toString().toLowerCase().equals("tax 1")
+                        && !inputItems.get(i).toString().toLowerCase().equals("tax 2")
+                        && !inputItems.get(i).toString().toLowerCase().equals("order")
+                        && !inputItems.get(i).toString().toLowerCase().equals("order total")
+                        && !inputItems.get(i).toString().toLowerCase().equals("regular tax")
+                        && !inputItems.get(i).toString().toLowerCase().equals("food tax")
+                        && !inputItems.get(i).toString().toLowerCase().equals("grand total")
+                        && !inputItems.get(i).toString().toLowerCase().equals("payment")
+                        && !inputItems.get(i).toString().toLowerCase().equals("sales")
+                        && !inputItems.get(i).toString().toLowerCase().equals("sale total")
+                        && !inputItems.get(i).toString().toLowerCase().equals("ycu saved")
 
 
-        transactionList.add(step_fart_nee );
-        transactionList.add(john );
-        transactionList.add(steve );
-        transactionList.add(abe );
-        transactionList.add(dita );
-        transactionList.add(jordan );
-        transactionList.add(joshua );
-        transactionList.add(subhash );
-        transactionList.add(biem );
-        transactionList.add(no_name);
+                        )
+                {
+                    clean_input_items.add(inputItems.get(i));
+                }
 
+                if(!String.valueOf(inputPrices.get(i)).equals("")){
+                    clean_input_prices.add(inputPrices.get(i));
+                }
+            }
+
+            int clean_len = Math.min(clean_input_items.size(), clean_input_prices.size());
+
+            for(int i = 0; i < clean_len; i++)
+            {
+                transactionList.add(
+                        new Transaction(
+                                clean_input_items.get(i).toString(),
+                                Float.parseFloat(String.valueOf(clean_input_prices.get(i)))
+                        )
+
+                );
+            }
+
+        }
+
+
+        initRecyclerView();
 
         // take in the context, custom layout that made, arraylist(which is transactionList)
-        TransactionListAdapter adapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
-        listViewItems.setAdapter(adapter);
+        transListAdapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
+        transListAdapter.setRecyclerViewAdapter(nameListAdapter);
 
+        listViewItems.setAdapter(transListAdapter);
 
+        store_restaurant = findViewById(R.id.store_restaurant);
+        store_restaurant.setText(mReceipt.getStoreName());
+
+        store_restaurant.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { openEditStoreNameDialog();} });
 
         Button nextButton = (Button)findViewById(R.id.button_next);
         nextButton.setOnClickListener(new View.OnClickListener() {
@@ -200,64 +158,149 @@ public class TransactionActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openOcrCaptureActivity();
+                finish();
             }
         });
 
-        store_restaurant = findViewById(R.id.store_restaurant);
-        store_restaurant.setText(input_store_name);
 
-        store_restaurant.setOnClickListener(new View.OnClickListener() {
+        Button addButton = (Button)findViewById(R.id.button_add_person);
+        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                openAddPersonDialog();
+            }
+        });
 
-                openEditStoreNameDialog();
+        // Add Item/Price Button
+        Button add_item_price = (Button)findViewById(R.id.button_add_more_item_price);
+        add_item_price.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddItemPriceDialog();
 
             }
         });
 
     }
 
-    public void openEditStoreNameDialog(){
+    public void openAddPersonDialog(){
+
         AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
 
         LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
-        final View dialogView = inflater.inflate(R.layout.store_restaurant_dialog,null);
+
+        final View dialogView = inflater.inflate(R.layout.add_person_dialog,null);
 
         builder.setView(dialogView);
 
-        builder.setTitle("Edit");
-
-        edit_store_restaurant_name = (EditText)dialogView.findViewById(R.id.edit_store_restaurant_name);
-
-        // Set the positive button
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                store_restaurant.setText(edit_store_restaurant_name.getText().toString());
-            }
-        });
-
-        // Set the negative button
-        builder.setNegativeButton("Cancel", null);
-
         // Create the alert dialog
-        AlertDialog dialog = builder.create();
+        final AlertDialog dialog = builder.create();
 
         // Finally, display the alert dialog
         dialog.show();
 
-        // Get the alert dialog buttons reference
-        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        final EditText editText_get_names = (EditText)dialogView.findViewById(R.id.editText_add_name);
+
+        Button keep_adding = (Button)dialogView.findViewById(R.id.button_keep_adding);
+        keep_adding.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                System.out.println("====== Keep adding button clicked!! ========== ");
+                System.out.println(editText_get_names.getText().toString());
+                System.out.println("====== Keep adding button clicked!! ========== ");
 
 
-        // Change the alert dialog buttons text and background color
-        positiveButton.setTextColor(Color.parseColor("#FF0B8B42"));
-        positiveButton.setBackgroundColor(Color.parseColor("#FFE1FCEA"));
+                if(mNames.contains(editText_get_names.getText().toString())) {
 
-        negativeButton.setTextColor(Color.parseColor("#FFFF0400"));
-        negativeButton.setBackgroundColor(Color.parseColor("#FFFCB9B7"));
+                    Toast.makeText(TransactionActivity.this, "Name already exists, please try a different name.", Toast.LENGTH_SHORT).show();
+                }
+                else{
+
+                    mImageUrls.add("");
+                    mNames.add(editText_get_names.getText().toString());
+
+                    Toast.makeText(TransactionActivity.this, editText_get_names.getText().toString() + " added!", Toast.LENGTH_SHORT).show();
+
+                    editText_get_names.setText(null);
+                }
+
+
+            }
+        });
+
+    }
+
+    public void openAddItemPriceDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
+
+        LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
+
+        final View dialogView = inflater.inflate(R.layout.add_or_edit_item_dialog,null);
+
+        builder.setView(dialogView);
+
+        final EditText editText_item_name = (EditText) dialogView.findViewById(R.id.edit_item_name);
+        final EditText editText_item_price = (EditText) dialogView.findViewById(R.id.edit_item_price);
+
+        Button btn_positive = (Button) dialogView.findViewById(R.id.dialog_positive_btn);
+
+        // Create the alert dialog
+        final AlertDialog dialog = builder.create();
+
+        // Set the positive button
+        btn_positive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                System.out.println("Item: **** "+editText_item_name.getText().toString());
+                System.out.println("Price: **** "+editText_item_price.getText().toString());
+
+                transactionList.add(new Transaction(
+                        editText_item_name.getText().toString(),
+                        Float.parseFloat(editText_item_price.getText().toString())
+                        ));
+
+                dialog.dismiss();
+            }
+        });
+
+        // Finally, display the alert dialog
+        dialog.show();
+
+    }
+
+    public void openEditStoreNameDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
+
+        LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
+
+        final View dialogView = inflater.inflate(R.layout.edit_store_name_dialog,null);
+
+        builder.setView(dialogView);
+
+        final EditText edit_store_restaurant_name = (EditText)dialogView.findViewById(R.id.edit_store_name);
+        Button btn_positive = (Button) dialogView.findViewById(R.id.dialog_positive_btn);
+
+        // Create the alert dialog
+        final AlertDialog dialog = builder.create();
+
+
+        // Set positive/yes button click listener
+        btn_positive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                store_restaurant.setText(edit_store_restaurant_name.getText().toString());
+
+                dialog.dismiss();
+            }
+        });
+
+        // Finally, display the alert dialog
+        dialog.show();
 
     }
 
@@ -266,52 +309,45 @@ public class TransactionActivity extends AppCompatActivity {
 
         Log.d(TAG, "initImageBitmaps: preparing bitmaps.");
 
-        mImageUrls.add("");
-        mNames.add("Steve");
+//        mImageUrls.add("");
+//        mNames.add("Steve");
+//
+//        mImageUrls.add("");
+//        mNames.add("Abe");
+//
+//        mImageUrls.add("");
+//        mNames.add("Dita");
+//
+//        mImageUrls.add("");
+//        mNames.add("Alana");
+//
+//        mImageUrls.add("");
+//        mNames.add("Joshua");
+//
+//        mImageUrls.add("");
+//        mNames.add("John");
+//
+//        mImageUrls.add("");
+//        mNames.add("Subhash");
 
-        mImageUrls.add("");
-        mNames.add("Abe");
 
-        mImageUrls.add("");
-        mNames.add("Dita");
-
-        mImageUrls.add("");
-        mNames.add("Alana");
-
-        mImageUrls.add("");
-        mNames.add("Joshua");
-
-        mImageUrls.add("");
-        mNames.add("John");
-
-        mImageUrls.add("");
-        mNames.add("Subhash");
-
-
-        initRecyclerView();
+        //initRecyclerView();
 
     }
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
-
         LinearLayoutManager layoutManager = new LinearLayoutManager( TransactionActivity.this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.horizontal_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mNames, mImageUrls);
-        recyclerView.setAdapter(adapter);
-
+        nameListAdapter = new RecyclerViewAdapter(this, mNames, mImageUrls);
+        recyclerView.setAdapter(nameListAdapter);
 
     }
 
     public void openSummaryActivity() {
         Intent intent = new Intent(this, SummaryActivity.class);
-        startActivity(intent);
-    }
-
-    public void openOcrCaptureActivity(){
-        Intent intent = new Intent(this, OcrCaptureActivity.class);
         startActivity(intent);
     }
 

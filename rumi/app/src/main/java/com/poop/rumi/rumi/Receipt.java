@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Receipt {
+public class Receipt implements Serializable{
 
 
     public final String TAG = "ReceiptClass";
@@ -24,6 +25,8 @@ public class Receipt {
     private String storeName;
 
     private String dateOfCapture;
+
+    private String receiptImagePath;
 
     private ArrayList<String> items;
 
@@ -37,17 +40,15 @@ public class Receipt {
     // include  2 chars (`KF`) at the end of the code
     private final Pattern dgtPttrn = Pattern.compile("[0-9]{12,}");
 
-    private Matcher m;
-
-
-
-    String storeType;
+    private static transient Matcher m = null;
 
     // Passing image file path allows for extracting the date the receipt was captured given the format
     // of the image file path
-     public Receipt() {
+    public Receipt(String imagePath) {
 
-        dateOfCapture = dateToString();
+        this.storeName = " ";
+        this.dateOfCapture = dateToString();
+        this.receiptImagePath = imagePath;
 
         Log.d(TAG, "dateOfCapture = " + dateOfCapture);
 
@@ -89,6 +90,8 @@ public class Receipt {
         boolean chk = false;
 
         // Discarding items with symbols
+
+        LINES:
         for (int idx = 0; idx < lines.size(); ++idx) {
 
             Log.d(TAG, "CHECK = " + (chk? "flipped" : "" ));
@@ -107,10 +110,30 @@ public class Receipt {
 
                 continue;
 
+
+            }
+
+            // Looks for the term "you saved" in the case of publix receipts
+            boolean hasSave = Pattern.compile(Pattern.quote("save"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasSaving = Pattern.compile(Pattern.quote("saving"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasPromotion= Pattern.compile(Pattern.quote("promotion"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasSubtotal= Pattern.compile(Pattern.quote("subtotal"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasTotal= Pattern.compile(Pattern.quote("total"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasDebit= Pattern.compile(Pattern.quote("debit"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasChange= Pattern.compile(Pattern.quote("change"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+            boolean hasTax= Pattern.compile(Pattern.quote("tax"), Pattern.CASE_INSENSITIVE).matcher(str).find();
+
+            if(hasSave || hasSaving || hasPromotion || hasSubtotal || hasTotal || hasDebit || hasChange || hasTax) {
+
+                lines.remove(idx);
+                --idx;
+
+                continue;
             }
 
 //            Log.d(TAG, "AT STRING: " + str);
 
+            int numInts = 0;
             spaces = new ArrayList<>(Arrays.asList(str.split(" ")));
 
             for(int i = 0; i < spaces.size(); i++)
@@ -125,6 +148,15 @@ public class Receipt {
                     spaces.remove(i--);
 
 //                    Log.d(TAG, "FOUND DIGITPTRN: "+ str);
+
+                }
+
+                if(str.matches("[\\d]") && (++numInts > 1))
+                {
+                    lines.remove(idx);
+                    --idx;
+
+                    continue LINES;
 
                 }
 
@@ -145,9 +177,7 @@ public class Receipt {
             str = sb.toString().trim();
 
             if(!str.equals(""))
-                lines.set(idx, str);
-
-            items.add(str);
+                items.add(str);
         }
 
     }
@@ -169,26 +199,37 @@ public class Receipt {
 
             Log.d(TAG, "PRICE WAS: " + str);
 
-            m = dgtPttrn.matcher(str);
+            str = str.replaceAll("[ ]*[0-9]{12,}[ ]*", "")
+                    .replaceAll("[A-Za-z][ ]*[$]", "")
+                    .replaceAll("[A-Za-z]", "");
 
-            if (m.find())
-                str = str.substring(11, str.length());
-
-            // must maintain space after "..A-Z" to get rid of spaces
-            str = str.replaceAll("[$a-zA-Z ]", "");
 
             Log.d(TAG, "STRING BECOMING: " + str);
 
             DecimalFormat df = new DecimalFormat("#.00");
 
-            Float fl = Float.parseFloat(str);
+            Float fl;
+            try {
 
-            df.format(fl);
+                fl = Float.parseFloat(str);
+                df.format(fl);
+                Log.d(TAG, "PRICE IS: " + String.valueOf(fl));
 
-            Log.d(TAG, "PRICE IS: " + String.valueOf(fl));
+                prices.add(fl);
+            }
+            catch (Exception e){
+                Log.w(TAG, "Can't convert passed string to float");
+            }
 
-            prices.add(fl);
+
+
+
         }
+
+    }
+
+    public void finalize(){
+
 
     }
 
@@ -200,10 +241,12 @@ public class Receipt {
         return dateOfCapture;
     }
 
+    public String getReceiptImagePath() { return receiptImagePath; }
+
+
     public ArrayList<String> getItems() {
         return items;
     }
-
 
     public ArrayList<Float> getPrices() {
         return prices;

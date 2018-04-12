@@ -29,20 +29,25 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
-    private ArrayList<String> mImageNames = new ArrayList<>();
-    private ArrayList<String> mImagesURL = new ArrayList<>();
+    private ArrayList<String> mImageNames;
+    private ArrayList<String> mImagesURL;
     private Context mContext;
+
+    private int posOfName;
+    private String lastNameTapped;
 
     public RecyclerViewAdapter(Context mContext, ArrayList<String> mImageNames, ArrayList<String> mImagesURL) {
         this.mImageNames = mImageNames;
         this.mImagesURL = mImagesURL;
         this.mContext = mContext;
+
+        posOfName = -1;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder: called Viewholder!");
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_listitem, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_name_box, parent, false);
 
         return new ViewHolder(view);
 
@@ -63,9 +68,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Clicked on: " + mImageNames.get(position));
-                Toast.makeText(mContext, mImageNames.get(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "NAME " +position+ " " +mImageNames.get(position), Toast.LENGTH_SHORT).show();
+
+
+                // COMEBACK HERE
+                lastNameTapped = mImageNames.get(position);
+                posOfName = position;
             }
         });
+
+
 
     }
 
@@ -86,4 +98,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             parentLayout = itemView.findViewById(R.id.parent_layout);
         }
     }
+
+    public int getPosOfName(){
+        return posOfName;
+    }
+
+    public String getLastNameTapped(){
+        return lastNameTapped;
+    }
+
 }

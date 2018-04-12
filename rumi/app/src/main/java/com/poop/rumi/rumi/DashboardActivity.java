@@ -126,6 +126,7 @@ public class DashboardActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(view.getContext(), OcrCaptureActivity.class));
+                onPause();
             }
         });
 

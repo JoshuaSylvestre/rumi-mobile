@@ -98,7 +98,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        setContentView(R.layout.ocr_capture);
+        setContentView(R.layout.activity_ocr_capture);
 
 
         mPreview = findViewById(R.id.preview);
@@ -220,7 +220,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
     // implemented in Receipt class
     private void startDialogSequence(){
 
-        mReceipt = new Receipt();
+        mReceipt = new Receipt(imagePath);
 
         // Would be nice to highlight words that change. eg, ITEMS, PRICES, etc.
         final String [] promptMsg = {"TAP ON ITEMS PLS AND TAP TICK MARK WHEN FINISHED",
@@ -247,6 +247,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
                     //TODO: Push to next activity(already done by Steve =D )
                     // where are my data homie(Solved)
 
+                    promptDialogStage = 0;
                     openTransactionActivity();
                 }
             }
@@ -257,12 +258,10 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
     public void openTransactionActivity() {
 
-        Intent intent = new Intent(this, TransactionActivity.class);
-        intent.putExtra("DATE", mReceipt.getDateOfCapture().toString());
-        intent.putExtra("ITEMS", mReceipt.getItems());
-        intent.putExtra("PRICES", mReceipt.getPrices());
-        intent.putExtra("STORENAME", mReceipt.getStoreName().toString());
+        mReceipt.finalize();
 
+        Intent intent = new Intent(this, TransactionActivity.class);
+        intent.putExtra("RECEIPT", mReceipt);
         startActivity(intent);
     }
 
@@ -271,7 +270,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
         AlertDialog.Builder builder = new AlertDialog.Builder(OcrCaptureActivity.this);
 
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.custom_alertdialog_view,null);
+        View dialogView = inflater.inflate(R.layout.prompt_user_taps_dialog,null);
 
         // Specify alert dialog is not cancelable/not ignorable
         builder.setCancelable(false);
