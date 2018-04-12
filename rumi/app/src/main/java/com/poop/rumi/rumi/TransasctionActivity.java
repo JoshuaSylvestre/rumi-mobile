@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.poop.rumi.rumi.ocr.OcrCaptureActivity;
 import com.poop.rumi.rumi.ocr.RecyclerViewAdapter;
 import com.poop.rumi.rumi.ocr.Transaction;
 import com.poop.rumi.rumi.ocr.TransactionListAdapter;
@@ -379,11 +378,6 @@ public class TransasctionActivity extends AppCompatActivity {
 
     public void openSummaryActivity() {
         Intent intent = new Intent(this, SummaryActivity.class);
-        startActivity(intent);
-    }
-
-    public void openOcrCaptureActivity(){
-        Intent intent = new Intent(this, OcrCaptureActivity.class);
         startActivity(intent);
     }
 

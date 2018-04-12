@@ -59,12 +59,6 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     int mResource;
     ArrayList<Transaction> arrayList;
 
-    EditText editText_item_name;
-    EditText editText_item_price;
-
-
-
-
 
     public TransactionListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Transaction> objects) {
         super(context, resource, objects);
@@ -100,8 +94,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         // Declare TextView objects:
         // In Main: don't need to call the View, but in here yes: convertView
         final TextView tvItem = (TextView) convertView.findViewById(R.id.textView1);
-        TextView tvNames = (TextView) convertView.findViewById(R.id.textView2);
         final TextView tvPrice = (TextView) convertView.findViewById(R.id.textView3);
+        TextView tvNames = (TextView) convertView.findViewById(R.id.textView2);
 
         LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.parent_layout_item_price);
         linearLayout.setOnClickListener(new View.OnClickListener() {
