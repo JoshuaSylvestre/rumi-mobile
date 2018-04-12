@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context="com.poop.rumi.rumi.TransasctionActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.poop.rumi.rumi.TransasctionActivity"
 
-android:orientation="vertical"
-android:background="#feef"
+    android:orientation="vertical"
+    android:background="#feef"
 
     >
 
@@ -69,6 +68,43 @@ android:background="#feef"
         android:layout_weight="1"
         >
 
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        android:orientation="vertical"
+
+
+        >
+
+        <ListView
+            android:id="@+id/vertical_list_item_price_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+
+        </ListView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_horizontal"
+
+            >
+
+            <Button
+                android:id="@+id/button_add_more_item_price"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="+Add an item"
+
+                />
+
+        </RelativeLayout>
+
+
+        </LinearLayout>
+    
 
     </ListView>
 
