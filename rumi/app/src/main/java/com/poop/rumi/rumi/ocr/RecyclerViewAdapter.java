@@ -5,6 +5,7 @@ package com.poop.rumi.rumi.ocr;
  */
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +37,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private int posOfName;
     private String lastNameTapped;
 
+
     public RecyclerViewAdapter(Context mContext, ArrayList<String> mImageNames, ArrayList<String> mImagesURL) {
         this.mImageNames = mImageNames;
         this.mImagesURL = mImagesURL;
@@ -54,8 +56,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called!");
+
+        boolean[] changeColor = new boolean[mImageNames.size()];
 
         Glide.with(mContext)
                 .asBitmap()
@@ -68,12 +72,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: Clicked on: " + mImageNames.get(position));
+
+
+
                 Toast.makeText(mContext, "NAME " +position+ " " +mImageNames.get(position), Toast.LENGTH_SHORT).show();
 
 
                 // COMEBACK HERE
                 lastNameTapped = mImageNames.get(position);
                 posOfName = position;
+
+
+                holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.WHITE);
+
+
             }
         });
 

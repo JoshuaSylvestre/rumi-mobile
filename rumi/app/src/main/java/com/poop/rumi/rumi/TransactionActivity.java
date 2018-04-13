@@ -1,6 +1,7 @@
 package com.poop.rumi.rumi;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -15,8 +16,13 @@ import java.util.ArrayList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.support.v7.widget.RecyclerView;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -60,6 +66,13 @@ public class TransactionActivity extends AppCompatActivity {
 
 
         ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
+//        listViewItems.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                v.setBackgroundColor(Color.WHITE);
+//                return true;
+//            }
+//        });
 
         // Add transactions to the arraylist: take Transactions objects
         transactionList = new ArrayList<>();
@@ -130,7 +143,7 @@ public class TransactionActivity extends AppCompatActivity {
 
         }
 
-
+        initImageBitmaps();
         initRecyclerView();
 
         // take in the context, custom layout that made, arraylist(which is transactionList)
@@ -309,26 +322,26 @@ public class TransactionActivity extends AppCompatActivity {
 
         Log.d(TAG, "initImageBitmaps: preparing bitmaps.");
 
-//        mImageUrls.add("");
-//        mNames.add("Steve");
-//
-//        mImageUrls.add("");
-//        mNames.add("Abe");
-//
-//        mImageUrls.add("");
-//        mNames.add("Dita");
-//
-//        mImageUrls.add("");
-//        mNames.add("Alana");
-//
-//        mImageUrls.add("");
-//        mNames.add("Joshua");
-//
-//        mImageUrls.add("");
-//        mNames.add("John");
-//
-//        mImageUrls.add("");
-//        mNames.add("Subhash");
+        mImageUrls.add("");
+        mNames.add("Steve");
+
+        mImageUrls.add("");
+        mNames.add("Abe");
+
+        mImageUrls.add("");
+        mNames.add("Dita");
+
+        mImageUrls.add("");
+        mNames.add("Alana");
+
+        mImageUrls.add("");
+        mNames.add("Joshua");
+
+        mImageUrls.add("");
+        mNames.add("John");
+
+        mImageUrls.add("");
+        mNames.add("Subhash");
 
 
         //initRecyclerView();

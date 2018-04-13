@@ -1,75 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="horizontal"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:weightSum="100"
-android:id="@+id/parent_layout_item_price"
-    >
-
-<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_weight="45"
-
-    >
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:gravity="left"
-        android:text="Item"
-        android:textSize="25dp"
-
-        />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="25dp"
-        android:gravity="left"
-        android:text="namesArray"
-        android:textSize="15dp"
-
-        />
-</LinearLayout>
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="60dp"
-    android:layout_weight="55"
+    android:layout_height="match_parent"
     android:weightSum="100"
+    android:id="@+id/parent_layout_item_price"
+
     >
 
-    <TextView
-        android:id="@+id/textView3"
+<!--<LinearLayout-->
+    <!--android:id="@+id/parent_layout_item_plus_names"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:orientation="vertical"-->
+    <!--android:layout_weight="45"-->
+
+    <!--&gt;-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/textView1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="35dp"-->
+        <!--android:gravity="left"-->
+        <!--android:text="Item"-->
+        <!--android:textSize="25dp"-->
+
+        <!--/>-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/textView2"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="25dp"-->
+        <!--android:gravity="left"-->
+        <!--android:text="namesArray"-->
+        <!--android:textSize="15dp"-->
+
+        <!--/>-->
+<!--</LinearLayout>-->
+
+<!--<LinearLayout-->
+    <!--android:id="@+id/parent_layout_price_plus_dotButton"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="60dp"-->
+    <!--android:layout_weight="55"-->
+    <!--android:weightSum="100"-->
+    <!--&gt;-->
+
+    <!--<TextView-->
+        <!--android:id="@+id/textView3"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:gravity="center"-->
+        <!--android:textAlignment="center"-->
+        <!--android:text="$Price"-->
+        <!--android:layout_weight="30"-->
+        <!--android:textSize="25dp"-->
+
+        <!--/>-->
+
+    <!--<Button-->
+        <!--android:id="@+id/threeDotsButton"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:layout_weight="70"-->
+        <!--android:text="..."-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:gravity="center_vertical"-->
+        <!--android:textAlignment="center"-->
+        <!--android:background="#feefeffe"-->
+
+
+        <!--/>-->
+
+<!--</LinearLayout>-->
+
+
+    <!--<LinearLayout-->
+        <!--android:id="@+id/parent_layout_item_plus_names"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical"-->
+        <!--android:layout_weight="45"-->
+
+        <!--&gt;-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/textView1"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="35dp"-->
+            <!--android:gravity="left"-->
+            <!--android:text="Item"-->
+            <!--android:textSize="25dp"-->
+
+            <!--/>-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/textView2"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="25dp"-->
+            <!--android:gravity="left"-->
+            <!--android:text="namesArray"-->
+            <!--android:textSize="15dp"-->
+
+            <!--/>-->
+    <!--</LinearLayout>-->
+
+    <RelativeLayout
+        android:id="@+id/parent_layout_item_plus_names"
+        android:layout_width="595dp"
+        android:layout_height="60dp"
+        android:layout_weight="45"
+
+
+        >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="228dp"
+            android:layout_height="35dp"
+            android:text="Item"
+            android:textSize="25dp"
+
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="106dp"
+            android:layout_height="match_parent"
+
+            android:layout_above="@+id/textView2"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@+id/textView1"
+            android:layout_weight="30"
+            android:gravity="right"
+            android:text="$Price"
+            android:textAlignment="center"
+            android:textSize="25dp"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="228dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:gravity="left"
+
+            android:text="namesArray"
+            android:textSize="15dp"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="35dp" />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/parent_layout_price_plus_dotButton"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:text="$Price"
-        android:layout_weight="30"
-        android:textSize="25dp"
-
-        />
-
-    <Button
-        android:id="@+id/threeDotsButton"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_weight="70"
-        android:text="..."
-        android:layout_gravity="center_vertical"
-        android:gravity="center_vertical"
-        android:textAlignment="center"
-        android:background="#feef"
+        android:layout_weight="55"
+        android:weightSum="100"
+        >
 
 
-        />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/threeDotsButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_weight="70"
+            android:text="..."
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:textAlignment="center"
+            android:background="#feef"
+            android:textStyle="bold"
+            android:textSize="20dp"
+
+            />
+
+    </LinearLayout>
+
+
 
 </LinearLayout>
