@@ -348,6 +348,17 @@ public class TransactionActivity extends AppCompatActivity {
 
     public void openSummaryActivity() {
         Intent intent = new Intent(this, SummaryActivity.class);
+
+        for(int i = 0; i < transactionList.size(); i++){
+            System.out.println(String.valueOf(i)+"item");
+            System.out.println(String.valueOf(i)+"names");
+            System.out.println(String.valueOf(i)+"price");
+            intent.putExtra(String.valueOf(i)+"item" , transactionList.get(i).getItem().toString());
+            intent.putExtra(String.valueOf(i)+"names" , transactionList.get(i).getNames());
+            intent.putExtra(String.valueOf(i)+"price" , transactionList.get(i).getPrice().toString());
+        }
+
+
         startActivity(intent);
     }
 
