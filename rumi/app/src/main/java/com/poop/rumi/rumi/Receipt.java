@@ -44,6 +44,7 @@ public class Receipt implements Serializable{
 
     // Passing image file path allows for extracting the date the receipt was captured given the format
     // of the image file path
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public Receipt(String imagePath) {
 
         this.storeName = " ";
@@ -57,6 +58,7 @@ public class Receipt implements Serializable{
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private String dateToString() {
 
         DateFormat df = new SimpleDateFormat("E MMM dd yyyy");

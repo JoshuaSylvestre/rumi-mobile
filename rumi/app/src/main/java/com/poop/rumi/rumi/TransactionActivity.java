@@ -65,7 +65,7 @@ public class TransactionActivity extends AppCompatActivity {
         Log.d("TEST 2" ,"==============================================");
 
 
-        ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
+        final ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
 //        listViewItems.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
 //            public boolean onTouch(View v, MotionEvent event) {
@@ -371,7 +371,8 @@ public class TransactionActivity extends AppCompatActivity {
             intent.putExtra(String.valueOf(i)+"price" , transactionList.get(i).getPrice().toString());
         }
 
-
+        intent.putExtra("STORE_NAME", mReceipt.getStoreName().toString());
+        
         startActivity(intent);
     }
 

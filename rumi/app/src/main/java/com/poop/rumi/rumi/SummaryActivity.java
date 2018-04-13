@@ -17,10 +17,19 @@ public class SummaryActivity extends AppCompatActivity {
     ArrayList<EachPersonInfor> eachPersonInforArrayList = new ArrayList<>();
     EachPersonInfor mPerson;
 
+    String store_name = new String();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
+
+        store_name = (String)getIntent().getSerializableExtra("STORE_NAME");
+
+
+        System.out.println("Store name: "+store_name);
+
 
         String itemName = new String();
         ArrayList<String> peopleNames = new ArrayList<>();
