@@ -129,7 +129,10 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     if (names.contains(nameListAdapter.getLastNameTapped())) {
 
                         transactionList.get(position).removeName(nameListAdapter.getLastNameTapped());
-                        tvNames.setText(names.toString());
+                        if(names.size() <= 5)
+                            tvNames.setText(names.toString());
+                        else if(names.size() > 5)
+                            tvNames.setText(names.size()+" people shared this");
 
                         // The colors aren't working perfectly because they disappeared after scrolling up or down.
                         // comment out for now, will come back later:
@@ -141,7 +144,12 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     else{
 
                         transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
-                        tvNames.setText(names.toString());
+//                        tvNames.setText(names.toString());
+
+                        if(names.size() <= 5)
+                            tvNames.setText(names.toString());
+                        else if(names.size() > 5)
+                            tvNames.setText(names.size()+" people shared this");
 
                         tvItem.setBackgroundColor(Color.rgb(87,188,150));
                         tvNames.setBackgroundColor(Color.rgb(87,188,150));
