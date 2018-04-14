@@ -360,8 +360,9 @@ public class TransactionActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, SummaryActivity.class);
         intent.putExtra("TRANSACTION", transactionList);
+        intent.putExtra("PARTICIPANTS", mNames);
         intent.putExtra("STORENAME", store_restaurant.getText().toString());
-        //TODO: pass storename and date
+        intent.putExtra("DATE", mReceipt.getDateOfCapture());
         startActivity(intent);
 
     }

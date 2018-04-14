@@ -2,20 +2,27 @@ package com.poop.rumi.rumi;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.poop.rumi.rumi.transaction_classes.Transaction;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class SummaryActivity extends AppCompatActivity {
 
     ArrayList<Transaction> transactionList;
+    ArrayList<String> names;
 
-    ArrayList<ArrayList<String>> people = new ArrayList<>();
-    ArrayList<EachPersonInfor> eachPersonInforArrayList = new ArrayList<>();
-    EachPersonInfor mPerson;
+    ArrayList<ParticipantInfo> participantList;
     String storeName;
-    int numItems = 0;
+
+
+    int numTapped = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,58 +33,59 @@ public class SummaryActivity extends AppCompatActivity {
 
         assert transData != null;
         transactionList = transData.getParcelableArrayList("TRANSACTION");
+        names = transData.getStringArrayList("PARTICIPANTS");
+        storeName = transData.getString("STORENAME");
+        //TODO: get store name and data
 
-        System.out.println("IN SUMMARY");
 
+        participantList = new ArrayList<>();
+        doMath();
+
+
+        Button bt = findViewById(R.id.infoButton);
+        final TextView tv = findViewById(R.id.infoText);
+
+
+        bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (numTapped < participantList.size())
+                    tv.setText(participantList.get(numTapped++).printInfo());
+
+
+            }
+        });
+
+    }
+
+    private void doMath(){
+
+        DecimalFormat df = new DecimalFormat("#.00");
+
+        for(String name: names)
+            participantList.add(new ParticipantInfo(name));
+
+
+        int numParticipants;
+        Float eachPay;
+        ArrayList<String> curNames;
         for(Transaction t : transactionList){
 
-            System.out.println(t.getItem());
-            System.out.println(t.getPrice());
-            System.out.println(t.printNames());
-        }
+            curNames = t.getNames();
 
+            numParticipants = curNames.size();
 
+            eachPay = t.getPrice()/numParticipants;
+            df.format(eachPay);
 
-
-
-
+            for(String name : curNames)
+                for(ParticipantInfo p : participantList)
+                    if(p.getName().equals(name))
+                        p.addItemPrice(t.getItem(), t.getPrice(), eachPay);
+            
     }
 
-    {
 
-//        System.out.println("Store name: "+store_name);}
-//
-//
-//        String itemName = new String();
-//        ArrayList<String> peopleNames = new ArrayList<>();
-//        String itemPrice = new String();
-//
-//
-//        for(int i = 0; i < Integer.MAX_VALUE; i++){
-//            if( (String)getIntent().getSerializableExtra(String.valueOf(i)+"item") == null )
-//            {
-//                numItems = i;
-//                System.out.println("***** num items: "+i);
-//                break;
-//            }
-//            itemName = (String)getIntent().getSerializableExtra( String.valueOf(i)+"item");
-//            peopleNames = (ArrayList<String>)getIntent().getSerializableExtra(String.valueOf(i)+"names");
-//            itemPrice = (String)getIntent().getSerializableExtra(String.valueOf(i)+"price");
-//
-//            transactionArrayList.add(
-//                    new Transaction(itemName, Float.parseFloat(String.valueOf(itemPrice)))
-//            );
-//            people.add(i, peopleNames);
-//            System.out.println("**********************************************");
-//            System.out.println("transactionArrayList getItem: "+transactionArrayList.get(i).getItem());
-//            System.out.println("transactionArrayList getPrice: "+transactionArrayList.get(i).getPrice());
-//            System.out.println("people: "+people.get(i));
-//            System.out.println("**********************************************");
-//        }
-//
-//
-//
-//        // TODO: Loop through these data and put the right items and prices into the right name:
-//        // TODO: Then calculate the number of items, total plus taxes}
-    }
 }
+

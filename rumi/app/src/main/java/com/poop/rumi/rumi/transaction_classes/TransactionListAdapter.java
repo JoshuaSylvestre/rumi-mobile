@@ -118,11 +118,11 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             @Override
             public void onClick(View v) {
 
-                Toast.makeText(mContext, transactionList.get(position).getItem()+", "+transactionList.get(position).getPrice() , Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, transactionList.get(position).getItem()+", "+transactionList.get(position).getPrice() , Toast.LENGTH_SHORT).show();
 
                 if(nameListAdapter.getLastNamePos() != -1) {
 
-                    Toast.makeText(mContext, "Tryna add name: " + nameListAdapter.getLastNameTapped(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(mContext, "Tryna add name: " + nameListAdapter.getLastNameTapped(), Toast.LENGTH_SHORT).show();
 
                     if (names.contains(nameListAdapter.getLastNameTapped())) {
 

@@ -9,7 +9,6 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.io.Serializable;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,7 +116,7 @@ public class Receipt implements Serializable{
 
             }
 
-            // Looks for the term "you saved" in the case of publix receipts
+            // TODO: ideally, have these constructed and initialized under var declerations
             boolean hasSave = Pattern.compile(Pattern.quote("save"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasSaving = Pattern.compile(Pattern.quote("saving"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasPromotion= Pattern.compile(Pattern.quote("promotion"), Pattern.CASE_INSENSITIVE).matcher(str).find();
