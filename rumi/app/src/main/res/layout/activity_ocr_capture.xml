@@ -40,6 +40,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="15dp"
+        android:scaleType="fitCenter"
         android:visibility="visible"
         app:srcCompat="@drawable/cam_icon"
         app:useCompatPadding="true" />
@@ -52,8 +53,10 @@
         android:layout_alignTop="@+id/tickMark"
         android:layout_marginStart="22dp"
         android:background="@android:color/transparent"
+        android:elevation="0dp"
         android:fadingEdge="none"
-        android:visibility="invisible"
+        android:scaleType="fitXY"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/xmark_icon_64" />
@@ -68,7 +71,8 @@
         android:layout_marginEnd="24dp"
         android:background="@android:color/transparent"
         android:fadingEdge="none"
-        android:visibility="invisible"
+        android:visibility="visible"
+        android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/tickmark_icon_64" />
