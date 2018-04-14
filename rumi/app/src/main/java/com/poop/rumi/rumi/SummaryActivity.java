@@ -59,31 +59,34 @@ public class SummaryActivity extends AppCompatActivity {
 
     }
 
-    private void doMath(){
+    private void doMath() {
 
         DecimalFormat df = new DecimalFormat("#.00");
 
-        for(String name: names)
+        for (String name : names)
             participantList.add(new ParticipantInfo(name));
 
 
         int numParticipants;
         Float eachPay;
         ArrayList<String> curNames;
-        for(Transaction t : transactionList){
+        for (Transaction t : transactionList) {
 
             curNames = t.getNames();
 
             numParticipants = curNames.size();
 
-            eachPay = t.getPrice()/numParticipants;
+            eachPay = t.getPrice() / numParticipants;
             df.format(eachPay);
 
-            for(String name : curNames)
-                for(ParticipantInfo p : participantList)
-                    if(p.getName().equals(name))
+            Toast.makeText(this, "ITEM :" + t.getItem() + "<= " + curNames.toString(), Toast.LENGTH_LONG).show();
+
+            for (String name : curNames)
+                for (ParticipantInfo p : participantList)
+                    if (p.getName().equals(name))
                         p.addItemPrice(t.getItem(), t.getPrice(), eachPay);
-            
+
+        }
     }
 
 
