@@ -1,12 +1,14 @@
-package com.poop.rumi.rumi.ocr;
+package com.poop.rumi.rumi.transaction_classes;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import java.util.ArrayList;
 
 /**
  * Created by Steve on 4/10/2018.
  */
 
-public class Transaction {
+public class Transaction implements Parcelable {
 
     private String item;
     private Float price;
@@ -22,6 +24,28 @@ public class Transaction {
         names = new ArrayList<>();
 
     }
+
+    private Transaction(Parcel in) {
+        item = in.readString();
+        if (in.readByte() == 0) {
+            price = null;
+        } else {
+            price = in.readFloat();
+        }
+        names = in.createStringArrayList();
+    }
+
+    public static final Creator<Transaction> CREATOR = new Creator<Transaction>() {
+        @Override
+        public Transaction createFromParcel(Parcel in) {
+            return new Transaction(in);
+        }
+
+        @Override
+        public Transaction[] newArray(int size) {
+            return new Transaction[size];
+        }
+    };
 
     // Alt + Insert/Setter and Getter/Select all to make the constructor
     public ArrayList<String> getNames() {
@@ -65,6 +89,23 @@ public class Transaction {
 
     public void setPrice(Float price) {
         this.price = price;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(item);
+        if (price == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeFloat(price);
+        }
+        dest.writeStringList(names);
     }
 }
 

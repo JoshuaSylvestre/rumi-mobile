@@ -244,11 +244,8 @@ public class OcrCaptureActivity extends AppCompatActivity{
                 {
                     Toast.makeText(OcrCaptureActivity.this, "SCANNING COMPLETE", Toast.LENGTH_SHORT).show();
 
-                    //TODO: Push to next activity(already done by Steve =D )
-                    // where are my data homie(Solved)
-
-                    promptDialogStage = 0;
-                    openTransactionActivity();
+//                    promptDialogStage = 0;
+//                    openTransactionActivity();
                 }
             }
 
@@ -270,7 +267,7 @@ public class OcrCaptureActivity extends AppCompatActivity{
         AlertDialog.Builder builder = new AlertDialog.Builder(OcrCaptureActivity.this);
 
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.prompt_user_taps_dialog,null);
+        View dialogView = inflater.inflate(R.layout.dialog_prompt_user_taps,null);
 
         // Specify alert dialog is not cancelable/not ignorable
         builder.setCancelable(false);
@@ -499,6 +496,9 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
                         Toast.makeText(mPreview.getContext(), mReceipt.getStoreName(), Toast.LENGTH_LONG)
                                 .show();
+
+                        promptDialogStage = 0;
+                        openTransactionActivity();
                     }
 
                     mGraphicOverlay.remove(graphic);

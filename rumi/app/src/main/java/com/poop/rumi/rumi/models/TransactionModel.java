@@ -2,8 +2,6 @@ package com.poop.rumi.rumi.models;
 
 import android.util.Log;
 
-import com.poop.rumi.rumi.ocr.Transaction;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

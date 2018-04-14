@@ -1,4 +1,4 @@
-package com.poop.rumi.rumi.ocr;
+package com.poop.rumi.rumi.transaction_classes;
 
 /**
  * Created by Steve on 4/10/2018.
@@ -10,6 +10,8 @@ package com.poop.rumi.rumi.ocr;
  * Created by Steve on 4/10/2018.
  */
 import com.poop.rumi.rumi.R;
+import com.poop.rumi.rumi.transaction_classes.RecyclerViewAdapter;
+import com.poop.rumi.rumi.transaction_classes.Transaction;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -24,12 +26,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.zip.CheckedOutputStream;
 
 // extrends the ArrayAdapter and pass in a Transaction Object
 //          extends ArrayAdapter<Transaction>
@@ -176,7 +176,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
                 LayoutInflater inflater = LayoutInflater.from(mContext);
 
-                final View dialogView = inflater.inflate(R.layout.add_or_edit_item_dialog,null);
+                final View dialogView = inflater.inflate(R.layout.dialog_add_or_edit_item,null);
 
                 builder.setView(dialogView);
 
@@ -208,6 +208,9 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         tvItem.setText(editText_item_name.getText().toString());
                         tvPrice.setText("$" + editText_item_price.getText().toString());
 
+                        // tryna fix the fact that on re-edit, orig items name appear
+                        editText_item_name.setText(tvItem.getText().toString());
+                        editText_item_price.setText(tvPrice.getText().toString());
 
 
                         dialog.dismiss();

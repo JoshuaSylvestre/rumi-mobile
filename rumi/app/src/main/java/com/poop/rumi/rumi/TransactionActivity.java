@@ -1,13 +1,12 @@
 package com.poop.rumi.rumi;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.poop.rumi.rumi.ocr.RecyclerViewAdapter;
-import com.poop.rumi.rumi.ocr.Transaction;
-import com.poop.rumi.rumi.ocr.TransactionListAdapter;
+import com.poop.rumi.rumi.transaction_classes.RecyclerViewAdapter;
+import com.poop.rumi.rumi.transaction_classes.Transaction;
+import com.poop.rumi.rumi.transaction_classes.TransactionListAdapter;
 
 import android.app.AlertDialog;
 
@@ -16,18 +15,15 @@ import java.util.ArrayList;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.support.v7.widget.RecyclerView;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class TransactionActivity extends AppCompatActivity {
 
@@ -202,7 +198,7 @@ public class TransactionActivity extends AppCompatActivity {
 
         LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
 
-        final View dialogView = inflater.inflate(R.layout.add_person_dialog,null);
+        final View dialogView = inflater.inflate(R.layout.dialog_add_person,null);
 
         builder.setView(dialogView);
 
@@ -250,7 +246,7 @@ public class TransactionActivity extends AppCompatActivity {
 
         LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
 
-        final View dialogView = inflater.inflate(R.layout.add_or_edit_item_dialog,null);
+        final View dialogView = inflater.inflate(R.layout.dialog_add_or_edit_item,null);
 
         builder.setView(dialogView);
 
@@ -290,7 +286,7 @@ public class TransactionActivity extends AppCompatActivity {
 
         LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
 
-        final View dialogView = inflater.inflate(R.layout.edit_store_name_dialog,null);
+        final View dialogView = inflater.inflate(R.layout.dialog_edit_store_name,null);
 
         builder.setView(dialogView);
 
@@ -360,20 +356,13 @@ public class TransactionActivity extends AppCompatActivity {
     }
 
     public void openSummaryActivity() {
+
+
         Intent intent = new Intent(this, SummaryActivity.class);
-
-        for(int i = 0; i < transactionList.size(); i++){
-            System.out.println(String.valueOf(i)+"item");
-            System.out.println(String.valueOf(i)+"names");
-            System.out.println(String.valueOf(i)+"price");
-            intent.putExtra(String.valueOf(i)+"item" , transactionList.get(i).getItem().toString());
-            intent.putExtra(String.valueOf(i)+"names" , transactionList.get(i).getNames());
-            intent.putExtra(String.valueOf(i)+"price" , transactionList.get(i).getPrice().toString());
-        }
-
-        intent.putExtra("STORE_NAME", mReceipt.getStoreName().toString());
-        
+        intent.putExtra("TRANSACTION", transactionList);
+        //TODO: pass storename and date
         startActivity(intent);
+
     }
 
 }
