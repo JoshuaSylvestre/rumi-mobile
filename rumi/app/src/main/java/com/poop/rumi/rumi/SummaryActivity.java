@@ -1,7 +1,6 @@
 package com.poop.rumi.rumi;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.poop.rumi.rumi.transaction_classes.Transaction;
@@ -36,6 +35,7 @@ public class SummaryActivity extends AppCompatActivity {
             System.out.println(t.getPrice());
             System.out.println(t.printNames());
         }
+
 
 
 

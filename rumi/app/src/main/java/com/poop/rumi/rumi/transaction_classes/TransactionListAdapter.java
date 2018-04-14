@@ -10,8 +10,6 @@ package com.poop.rumi.rumi.transaction_classes;
  * Created by Steve on 4/10/2018.
  */
 import com.poop.rumi.rumi.R;
-import com.poop.rumi.rumi.transaction_classes.RecyclerViewAdapter;
-import com.poop.rumi.rumi.transaction_classes.Transaction;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -122,7 +120,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
                 Toast.makeText(mContext, transactionList.get(position).getItem()+", "+transactionList.get(position).getPrice() , Toast.LENGTH_SHORT).show();
 
-                if(nameListAdapter.getPosOfName() != -1) {
+                if(nameListAdapter.getLastNamePos() != -1) {
 
                     Toast.makeText(mContext, "Tryna add name: " + nameListAdapter.getLastNameTapped(), Toast.LENGTH_SHORT).show();
 

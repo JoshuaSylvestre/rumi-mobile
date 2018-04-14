@@ -34,8 +34,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<String> mImagesURL;
     private Context mContext;
 
-    private int posOfName;
+    private int lastNamePos;
     private String lastNameTapped;
+    private ViewHolder lastViewHolder;
+
 
 
     public RecyclerViewAdapter(Context mContext, ArrayList<String> mImageNames, ArrayList<String> mImagesURL) {
@@ -43,7 +45,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mImagesURL = mImagesURL;
         this.mContext = mContext;
 
-        posOfName = -1;
+        lastNamePos = -1;
+        lastViewHolder = null;
     }
 
     @Override
@@ -74,17 +77,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Log.d(TAG, "onClick: Clicked on: " + mImageNames.get(position));
 
 
-
                 Toast.makeText(mContext, "NAME " +position+ " " +mImageNames.get(position), Toast.LENGTH_SHORT).show();
-
-
-                // COMEBACK HERE
-                lastNameTapped = mImageNames.get(position);
-                posOfName = position;
-
 
                 holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.WHITE);
 
+                if(lastViewHolder != null && holder != lastViewHolder)
+                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(87,188,150));
+
+                lastNameTapped = mImageNames.get(position);
+                lastViewHolder = holder;
+                lastNamePos = position;
 
             }
         });
@@ -111,8 +113,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    public int getPosOfName(){
-        return posOfName;
+    public int getLastNamePos(){
+        return lastNamePos;
     }
 
     public String getLastNameTapped(){

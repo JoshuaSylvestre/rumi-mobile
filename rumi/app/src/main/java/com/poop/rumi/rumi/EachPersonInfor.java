@@ -8,10 +8,6 @@ import java.util.ArrayList;
 
 public class EachPersonInfor {
 
-
-
-
-
 //    private String name = "";
 //    private int mNumItems = 0;
 //    private ArrayList<String> mItems = new ArrayList<>();

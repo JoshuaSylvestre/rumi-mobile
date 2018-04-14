@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    tools:context=".TransasctionActivity"
+    tools:context=".TransactionActivity"
     android:background="@color/colorPrimary"
     >
 
@@ -63,7 +63,7 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/edit_item_price"
         android:layout_marginTop="20dp"
-        android:background="@color/colorAccent"
+        android:background="@color/colorPrimary"
         android:text="Save"
         android:textSize="20dp"
         />
