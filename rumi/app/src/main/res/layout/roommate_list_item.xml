@@ -19,7 +19,7 @@
         android:padding="5dp">
 
         <TableRow
-            android:layout_width="match_parent"
+            android:layout_width="112dp"
             android:layout_height="match_parent">
 
             <TextView
@@ -35,9 +35,9 @@
 
             <TextView
                 android:id="@+id/roommate_list_preferred_name"
-                android:layout_width="match_parent"
+                android:layout_width="322dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="left"
                 android:paddingLeft="10dp"
                 android:paddingTop="5dp"
                 android:text="Preferred Name" />
@@ -60,9 +60,9 @@
 
             <TextView
                 android:id="@+id/roommate_list_address"
-                android:layout_width="match_parent"
+                android:layout_width="260dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="left"
                 android:paddingLeft="10dp"
                 android:paddingTop="5dp"
                 android:text="Address" />
@@ -86,7 +86,7 @@
                 android:id="@+id/roommate_list_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="left"
                 android:paddingLeft="10dp"
                 android:paddingTop="5dp"
                 android:text="Email" />
@@ -108,9 +108,9 @@
 
             <TextView
                 android:id="@+id/roommate_list_cell_phone"
-                android:layout_width="match_parent"
+                android:layout_width="241dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="left"
                 android:paddingLeft="10dp"
                 android:paddingTop="5dp"
                 android:text="Cell Phone" />
@@ -134,7 +134,7 @@
                 android:id="@+id/roommate_list_home_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="left"
                 android:paddingLeft="10dp"
                 android:paddingTop="5dp"
                 android:text="Home Phone" />

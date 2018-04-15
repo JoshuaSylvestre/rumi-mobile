@@ -63,9 +63,9 @@
 
     <!-- Strings related to ROUTES -->
     <!-- If server is up -->
-    <!--<string name="base_url">https://rumi-app.herokuapp.com</string>-->
+    <string name="base_url">https://rumi-app.herokuapp.com</string>
     <!-- If server is down, use localhost tag below -->
-    <string name="base_url">http://10.0.2.2:8080</string>
+    <!--<string name="base_url">http://10.0.2.2:8080</string>-->
     <string name="login_url">/login</string>
     <string name="register_url">/register</string>
     <string name="find_user_by_id_url">/get_user_by_id</string>
