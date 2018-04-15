@@ -78,11 +78,7 @@ public class TransactionActivity extends AppCompatActivity {
         ArrayList<String> inputItems = mReceipt.getItems();
         ArrayList<Float> inputPrices = mReceipt.getPrices();
 
-//        System.out.println(storeName);
-//        System.out.println(date);
-//
-//        System.out.println(inputItems);
-//        System.out.println(inputPrices);
+
 
         if(!storeName.equals(null))
         {
@@ -144,13 +140,16 @@ public class TransactionActivity extends AppCompatActivity {
 
         // take in the context, custom layout that made, arraylist(which is transactionList)
         transListAdapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
-        transListAdapter.setRecyclerViewAdapter(nameListAdapter);
-
         listViewItems.setAdapter(transListAdapter);
+
+        // setting up co-dependencies
+        // for sake of highlighting items based on most recently tapped name
+        transListAdapter.setRecyclerViewAdapter(nameListAdapter);
+        nameListAdapter.setTransactionListAdapter(transListAdapter);
+
 
         store_restaurant = findViewById(R.id.store_restaurant);
         store_restaurant.setText(mReceipt.getStoreName());
-
         store_restaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { openEditStoreNameDialog();} });
@@ -362,9 +361,11 @@ public class TransactionActivity extends AppCompatActivity {
         intent.putExtra("TRANSACTION", transactionList);
         intent.putExtra("PARTICIPANTS", mNames);
         intent.putExtra("STORENAME", store_restaurant.getText().toString());
-        intent.putExtra("DATE", mReceipt.getDateOfCapture());
+        //TODO: pass storename and date
         startActivity(intent);
 
     }
+
+
 
 }

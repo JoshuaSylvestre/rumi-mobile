@@ -38,7 +38,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private String lastNameTapped;
     private ViewHolder lastViewHolder;
 
-
+    private TransactionListAdapter transListAdapter;
 
     public RecyclerViewAdapter(Context mContext, ArrayList<String> mImageNames, ArrayList<String> mImagesURL) {
         this.mImageNames = mImageNames;
@@ -58,11 +58,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     }
 
+    public void setTransactionListAdapter(TransactionListAdapter transListAdapter){
+        this.transListAdapter = transListAdapter;
+    }
+
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called!");
 
-        boolean[] changeColor = new boolean[mImageNames.size()];
 
         Glide.with(mContext)
                 .asBitmap()
@@ -74,15 +77,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: Clicked on: " + mImageNames.get(position));
+                //Log.d(TAG, "onClick: Clicked on: " + mImageNames.get(position));
+                //Toast.makeText(mContext, "NAME " +position+ " " +mImageNames.get(position), Toast.LENGTH_SHORT).show();
 
+                // Set to primary color to indicate which participant is selected
+                holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(87,188,150));
 
-                Toast.makeText(mContext, "NAME " +position+ " " +mImageNames.get(position), Toast.LENGTH_SHORT).show();
-
-                holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.WHITE);
-
+                // Set previously selected participant to secondary color
                 if(lastViewHolder != null && holder != lastViewHolder)
-                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(87,188,150));
+                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(238,238,255));
 
                 lastNameTapped = mImageNames.get(position);
                 lastViewHolder = holder;
@@ -120,5 +123,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public String getLastNameTapped(){
         return lastNameTapped;
     }
+
+
 
 }

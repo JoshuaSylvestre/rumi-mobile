@@ -49,6 +49,7 @@ public class Transaction implements Parcelable {
 
     // Alt + Insert/Setter and Getter/Select all to make the constructor
     public ArrayList<String> getNames() {
+
         return names;
     }
 

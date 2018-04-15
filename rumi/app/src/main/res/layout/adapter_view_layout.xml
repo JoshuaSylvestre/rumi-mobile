@@ -7,20 +7,17 @@
     android:layout_height="match_parent"
     android:weightSum="100"
     android:id="@+id/parent_layout_item_price"
-
+    android:background="@color/colorSecondary"
     >
 
     <RelativeLayout
         android:id="@+id/parent_layout_item_plus_names"
         android:layout_width="595dp"
         android:layout_height="60dp"
-        android:layout_weight="45"
-
-
-        >
+        android:layout_weight="45">
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/itemView"
             android:layout_width="228dp"
             android:layout_height="35dp"
             android:text="Item"
@@ -31,13 +28,11 @@
 
 
         <TextView
-            android:id="@+id/textView3"
-            android:layout_width="106dp"
-            android:layout_height="match_parent"
-
-            android:layout_above="@+id/textView2"
-            android:layout_alignParentEnd="true"
-            android:layout_toEndOf="@+id/textView1"
+            android:id="@+id/priceView"
+            android:layout_width="155dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/itemView"
             android:layout_weight="30"
             android:gravity="right"
             android:text="$Price"
@@ -48,7 +43,7 @@
             tools:layout_editor_absoluteY="0dp" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/namesView"
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:layout_alignParentBottom="true"
@@ -61,35 +56,6 @@
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="35dp" />
     </RelativeLayout>
-
-
-    <LinearLayout
-        android:id="@+id/parent_layout_price_plus_dotButton"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_weight="55"
-        android:weightSum="100"
-        >
-
-
-
-        <Button
-            android:id="@+id/threeDotsButton"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_weight="70"
-            android:text="..."
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"
-            android:textAlignment="center"
-            android:background="#feef"
-            android:textStyle="bold"
-            android:textSize="20dp"
-
-            />
-
-    </LinearLayout>
-
 
 
 </LinearLayout>

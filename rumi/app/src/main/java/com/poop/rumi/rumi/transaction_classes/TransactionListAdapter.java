@@ -1,14 +1,6 @@
 package com.poop.rumi.rumi.transaction_classes;
 
-/**
- * Created by Steve on 4/10/2018.
- */
 
-
-
-/**
- * Created by Steve on 4/10/2018.
- */
 import com.poop.rumi.rumi.R;
 
 import android.annotation.SuppressLint;
@@ -24,8 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -57,29 +49,33 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     private static final String TAG = "TransactionListAdapter";
     private Context mContext;
     int mResource;
-    ArrayList<Transaction> transactionList;
 
-    RecyclerViewAdapter nameListAdapter;
+    private ArrayList<Transaction> transactionList;
+    private RecyclerViewAdapter nameListAdapter;
 
-    int size = 0;
-
-
-     TextView tvItem ;
-     TextView tvPrice ;
-     TextView tvNames ;
-
-    LinearLayout linearLayout1;
-    LinearLayout linearLayout2;
-
+    ViewGroup parent;
 
     public TransactionListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Transaction> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
         transactionList =  objects;
-        this.size = objects.size();
     }
 
+
+    public void setRecyclerViewAdapter(RecyclerViewAdapter nameListAdapter){
+
+        this.nameListAdapter = nameListAdapter;
+    }
+
+    public static class ViewHolder{
+
+
+        TextView itemTextView;
+        TextView priceTextView;
+        TextView namesTextView;
+
+    }
 
     // Alt Insert/Override Methods/getView
     // This will get the view and attach it to the listview we have
@@ -92,6 +88,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
+        this.parent = parent;
+        View rowView = convertView;
 
         // Get transaction information
         final String item = getItem(position).getItem();
@@ -99,21 +97,36 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         final Float price = getItem(position).getPrice();
 
 
-        // Create a transaction object to hold these strings
-        Transaction transaction = new Transaction(item, price);
+        if(convertView == null){
 
-        // Create layoutinflatter, take convertView from the getView
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        convertView = inflater.inflate(mResource, parent, false);
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            rowView = inflater.inflate(mResource, parent, false);
 
-        // Declare TextView objects:
-        // In Main: don't need to call the View, but in here yes: convertView
-        final TextView tvItem = (TextView) convertView.findViewById(R.id.textView1);
-        final TextView tvPrice = (TextView) convertView.findViewById(R.id.textView3);
-        final TextView tvNames = (TextView) convertView.findViewById(R.id.textView2);
+            ViewHolder vh = new ViewHolder();
+            vh.itemTextView = rowView.findViewById(R.id.itemView);
+            vh.priceTextView = rowView.findViewById(R.id.priceView);
+            vh.namesTextView = rowView.findViewById(R.id.namesView);
 
-        final LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.parent_layout_item_price);
+            rowView.setTag(vh);
 
+        }
+
+
+        final ViewHolder holder = (ViewHolder) rowView.getTag();
+
+//        // Create layoutinflatter, take convertView from the getView
+//        LayoutInflater inflater = LayoutInflater.from(mContext);
+//        convertView = inflater.inflate(mResource, parent, false);
+//
+//        // Declare TextView objects:
+//        // In Main: don't need to call the View, but in here yes: convertView
+//        final TextView tvItem = (TextView) convertView.findViewById(R.id.textView1);
+//        final TextView tvPrice = (TextView) convertView.findViewById(R.id.textView3);
+//        final TextView tvNames = (TextView) convertView.findViewById(R.id.textView2);
+
+        final LinearLayout linearLayout = (LinearLayout)rowView.findViewById(R.id.parent_layout_item_price);
+
+        final View finalRowView = rowView;
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,31 +140,33 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     if (names.contains(nameListAdapter.getLastNameTapped())) {
 
                         transactionList.get(position).removeName(nameListAdapter.getLastNameTapped());
+                        finalRowView.setBackgroundColor(Color.rgb(238,238,255));
+
                         if(names.size() <= 5)
-                            tvNames.setText(names.toString());
+                            holder.namesTextView.setText(names.toString());
                         else if(names.size() > 5)
-                            tvNames.setText(names.size()+" people shared this");
+                            holder.namesTextView.setText(names.size()+" people shared this");
 
                         // The colors aren't working perfectly because they disappeared after scrolling up or down.
                         // comment out for now, will come back later:
-                        tvItem.setBackgroundColor(Color.rgb(153,204,255));
-                        tvNames.setBackgroundColor(Color.rgb(153,204,255));
-                        tvPrice.setBackgroundColor(Color.rgb(153,204,255));
+//                        tvItem.setBackgroundColor(Color.rgb(153,204,255));
+//                        tvNames.setBackgroundColor(Color.rgb(153,204,255));
+//                        tvPrice.setBackgroundColor(Color.rgb(153,204,255));
 
                     }
                     else{
 
                         transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
-//                        tvNames.setText(names.toString());
+                        finalRowView.setBackgroundColor(Color.rgb(87,188,150));
 
                         if(names.size() <= 5)
-                            tvNames.setText(names.toString());
+                            holder.namesTextView.setText(names.toString());
                         else if(names.size() > 5)
-                            tvNames.setText(names.size()+" people shared this");
+                            holder.namesTextView.setText(names.size()+" people shared this");
 
-                        tvItem.setBackgroundColor(Color.rgb(87,188,150));
-                        tvNames.setBackgroundColor(Color.rgb(87,188,150));
-                        tvPrice.setBackgroundColor(Color.rgb(87,188,150));
+//                        tvItem.setBackgroundColor(Color.rgb(87,188,150));
+//                        tvNames.setBackgroundColor(Color.rgb(87,188,150));
+//                        tvPrice.setBackgroundColor(Color.rgb(87,188,150));
                     }
 
 
@@ -161,14 +176,10 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
             }
         });
 
-
-        Button dotsButton = (Button) convertView.findViewById(R.id.threeDotsButton);
-        dotsButton.setOnClickListener(new View.OnClickListener() {
+        linearLayout.isLongClickable();
+        linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-
-                // TODO: create function for this instead
-                // openEditItemDialog();
+            public boolean onLongClick(View v) {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
@@ -187,13 +198,13 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                 editText_item_name.setText(item);
                 editText_item_price.setText(price.toString());
 
-                Button btn_positive = (Button) dialogView.findViewById(R.id.dialog_positive_btn);
+                Button three_dot_btn = (Button) dialogView.findViewById(R.id.dialog_positive_btn);
 
                 // Create the alert dialog
                 final AlertDialog dialog = builder.create();
 
                 // Set the positive button
-                btn_positive.setOnClickListener(new View.OnClickListener() {
+                three_dot_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
@@ -203,13 +214,12 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         transactionList.get(position).setItem(editText_item_name.getText().toString());
                         transactionList.get(position).setPrice(Float.parseFloat(editText_item_price.getText().toString()));
 
-                        tvItem.setText(editText_item_name.getText().toString());
-                        tvPrice.setText("$" + editText_item_price.getText().toString());
+                        holder.itemTextView.setText(editText_item_name.getText().toString());
+                        holder.priceTextView.setText("$" + editText_item_price.getText().toString());
 
                         // tryna fix the fact that on re-edit, orig items name appear
-                        editText_item_name.setText(tvItem.getText().toString());
-                        editText_item_price.setText(tvPrice.getText().toString());
-
+//                        editText_item_name.setText(tvItem.getText().toString());
+//                        editText_item_price.setText(tvPrice.getText().toString());
 
                         dialog.dismiss();
                     }
@@ -219,26 +229,122 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                 // Finally, display the alert dialog
                 dialog.show();
 
+                return true;
+
             }
         });
 
+//        Button dotsButton = (Button) rowView.findViewById(R.id.threeDotsButton);
+//        dotsButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                // TODO: create function for this instead
+//                // openEditItemDialog();
+//
+//                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+//
+//                LayoutInflater inflater = LayoutInflater.from(mContext);
+//
+//                final View dialogView = inflater.inflate(R.layout.dialog_add_or_edit_item,null);
+//
+//                builder.setView(dialogView);
+//
+//
+//                final EditText editText_item_name = (EditText) dialogView.findViewById(R.id.edit_item_name);
+//                final EditText editText_item_price = (EditText) dialogView.findViewById(R.id.edit_item_price);
+//
+//                editText_item_name.setSelection(editText_item_name.getText().length());
+//
+//                editText_item_name.setText(item);
+//                editText_item_price.setText(price.toString());
+//
+//                Button three_dot_btn = (Button) dialogView.findViewById(R.id.dialog_positive_btn);
+//
+//                // Create the alert dialog
+//                final AlertDialog dialog = builder.create();
+//
+//                // Set the positive button
+//                three_dot_btn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//
+//                        System.out.println("Item Name: "+editText_item_name.getText().toString());
+//                        System.out.println("Price: "+editText_item_price.getText().toString());
+//
+//                        transactionList.get(position).setItem(editText_item_name.getText().toString());
+//                        transactionList.get(position).setPrice(Float.parseFloat(editText_item_price.getText().toString()));
+//
+//                        holder.itemTextView.setText(editText_item_name.getText().toString());
+//                        holder.priceTextView.setText("$" + editText_item_price.getText().toString());
+//
+//                        // tryna fix the fact that on re-edit, orig items name appear
+////                        editText_item_name.setText(tvItem.getText().toString());
+////                        editText_item_price.setText(tvPrice.getText().toString());
+//
+//                        dialog.dismiss();
+//                    }
+//                });
+//
+//
+//                // Finally, display the alert dialog
+//                dialog.show();
+//
+//            }
+//        });
+
 
         // Set the text for the TextView
-        tvItem.setText(item);
-        tvPrice.setText("$" + price.toString());
-        tvNames.setText(names.toString());
+        holder.itemTextView.setText(item);
+        holder.priceTextView.setText("$" + price.toString());
+        holder.namesTextView.setText(names.toString());
 
 
-
-        return convertView;
+        return rowView;
     }
 
-    private void openEditItemDialog() {
+    public void highlightSelectedItems(String name){
+
+
+        ListView lv = parent.findViewById(R.id.vertical_list_item_price_name);
+        View v;
+
+        for(int i = 0; i < transactionList.size(); i++){
+
+            if(transactionList.get(i).getNames().contains(name)){
+
+                v = getViewByPosition(i, lv);
+
+                v.setBackgroundColor(Color.rgb(87,188,150));
+
+            }
+
+        }
+
+
+
+
     }
 
-    public void setRecyclerViewAdapter(RecyclerViewAdapter nameListAdapter){
+    public void undoHighlightedItems(String name){
 
-        this.nameListAdapter = nameListAdapter;
+
+
+
     }
+
+    public View getViewByPosition(int pos, ListView listView) {
+        final int firstListItemPosition = listView.getFirstVisiblePosition();
+        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
+
+        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
+            return listView.getAdapter().getView(pos, null, listView);
+        } else {
+            final int childIndex = pos - firstListItemPosition;
+            return listView.getChildAt(childIndex);
+        }
+    }
+
+
 
 }
