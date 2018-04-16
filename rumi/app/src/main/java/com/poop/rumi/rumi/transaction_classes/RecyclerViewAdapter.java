@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.poop.rumi.rumi.R;
@@ -35,6 +34,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ViewHolder lastViewHolder;
 
     private TransactionListAdapter transListAdapter;
+
+    private final int primaryColor = Color.rgb(87, 188, 150);
+    private final int secondaryColor = Color.rgb(238, 238, 255);
 
     public RecyclerViewAdapter(Context mContext, ArrayList<String> mImageNames, ArrayList<String> mImagesURL) {
         this.mImageNames = mImageNames;
@@ -80,11 +82,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 //Toast.makeText(mContext, "NAME " +position+ " " +mImageNames.get(position), Toast.LENGTH_SHORT).show();
 
                 // Set to primary color to indicate which participant is selected
-                holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(87,188,150));
+                holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(secondaryColor);
 
                 // Set previously selected participant to secondary color and remove all associated highlights
                 if(lastViewHolder != null && holder != lastViewHolder) {
-                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(238, 238, 255));
+                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(primaryColor);
 
                 }
                 lastNameTapped = mImageNames.get(position);

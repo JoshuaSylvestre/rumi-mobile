@@ -49,10 +49,14 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
     private static final String TAG = "TransactionListAdapter";
     private Context mContext;
-    int mResource;
+    private int mResource;
 
     private ArrayList<Transaction> transactionList;
     private RecyclerViewAdapter nameListAdapter;
+
+    private final int primaryColor = Color.rgb(87, 188, 150);
+    private final int secondayColor = Color.rgb(238, 238, 255);
+
 
     ViewGroup parent;
 
@@ -136,7 +140,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     if (names.contains(nameListAdapter.getLastNameTapped())) {
 
                         transactionList.get(position).removeName(nameListAdapter.getLastNameTapped());
-                        finalRowView.setBackgroundColor(Color.rgb(238,238,255));
+                        finalRowView.setBackgroundColor(primaryColor);
 
                         if(names.size() <= 5)
                             holder.namesTextView.setText(names.toString());
@@ -147,7 +151,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     else{
 
                         transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
-                        finalRowView.setBackgroundColor(Color.rgb(87,188,150));
+                        finalRowView.setBackgroundColor(secondayColor);
 
                         if(names.size() <= 5)
                             holder.namesTextView.setText(names.toString());
@@ -227,15 +231,15 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         // Set the text for the TextView
         holder.itemTextView.setText(item);
         holder.priceTextView.setText("$" + price.toString());
-        holder.namesTextView.setText(names.toString());
+        holder.namesTextView.setText(names.size() == 0 ? "" : toString());
 
         if(nameListAdapter.getLastNamePos() != -1){
 
             if(names.contains(nameListAdapter.getLastNameTapped())){
-                rowView.setBackgroundColor(Color.rgb(87, 188, 150));
+                rowView.setBackgroundColor(secondayColor);
             }
             else
-                rowView.setBackgroundColor(Color.rgb(238, 238, 255));
+                rowView.setBackgroundColor(primaryColor);
         }
 
 
@@ -270,14 +274,14 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
 
                     if(childView != null) {
-                        childView.setBackgroundColor(Color.rgb(87, 188, 150));
+                        childView.setBackgroundColor(secondayColor);
                         Log.d("HIGHLIGHT", "ADDING @ pos" + i);
                     }
                 }
                 else{
 
                     if(childView != null) {
-                        childView.setBackgroundColor(Color.rgb(238, 238, 255));
+                        childView.setBackgroundColor(primaryColor);
                         Log.d("HIGHLIGHT", "REMOVING @ pos" + i);
                     }
                 }

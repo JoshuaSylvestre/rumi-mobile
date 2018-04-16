@@ -62,78 +62,97 @@ public class TransactionActivity extends AppCompatActivity {
 
 
         final ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
-//        listViewItems.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                v.setBackgroundColor(Color.WHITE);
-//                return true;
-//            }
-//        });
 
         // Add transactions to the arraylist: take Transactions objects
         transactionList = new ArrayList<>();
 
-        String storeName = mReceipt.getStoreName();
-        String date = mReceipt.getDateOfCapture();
         ArrayList<String> inputItems = mReceipt.getItems();
         ArrayList<Float> inputPrices = mReceipt.getPrices();
 
+        int maxLength = Math.max(mReceipt.getItems().size(), mReceipt.getPrices().size());
 
-
-        if(!storeName.equals(null))
+        String tempStr;
+        Float tempFlt;
+        for(int i = 0; i < maxLength; i++)
         {
-            int len = Math.min(inputItems.size(), inputPrices.size());
-            clean_input_items = new ArrayList<>();
-            clean_input_prices = new ArrayList<>();
 
-            for(int i = 0; i < len; i++){
-
-                String inputItem = inputItems.get(i);
-
-                if(!inputItem.equals("")
-                    && !inputItem.toLowerCase().equals("subtotal")
-                    && !inputItem.toLowerCase().equals("total")
-                    && !inputItem.toLowerCase().equals("debit")
-                    && !inputItem.toLowerCase().equals("debit tend")
-                    && !inputItem.toLowerCase().equals("change")
-                    && !inputItem.toLowerCase().equals("change due")
-                    && !inputItem.toLowerCase().equals("debit")
-                    && !inputItem.toLowerCase().equals("you saved")
-                    && !inputItem.toLowerCase().equals("tax")
-                    && !inputItem.toLowerCase().equals("tax 1")
-                    && !inputItem.toLowerCase().equals("tax 2")
-                    && !inputItem.toLowerCase().equals("order")
-                    && !inputItem.toLowerCase().equals("order total")
-                    && !inputItem.toLowerCase().equals("regular tax")
-                    && !inputItem.toLowerCase().equals("food tax")
-                    && !inputItem.toLowerCase().equals("grand total")
-                    && !inputItem.toLowerCase().equals("payment")
-                    && !inputItem.toLowerCase().equals("sales")
-                    && !inputItem.toLowerCase().equals("sale total")
-                    && !inputItem.toLowerCase().equals("ycu saved"))
-                {
-                    clean_input_items.add(inputItems.get(i));
-                }
-
-                if(!String.valueOf(inputPrices.get(i)).equals("")){
-                    clean_input_prices.add(inputPrices.get(i));
-                }
+            if(i >= inputPrices.size()) {
+                tempStr = inputItems.get(i);
+                tempFlt = 0f;
+            }
+            else if(i >= inputItems.size()){
+                tempStr = "";
+                tempFlt = inputPrices.get(i);
+            }
+            else {
+                tempStr = inputItems.get(i);
+                tempFlt = inputPrices.get(i);
             }
 
-            int clean_len = Math.min(clean_input_items.size(), clean_input_prices.size());
-
-            for(int i = 0; i < clean_len; i++)
-            {
-                transactionList.add(
-                        new Transaction(
-                                clean_input_items.get(i).toString(),
-                                Float.parseFloat(String.valueOf(clean_input_prices.get(i)))
-                        )
-
-                );
-            }
-
+            transactionList.add(new Transaction(tempStr,tempFlt));
         }
+
+        String storeName = mReceipt.getStoreName();
+        String date = mReceipt.getDateOfCapture();
+
+
+
+//        if(!storeName.equals(null))
+//        {
+//            int len = Math.min(inputItems.size(), inputPrices.size());
+//            clean_input_items = new ArrayList<>();
+//            clean_input_prices = new ArrayList<>();
+//
+//            for(int i = 0; i < len; i++){
+//
+//                String inputItem = inputItems.get(i);
+//
+//                if(!inputItem.equals("")
+//                    && !inputItem.toLowerCase().equals("subtotal")
+//                    && !inputItem.toLowerCase().equals("total")
+//                    && !inputItem.toLowerCase().equals("debit")
+//                    && !inputItem.toLowerCase().equals("debit tend")
+//                    && !inputItem.toLowerCase().equals("change")
+//                    && !inputItem.toLowerCase().equals("change due")
+//                    && !inputItem.toLowerCase().equals("debit")
+//                    && !inputItem.toLowerCase().equals("you saved")
+//                    && !inputItem.toLowerCase().equals("tax")
+//                    && !inputItem.toLowerCase().equals("tax 1")
+//                    && !inputItem.toLowerCase().equals("tax 2")
+//                    && !inputItem.toLowerCase().equals("order")
+//                    && !inputItem.toLowerCase().equals("order total")
+//                    && !inputItem.toLowerCase().equals("regular tax")
+//                    && !inputItem.toLowerCase().equals("food tax")
+//                    && !inputItem.toLowerCase().equals("grand total")
+//                    && !inputItem.toLowerCase().equals("payment")
+//                    && !inputItem.toLowerCase().equals("sales")
+//                    && !inputItem.toLowerCase().equals("sale total")
+//                    && !inputItem.toLowerCase().equals("ycu saved"))
+//                {
+//                    clean_input_items.add(inputItems.get(i));
+//                }
+//
+//                if(!String.valueOf(inputPrices.get(i)).equals("")){
+//                    clean_input_prices.add(inputPrices.get(i));
+//                }
+//            }
+//
+//            int clean_len = Math.min(clean_input_items.size(), clean_input_prices.size());
+//
+//            for(int i = 0; i < clean_len; i++)
+//            {
+//                transactionList.add(
+//                        new Transaction(
+//                                clean_input_items.get(i),
+//                                Float.parseFloat(String.valueOf(clean_input_prices.get(i)))
+//                        )
+//
+//                );
+//            }
+//
+//
+//        }
+
 
         initImageBitmaps();
         initRecyclerView();
@@ -262,13 +281,21 @@ public class TransactionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                System.out.println("Item: **** "+editText_item_name.getText().toString());
-                System.out.println("Price: **** "+editText_item_price.getText().toString());
+//                System.out.println("Item: **** "+editText_item_name.getText().toString());
+//                System.out.println("Price: **** "+editText_item_price.getText().toString());
 
-                transactionList.add(new Transaction(
-                        editText_item_name.getText().toString(),
-                        Float.parseFloat(editText_item_price.getText().toString())
-                        ));
+                Transaction t;
+                try{
+
+                    t = new Transaction(
+                            editText_item_name.getText().toString(),
+                            Float.parseFloat(editText_item_price.getText().toString()));
+                }catch(Exception e){
+                    Log.e("InvalidNumber","Can not parse empty float");
+                        return; // Or another exception handling.
+                }
+
+                transactionList.add(t);
 
                 dialog.dismiss();
             }

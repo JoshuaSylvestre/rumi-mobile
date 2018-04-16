@@ -7,13 +7,13 @@
     android:layout_height="match_parent"
     android:weightSum="100"
     android:id="@+id/parent_layout_item_price"
-    android:background="@color/colorSecondary"
+    android:background="@color/colorPrimary"
     >
 
     <RelativeLayout
         android:id="@+id/parent_layout_item_plus_names"
         android:layout_width="595dp"
-        android:layout_height="60dp"
+        android:layout_height="56dp"
         android:layout_weight="45">
 
         <TextView

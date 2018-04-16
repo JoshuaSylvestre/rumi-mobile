@@ -200,14 +200,17 @@ public class Receipt implements Serializable{
 
             str = lines.get(idx);
 
-            Log.d(TAG, "PRICE WAS: " + str);
+            Log.d("PRICECHECK", "PRICE WAS: " + str);
 
             str = str.replaceAll("[ ]*[0-9]{12,}[ ]*", "")
                     .replaceAll("[A-Za-z][ ]*[$]", "")
-                    .replaceAll("[A-Za-z]", "");
+                    .replaceAll("[A-Za-z]", "")
+                    .replaceAll("[$]", "")
+                    .replaceAll("[%]", "")
+                    .replaceAll("[ ]", "");
 
 
-            Log.d(TAG, "STRING BECOMING: " + str);
+            Log.d("PRICECHECK", "PRICE BECOMING: " + str);
 
             DecimalFormat df = new DecimalFormat("#.00");
 
@@ -216,12 +219,13 @@ public class Receipt implements Serializable{
 
                 fl = Float.parseFloat(str);
                 df.format(fl);
-                Log.d(TAG, "PRICE IS: " + String.valueOf(fl));
+                Log.d("PRICECHECK", "PRICE IS: " + String.valueOf(fl));
 
                 prices.add(fl);
             }
             catch (Exception e){
-                Log.w(TAG, "Can't convert passed string to float");
+                Log.w("PRICECHECK", "Can't convert passed string to float");
+
             }
 
 
