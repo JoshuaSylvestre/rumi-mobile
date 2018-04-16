@@ -123,6 +123,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         transactionList.get(position).removeName(nameListAdapter.getLastNameTapped());
                         finalRowView.setBackgroundColor(primaryColor);
 
+                        if(names.size() == 0)
+                            holder.namesTextView.setText("");
                         if(names.size() == 1)
                             holder.namesTextView.setText((names_to_string(names))+" got this");
                         if(names.size() <= 5 && names.size() >= 2)

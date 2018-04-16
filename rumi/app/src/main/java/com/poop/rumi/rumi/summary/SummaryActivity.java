@@ -52,7 +52,7 @@ public class SummaryActivity extends AppCompatActivity {
         //TODO: get store name and data
         participantList = new ArrayList<>();
 
-        doMath(); // .. to fill participantList []
+        tooDeepToGetIntoThis(); // .. to fill participantList []
 
         final ListView listViewItems = (ListView)findViewById(R.id.vertical_list_participation);
 
@@ -88,7 +88,7 @@ public class SummaryActivity extends AppCompatActivity {
 
     }
 
-    private void doMath() {
+    private void tooDeepToGetIntoThis() {
 
         DecimalFormat df = new DecimalFormat("#.00");
 

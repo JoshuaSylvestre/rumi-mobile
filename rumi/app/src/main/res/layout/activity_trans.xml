@@ -18,6 +18,7 @@
         android:layout_height="48dp"
 
         android:orientation="horizontal"
+        android:background="#feef"
 
         >
 
@@ -155,7 +156,10 @@
             android:orientation="horizontal"
             android:paddingTop="5dp"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp">
+            tools:layout_editor_absoluteY="0dp"
+            android:background="#feef"
+
+            >
 
 
         </android.support.v7.widget.RecyclerView>

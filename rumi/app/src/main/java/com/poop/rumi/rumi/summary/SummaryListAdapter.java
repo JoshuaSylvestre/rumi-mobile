@@ -124,10 +124,15 @@ public class SummaryListAdapter extends ArrayAdapter<ParticipantInfo.Participant
         });
 
 
+        // TODO: if there is only one participant: the owed price text view
+        // TODO: will set the $Owed TextView same as the Original Price but with extra one decimal place
+        // TODO: e.g.: $Price: $2.99 $Owed: 2.990
+
+        // String.format("%.2f", owedPrice);
 
         holder.itemTextView.setText(item);
         holder.origPriceTextView.setText("$" + ogPrice.toString());
-        holder.owedPriceTextView.setText("$" + owedPrice.toString());
+        holder.owedPriceTextView.setText("$" + String.format("%.3f", owedPrice).toString());
 
         return rowView;
     }
