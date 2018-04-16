@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="120dp"
     android:padding="10dp"
-    tools:context=".TransactionActivity"
+    tools:context=".transaction.TransactionActivity"
     android:background="@color/colorPrimary"
     >
 

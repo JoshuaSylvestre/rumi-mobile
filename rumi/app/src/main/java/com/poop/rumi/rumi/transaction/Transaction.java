@@ -1,12 +1,9 @@
-package com.poop.rumi.rumi.transaction_classes;
+package com.poop.rumi.rumi.transaction;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import java.util.ArrayList;
 
-/**
- * Created by Steve on 4/10/2018.
- */
 
 public class Transaction implements Parcelable {
 

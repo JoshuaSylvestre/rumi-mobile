@@ -31,7 +31,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.vision.text.TextBlock;
 import com.poop.rumi.rumi.Receipt;
-import com.poop.rumi.rumi.TransactionActivity;
+import com.poop.rumi.rumi.transaction.TransactionActivity;
 import com.poop.rumi.rumi.camera.CameraSource;
 import com.poop.rumi.rumi.camera.CameraSourcePreview;
 import com.poop.rumi.rumi.camera.GraphicOverlay;

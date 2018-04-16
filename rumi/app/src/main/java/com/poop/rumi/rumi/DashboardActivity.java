@@ -34,6 +34,7 @@ import com.poop.rumi.rumi.models.ReceiptModel;
 import com.poop.rumi.rumi.models.RoommateModel;
 import com.poop.rumi.rumi.models.TransactionModel;
 import com.poop.rumi.rumi.ocr.OcrCaptureActivity;
+import com.poop.rumi.rumi.transaction.TransactionActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

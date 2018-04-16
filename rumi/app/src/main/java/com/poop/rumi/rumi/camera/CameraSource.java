@@ -89,10 +89,6 @@ public class CameraSource {
 
     private static final String TAG = "CameraSource";
 
-    //File path that stores image
-    // TODO: final?
-    private static String lastImageFilePath;
-
     /**
      * The dummy surface texture must be assigned a chosen name.  Since we never use an OpenGL
      * context, we can choose any ID we want here.

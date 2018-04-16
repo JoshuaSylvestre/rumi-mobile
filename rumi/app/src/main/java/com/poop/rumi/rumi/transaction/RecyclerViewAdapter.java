@@ -1,4 +1,4 @@
-package com.poop.rumi.rumi.transaction_classes;
+package com.poop.rumi.rumi.transaction;
 
 /**
  * Created by Abe on 4/10/2018.

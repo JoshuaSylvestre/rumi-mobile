@@ -77,7 +77,7 @@ android:label="@string/title_activity_roommate"
 android:theme="@style/AppTheme">
 
 </activity>
-<activity android:name=".TransactionActivity">
+<activity android:name=".transaction.TransactionActivity">
 
 <!-- <intent-filter> -->
 <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -87,7 +87,7 @@ android:theme="@style/AppTheme">
 <!-- </intent-filter> -->
 
 </activity>
-<activity android:name=".SummaryActivity"></activity>
+<activity android:name=".summary.SummaryActivity"></activity>
 </application>
 
 </manifest>

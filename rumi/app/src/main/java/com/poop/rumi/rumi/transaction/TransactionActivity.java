@@ -1,12 +1,12 @@
-package com.poop.rumi.rumi;
+package com.poop.rumi.rumi.transaction;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.poop.rumi.rumi.transaction_classes.RecyclerViewAdapter;
-import com.poop.rumi.rumi.transaction_classes.Transaction;
-import com.poop.rumi.rumi.transaction_classes.TransactionListAdapter;
+import com.poop.rumi.rumi.R;
+import com.poop.rumi.rumi.Receipt;
+import com.poop.rumi.rumi.summary.SummaryActivity;
 
 import android.app.AlertDialog;
 
@@ -22,8 +22,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.T;
 
 public class TransactionActivity extends AppCompatActivity {
 
@@ -60,8 +58,6 @@ public class TransactionActivity extends AppCompatActivity {
         Log.d("TEST 2" ,mReceipt.printPrices());
         Log.d("TEST 2" ,"==============================================");
 
-
-        final ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
 
         // Add transactions to the arraylist: take Transactions objects
         transactionList = new ArrayList<>();
@@ -154,11 +150,13 @@ public class TransactionActivity extends AppCompatActivity {
 //        }
 
 
+        final ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
+
         initImageBitmaps();
         initRecyclerView();
 
         // take in the context, custom layout that made, arraylist(which is transactionList)
-        transListAdapter = new TransactionListAdapter(this, R.layout.adapter_view_layout, transactionList);
+        transListAdapter = new TransactionListAdapter(this, R.layout.layout_transaction_view, transactionList);
         listViewItems.setAdapter(transListAdapter);
 
         // setting up co-dependencies
