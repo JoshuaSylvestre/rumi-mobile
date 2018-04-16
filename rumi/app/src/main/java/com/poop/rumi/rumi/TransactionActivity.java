@@ -237,8 +237,9 @@ public class TransactionActivity extends AppCompatActivity {
                 System.out.println(editText_get_names.getText().toString());
                 System.out.println("====== Keep adding button clicked!! ========== ");
 
-
-                if(mNames.contains(editText_get_names.getText().toString())) {
+                if(editText_get_names.getText().toString().length() >= 7){
+                    Toast.makeText(TransactionActivity.this, "Please limit the name/nickname under 7-letter", Toast.LENGTH_SHORT).show();
+                }else if(mNames.contains(editText_get_names.getText().toString())) {
 
                     Toast.makeText(TransactionActivity.this, "Name already exists, please try a different name.", Toast.LENGTH_SHORT).show();
                 }

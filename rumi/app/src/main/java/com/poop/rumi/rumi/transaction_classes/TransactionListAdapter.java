@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -59,6 +60,8 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
 
     ViewGroup parent;
+
+    String names_toString = "";
 
     public TransactionListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Transaction> objects) {
         super(context, resource, objects);
@@ -118,6 +121,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         final ArrayList<String> names = getItem(position).getNames();
         final Float price = getItem(position).getPrice();
 
+        final String print_names = getItem(position).printNames();
 
         final LinearLayout linearLayout = (LinearLayout)rowView.findViewById(R.id.parent_layout_item_price);
         linearLayout.isLongClickable();
@@ -142,9 +146,12 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         transactionList.get(position).removeName(nameListAdapter.getLastNameTapped());
                         finalRowView.setBackgroundColor(primaryColor);
 
-                        if(names.size() <= 5)
-                            holder.namesTextView.setText(names.toString());
-                        else
+                        if(names.size() == 1)
+                            holder.namesTextView.setText((names_to_string(names))+" got this");
+
+                        if(names.size() <= 5 && names.size() >= 2)
+                            holder.namesTextView.setText((names_to_string(names))+" shared this");
+                        else if(names.size() > 5)
                             holder.namesTextView.setText(names.size()+" people shared this");
 
                     }
@@ -153,9 +160,12 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
                         finalRowView.setBackgroundColor(secondayColor);
 
-                        if(names.size() <= 5)
-                            holder.namesTextView.setText(names.toString());
-                        else
+                        if(names.size() == 1)
+                            holder.namesTextView.setText((names_to_string(names))+" got this");
+
+                        if(names.size() <= 5 && names.size() >= 2)
+                            holder.namesTextView.setText((names_to_string(names)) +" shared this");
+                        else if(names.size() > 5)
                             holder.namesTextView.setText(names.size()+" people shared this");
 
                     }
@@ -228,10 +238,14 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         });
 
 
+
         // Set the text for the TextView
         holder.itemTextView.setText(item);
         holder.priceTextView.setText("$" + price.toString());
         holder.namesTextView.setText(names.size() == 0 ? "" : toString());
+
+
+
 
         if(nameListAdapter.getLastNamePos() != -1){
 
@@ -310,5 +324,23 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     }
 
 
+    public String names_to_string(ArrayList<String> namelist){
+
+        StringBuilder stringBuilder = new StringBuilder();
+        String comma = ", ";
+        String string = "";
+
+        for(String single_name : namelist){
+            if(single_name.equals(namelist.get(namelist.size() - 1))){
+                stringBuilder.append(single_name);
+                continue;
+            }
+            stringBuilder.append(single_name).append(comma);
+        }
+
+        string = stringBuilder.toString();
+
+        return string;
+    }
 
 }

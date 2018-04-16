@@ -25,6 +25,7 @@ public class Transaction implements Parcelable {
 
     }
 
+
     private Transaction(Parcel in) {
         item = in.readString();
         if (in.readByte() == 0) {
@@ -91,6 +92,8 @@ public class Transaction implements Parcelable {
     public void setPrice(Float price) {
         this.price = price;
     }
+
+
 
     @Override
     public int describeContents() {

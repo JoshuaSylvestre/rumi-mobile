@@ -14,7 +14,9 @@
         android:id="@+id/parent_layout_item_plus_names"
         android:layout_width="595dp"
         android:layout_height="56dp"
-        android:layout_weight="45">
+        android:layout_weight="45"
+
+        >
 
         <TextView
             android:id="@+id/itemView"
@@ -24,7 +26,10 @@
             android:textSize="25dp"
 
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
+            tools:layout_editor_absoluteY="0dp"
+            android:textColor="#000000"
+
+            />
 
 
         <TextView
@@ -40,7 +45,11 @@
             android:textSize="25dp"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="228dp"
-            tools:layout_editor_absoluteY="0dp" />
+            tools:layout_editor_absoluteY="0dp"
+
+            android:textColor="#000000"
+
+            />
 
         <TextView
             android:id="@+id/namesView"
@@ -54,7 +63,11 @@
             android:textSize="15dp"
             tools:ignore="MissingConstraints"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="35dp" />
+            tools:layout_editor_absoluteY="35dp"
+
+            android:textColor="#000000"
+
+            />
     </RelativeLayout>
 
 
