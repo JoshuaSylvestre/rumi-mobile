@@ -16,6 +16,7 @@ import com.poop.rumi.rumi.transaction.Transaction;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SummaryActivity extends AppCompatActivity {
 
@@ -36,6 +37,8 @@ public class SummaryActivity extends AppCompatActivity {
 
 
     int numTapped = 0;
+
+    private String share_code = "";
 
 
     @Override
@@ -84,7 +87,7 @@ public class SummaryActivity extends AppCompatActivity {
         });
 
 
-
+        generateSharedCode();
 
     }
 
@@ -134,6 +137,26 @@ public class SummaryActivity extends AppCompatActivity {
         nameListAdapter = new RecyclerViewAdapter(this, names, mImageUrls);
         recyclerView.setAdapter(nameListAdapter);
 
+    }
+
+    protected String getSaltString() {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 6) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
+    }
+
+    public void generateSharedCode(){
+
+        TextView textView = (TextView)findViewById(R.id.share_code);
+        share_code = getSaltString();
+        textView.setText(share_code);
     }
 
 
