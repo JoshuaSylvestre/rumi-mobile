@@ -1,7 +1,7 @@
 package com.poop.rumi.rumi.transaction_classes;
 
 /**
- * Created by Steve on 4/10/2018.
+ * Created by Abe on 4/10/2018.
  */
 
 import android.content.Context;
@@ -22,10 +22,6 @@ import com.poop.rumi.rumi.R;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-/**
- * Created by Steve on 4/10/2018.
- */
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
@@ -58,6 +54,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     }
 
+    /**
+     *  Needed to call highlightRowsAppropriately()
+     */
     public void setTransactionListAdapter(TransactionListAdapter transListAdapter){
         this.transListAdapter = transListAdapter;
     }
@@ -83,16 +82,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 // Set to primary color to indicate which participant is selected
                 holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(87,188,150));
 
-                // Set previously selected participant to secondary color
-                if(lastViewHolder != null && holder != lastViewHolder)
-                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(238,238,255));
+                // Set previously selected participant to secondary color and remove all associated highlights
+                if(lastViewHolder != null && holder != lastViewHolder) {
+                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(Color.rgb(238, 238, 255));
 
+                }
                 lastNameTapped = mImageNames.get(position);
                 lastViewHolder = holder;
                 lastNamePos = position;
 
+                transListAdapter.highlightRowsAppropriately();
+
             }
         });
+
 
 
 

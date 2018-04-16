@@ -35,8 +35,7 @@
         android:layout_marginTop="3dp"
         android:text="Save"
         android:textSize="20dp"
-        android:background="@color/colorPrimary"
-        android:textColor="@color/colorAccent" />
+        android:background="@color/colorPrimary" />
 
 
 </RelativeLayout>

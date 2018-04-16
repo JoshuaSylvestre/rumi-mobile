@@ -87,30 +87,30 @@ public class TransactionActivity extends AppCompatActivity {
             clean_input_prices = new ArrayList<>();
 
             for(int i = 0; i < len; i++){
-                if(!inputItems.get(i).toString().equals("") &&
-                        !inputItems.get(i).toString().toLowerCase().equals("subtotal")
-                        && !inputItems.get(i).toString().toLowerCase().equals("total")
-                        && !inputItems.get(i).toString().toLowerCase().equals("debit")
-                        && !inputItems.get(i).toString().toLowerCase().equals("debit tend")
-                        && !inputItems.get(i).toString().toLowerCase().equals("change")
-                        && !inputItems.get(i).toString().toLowerCase().equals("change due")
-                        && !inputItems.get(i).toString().toLowerCase().equals("debit")
-                        && !inputItems.get(i).toString().toLowerCase().equals("you saved")
-                        && !inputItems.get(i).toString().toLowerCase().equals("tax")
-                        && !inputItems.get(i).toString().toLowerCase().equals("tax 1")
-                        && !inputItems.get(i).toString().toLowerCase().equals("tax 2")
-                        && !inputItems.get(i).toString().toLowerCase().equals("order")
-                        && !inputItems.get(i).toString().toLowerCase().equals("order total")
-                        && !inputItems.get(i).toString().toLowerCase().equals("regular tax")
-                        && !inputItems.get(i).toString().toLowerCase().equals("food tax")
-                        && !inputItems.get(i).toString().toLowerCase().equals("grand total")
-                        && !inputItems.get(i).toString().toLowerCase().equals("payment")
-                        && !inputItems.get(i).toString().toLowerCase().equals("sales")
-                        && !inputItems.get(i).toString().toLowerCase().equals("sale total")
-                        && !inputItems.get(i).toString().toLowerCase().equals("ycu saved")
 
+                String inputItem = inputItems.get(i);
 
-                        )
+                if(!inputItem.equals("")
+                    && !inputItem.toLowerCase().equals("subtotal")
+                    && !inputItem.toLowerCase().equals("total")
+                    && !inputItem.toLowerCase().equals("debit")
+                    && !inputItem.toLowerCase().equals("debit tend")
+                    && !inputItem.toLowerCase().equals("change")
+                    && !inputItem.toLowerCase().equals("change due")
+                    && !inputItem.toLowerCase().equals("debit")
+                    && !inputItem.toLowerCase().equals("you saved")
+                    && !inputItem.toLowerCase().equals("tax")
+                    && !inputItem.toLowerCase().equals("tax 1")
+                    && !inputItem.toLowerCase().equals("tax 2")
+                    && !inputItem.toLowerCase().equals("order")
+                    && !inputItem.toLowerCase().equals("order total")
+                    && !inputItem.toLowerCase().equals("regular tax")
+                    && !inputItem.toLowerCase().equals("food tax")
+                    && !inputItem.toLowerCase().equals("grand total")
+                    && !inputItem.toLowerCase().equals("payment")
+                    && !inputItem.toLowerCase().equals("sales")
+                    && !inputItem.toLowerCase().equals("sale total")
+                    && !inputItem.toLowerCase().equals("ycu saved"))
                 {
                     clean_input_items.add(inputItems.get(i));
                 }
