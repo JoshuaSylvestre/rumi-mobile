@@ -144,7 +144,8 @@
         android:id="@+id/linear_layout_add_splitters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:background="#feef"
+        android:tooltipText="Add Name/Nickname"
         >
 
 
@@ -158,6 +159,7 @@
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="0dp"
             android:background="#feef"
+
 
             >
 
@@ -178,7 +180,6 @@
 
             android:layout_marginTop="5dp"
             android:layout_marginLeft="5dp"
-
             android:background="@drawable/name_round_box"
 
             />
