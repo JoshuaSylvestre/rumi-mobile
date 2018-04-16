@@ -220,7 +220,14 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         // Set the text for the TextView
         holder.itemTextView.setText(item);
         holder.priceTextView.setText("$" + price.toString());
-        holder.namesTextView.setText(names.size() == 0 ? "" : toString());
+        holder.namesTextView.setText(names.size() == 0 ? "" : names_to_string(names));
+
+//        if(names.size() == 0)
+//            holder.namesTextView.setText("");
+//        else
+//            holder.namesTextView.setText(names_to_string(names));
+
+
 
 
 
