@@ -22,29 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-
-// extrends the ArrayAdapter and pass in a Transaction Object
-//          extends ArrayAdapter<Transaction>
-// need a TAG and a Context (dont forget to import them)
-//      import android.content.Context;
-//      import android.widget.ArrayAdapter;
-//
-// get a constructor ALT + INSERT:
-//      use the 5th one: ArrayAdapter(Context, Resource, Object List<T>)
-//      change the List<Tracsaction> to ArrayList<Transaction>
-//      dont forget to import ArrayList class
-// After that the error in MainA go away:
-//      take in the context, custom layout that made, arraylist(which is transactionList)
-//      SummaryListAdapter adapter = new SummaryListAdapter(this, R.layout.adapter_view_layout, transactionList);
-//      listViewItems.setAdapter(adapter);
-// Alt Insert/Override Methods/getView (delete super)
-//      This will get the view and attach it to the listview we have
-// Bring in names, items, prices string
-// Create a transaction object to hold these strings
-// Create LayoutInflater inflater = LayoutInflater.from(mContext);
-// Create a gobal mresource var to use it in a diff. method, dont forget to get it from
-//      SummaryListAdapter           mResource = resource;
-
+x
 
 public class TransactionListAdapter extends ArrayAdapter<Transaction> {
 
@@ -145,18 +123,11 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         transactionList.get(position).removeName(nameListAdapter.getLastNameTapped());
                         finalRowView.setBackgroundColor(primaryColor);
 
-<<<<<<< Updated upstream:rumi/app/src/main/java/com/poop/rumi/rumi/transaction_classes/TransactionListAdapter.java
                         if(names.size() == 1)
                             holder.namesTextView.setText((names_to_string(names))+" got this");
-
                         if(names.size() <= 5 && names.size() >= 2)
                             holder.namesTextView.setText((names_to_string(names))+" shared this");
                         else if(names.size() > 5)
-=======
-                        if(names.size() <= 8)
-                            holder.namesTextView.setText(names.toString());
-                        else
->>>>>>> Stashed changes:rumi/app/src/main/java/com/poop/rumi/rumi/transaction/TransactionListAdapter.java
                             holder.namesTextView.setText(names.size()+" people shared this");
 
                     }
@@ -165,18 +136,12 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                         transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
                         finalRowView.setBackgroundColor(secondayColor);
 
-<<<<<<< Updated upstream:rumi/app/src/main/java/com/poop/rumi/rumi/transaction_classes/TransactionListAdapter.java
                         if(names.size() == 1)
                             holder.namesTextView.setText((names_to_string(names))+" got this");
 
                         if(names.size() <= 5 && names.size() >= 2)
                             holder.namesTextView.setText((names_to_string(names)) +" shared this");
                         else if(names.size() > 5)
-=======
-                        if(names.size() <= 8)
-                            holder.namesTextView.setText(names.toString());
-                        else
->>>>>>> Stashed changes:rumi/app/src/main/java/com/poop/rumi/rumi/transaction/TransactionListAdapter.java
                             holder.namesTextView.setText(names.size()+" people shared this");
 
                     }
