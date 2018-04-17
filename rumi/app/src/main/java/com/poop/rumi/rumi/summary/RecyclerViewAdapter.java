@@ -88,7 +88,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void highLightFirstName() {
 
 
-        parentViewGroup.getChildAt(0).setBackgroundColor(secondaryColor);
+        parentViewGroup.getChildAt(0).setBackgroundColor(primaryColor);
         lastNamePos = 0;
 
 
@@ -102,7 +102,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         if(lastNamePos == -1) {
 
             Log.d("TESTERSS", "SETTING CHILD @ " + position);
-            holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(secondaryColor);
+            holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(primaryColor);
 
             lastNameTapped = mImageNames.get(position);
             lastViewHolder = holder;
