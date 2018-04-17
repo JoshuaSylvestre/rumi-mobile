@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:weightSum="100"
     android:id="@+id/parent_layout_item_price"
-    android:background="@color/colorPrimary"
+    android:background="#feef"
     >
 
     <RelativeLayout

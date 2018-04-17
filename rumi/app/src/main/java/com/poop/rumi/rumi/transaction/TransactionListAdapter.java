@@ -121,7 +121,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     if (names.contains(nameListAdapter.getLastNameTapped())) {
 
                         transactionList.get(position).removeName(nameListAdapter.getLastNameTapped());
-                        finalRowView.setBackgroundColor(primaryColor);
+                        finalRowView.setBackgroundColor(secondayColor);
 
                         if(names.size() == 0)
                             holder.namesTextView.setText("");
@@ -136,7 +136,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                     else{
 
                         transactionList.get(position).addName(nameListAdapter.getLastNameTapped());
-                        finalRowView.setBackgroundColor(secondayColor);
+                        finalRowView.setBackgroundColor(primaryColor);
 
                         if(names.size() == 1)
                             holder.namesTextView.setText((names_to_string(names))+" got this");
@@ -235,10 +235,10 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
         if(nameListAdapter.getLastNamePos() != -1){
 
             if(names.contains(nameListAdapter.getLastNameTapped())){
-                rowView.setBackgroundColor(secondayColor);
+                rowView.setBackgroundColor(primaryColor);
             }
             else
-                rowView.setBackgroundColor(primaryColor);
+                rowView.setBackgroundColor(secondayColor);
         }
 
 
@@ -270,16 +270,16 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
                 childView = getViewByPosition(i, listView);
                 if(transactionList.get(i).getNames().contains(currName)) {
 
-
+                    // show the green on tapped items that belong to a user/name/nickname
                     if(childView != null) {
-                        childView.setBackgroundColor(secondayColor);
+                        childView.setBackgroundColor(primaryColor);
                         Log.d("HIGHLIGHT", "ADDING @ pos" + i);
                     }
                 }
                 else{
-
+                    // When another name is tapped, this one will turn everything back to #feef
                     if(childView != null) {
-                        childView.setBackgroundColor(primaryColor);
+                        childView.setBackgroundColor(Color.rgb(238,238,255));
                         Log.d("HIGHLIGHT", "REMOVING @ pos" + i);
                     }
                 }
