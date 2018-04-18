@@ -82,11 +82,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 //Toast.makeText(mContext, "NAME " +position+ " " +mImageNames.get(position), Toast.LENGTH_SHORT).show();
 
                 // Set to primary color to indicate which participant is selected
-                holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(secondaryColor);
+                holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(primaryColor);
 
                 // Set previously selected participant to secondary color and remove all associated highlights
                 if(lastViewHolder != null && holder != lastViewHolder) {
-                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(primaryColor);
+                    lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(secondaryColor);
 
                 }
                 lastNameTapped = mImageNames.get(position);

@@ -2,7 +2,6 @@ package com.poop.rumi.rumi.summary;
 
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -12,30 +11,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.poop.rumi.rumi.R;
-import com.poop.rumi.rumi.transaction.Transaction;
 
 import java.util.ArrayList;
 
 
 public class SummaryListAdapter extends ArrayAdapter<ParticipantInfo.ParticipantTriad> {
 
-    private static final String TAG = "SummaryListAdapter";
+    private static final String TAG = "summaryListAdapter";
     private Context mContext;
     private int mResource;
 
+
     private ArrayList<ParticipantInfo.ParticipantTriad> participantInfo;
 
-    private ArrayList<Transaction> transactionList;
-    private RecyclerViewAdapter nameListAdapter;
-
-    private ViewGroup parent;
 
 
     private final int primaryColor = Color.rgb(87, 188, 150);
@@ -49,13 +41,6 @@ public class SummaryListAdapter extends ArrayAdapter<ParticipantInfo.Participant
     }
 
 
-    /**
-     *  Needed to call get getLastNamePos() & getLastNameTapped()
-     */
-    public void setRecyclerViewAdapter(RecyclerViewAdapter nameListAdapter){
-        this.nameListAdapter = nameListAdapter;
-    }
-
     public static class ViewHolder{
         TextView itemTextView;
         TextView origPriceTextView;
@@ -67,7 +52,6 @@ public class SummaryListAdapter extends ArrayAdapter<ParticipantInfo.Participant
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        this.parent = parent;
         View rowView = convertView;
 
         if(convertView == null){

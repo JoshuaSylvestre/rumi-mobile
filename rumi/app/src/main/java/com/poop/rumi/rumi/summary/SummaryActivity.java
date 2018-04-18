@@ -1,5 +1,6 @@
 package com.poop.rumi.rumi.summary;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,26 +17,31 @@ import com.poop.rumi.rumi.transaction.Transaction;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SummaryActivity extends AppCompatActivity {
 
     private final String TAG = "SummaryActivity";
 
+    // Adapters
     private RecyclerViewAdapter nameListAdapter;
     private SummaryListAdapter summaryListAdapter;
+
+    //
+    private ArrayList<Transaction> transactionList;
     private ArrayList<ParticipantInfo> participantList;
 
+    //
     private ArrayList<String> names;
     private ArrayList<String> mImageUrls = new ArrayList<>();
-
-
-    private ArrayList<Transaction> transactionList;
 
 
     private String storeName;
 
 
     int numTapped = 0;
+
+    private String share_code;
 
 
     @Override
@@ -63,10 +69,11 @@ public class SummaryActivity extends AppCompatActivity {
         summaryListAdapter = new SummaryListAdapter(this, R.layout.layout_participation_view, participantList.get(0).getTriadList());
         listViewItems.setAdapter(summaryListAdapter);
 
-        // setting up co-dependencies
-        // for sake of highlighting items based on most recently tapped name
-        summaryListAdapter.setRecyclerViewAdapter(nameListAdapter);
-        nameListAdapter.setTransactionListAdapter(summaryListAdapter);
+        nameListAdapter.passSummaryData(summaryListAdapter, participantList, listViewItems);
+
+
+
+
 
         Button nextButton = (Button)findViewById(R.id.button_next);
         nextButton.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +91,7 @@ public class SummaryActivity extends AppCompatActivity {
         });
 
 
-
+        generateSharedCode();
 
     }
 
@@ -128,12 +135,37 @@ public class SummaryActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager( SummaryActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager( SummaryActivity.this,
+                LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.horizontal_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
         nameListAdapter = new RecyclerViewAdapter(this, names, mImageUrls);
         recyclerView.setAdapter(nameListAdapter);
 
+        // highlighting first element of names
+//        layoutManager.findViewByPosition(0).setBackgroundColor(Color.rgb(238, 238, 255));
+
+
+    }
+
+    protected String getSaltString() {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 6) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
+    }
+
+    public void generateSharedCode(){
+
+        TextView textView = (TextView)findViewById(R.id.share_code);
+        share_code = getSaltString();
+        textView.setText(share_code);
     }
 
 

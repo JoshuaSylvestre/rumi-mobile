@@ -84,6 +84,7 @@ public class ParticipantInfo {
         Float OgPrice;
         Float OwedPrice;
 
+
         ParticipantTriad(String item, Float ogprice, Float owedprice){
 
             this.Item = item;
