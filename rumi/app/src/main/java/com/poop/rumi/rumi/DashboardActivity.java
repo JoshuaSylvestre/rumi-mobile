@@ -196,6 +196,8 @@ public class DashboardActivity extends AppCompatActivity
 
         if (id == R.id.nav_scan)
         {
+            Intent getOCRActivity = new Intent(getApplicationContext(), OcrCaptureActivity.class);
+            startActivity(getOCRActivity);
             // Handle the camera action
         }
         else if (id == R.id.nav_roommates)

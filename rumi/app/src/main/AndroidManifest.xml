@@ -56,14 +56,12 @@
             android:label="@string/ocr_activity_main"
             android:parentActivityName=".DashboardActivity">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
-
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
+
         <activity
             android:name=".MainActivity"
             android:label="rumi">
@@ -73,10 +71,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".RoommateActivity"
             android:label="@string/title_activity_roommate"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme">
+
+        </activity>
+
         <activity android:name=".transaction.TransactionActivity">
 
             <!-- <intent-filter> -->
@@ -87,6 +89,7 @@
             <!-- </intent-filter> -->
 
         </activity>
+
         <activity android:name=".summary.SummaryActivity" />
         <activity android:name=".RoommateSearchResultsActivity"></activity>
     </application>
