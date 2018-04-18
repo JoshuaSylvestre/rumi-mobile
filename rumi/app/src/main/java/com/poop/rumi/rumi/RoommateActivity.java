@@ -1,44 +1,32 @@
 package com.poop.rumi.rumi;
 
-import android.app.DialogFragment;
-import android.database.DataSetObserver;
-import android.net.sip.SipSession;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.fasterxml.jackson.databind.ser.Serializers;
-import com.poop.rumi.rumi.fragments.AddRoommateFragment;
+import com.poop.rumi.rumi.fragments.SearchRoommateFragment;
 import com.poop.rumi.rumi.models.UserModel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,17 +47,7 @@ public class RoommateActivity extends AppCompatActivity {
     private RecyclerView roommateRecyclerView;
     private boolean success = false;
 
-    // User info mapping
-    public static String NAME = "name";
-    public static String FIRST_NAME = "firstName";
-    public static String LAST_NAME = "lastName";
-    public static String PREFERRED_NAME = "preferredName";
-    public static String ADDRESS = "address";
-    public static String EMAIL = "email";
-    public static String HOME_PHONE = "homePhone";
-    public static String CELL_PHONE = "cellPhone";
-
-    private AddRoommateFragment addRoommateFragment;
+    private SearchRoommateFragment searchRoommateFragment;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -82,10 +60,11 @@ public class RoommateActivity extends AppCompatActivity {
         currUser = getIntent().getStringExtra("user");
 
         View contentRoommateView = findViewById(R.id.content_roommate_layout);
+
         roommateRecyclerView = contentRoommateView.findViewById(R.id.roommate_recycler_view);
         roommateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        roommateListAdapter = new RoommateRecycleViewAdapter(getApplicationContext(), roommateArrayList);
+        roommateListAdapter = new RoommateRecycleViewAdapter(this, roommateArrayList, currUserToken);
 
         // Set list of roommates to the view in UI
         roommateRecyclerView.setAdapter(roommateListAdapter);
@@ -93,24 +72,35 @@ public class RoommateActivity extends AppCompatActivity {
         (new RoommateTask()).execute((Void) null);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Roommates");
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_roommate_button);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addRoommateFragment = new AddRoommateFragment();
+                searchRoommateFragment = new SearchRoommateFragment();
                 Bundle args = new Bundle();
                 args.putString("user", currUser);
                 args.putString("token", currUserToken);
-                addRoommateFragment.setArguments(args);
+                searchRoommateFragment.setArguments(args);
 
-                addRoommateFragment.show(getFragmentManager(), "Add Roommate Fragment");
+                searchRoommateFragment.show(getFragmentManager(), "Search Roommate Fragment");
             }
         });
     }
 
-    protected void makeListRequest() {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == SearchRoommateFragment.SEARCH_REQUEST_CODE) {
+            if(resultCode == Activity.RESULT_OK) {
+                finish();
+                startActivity(getIntent());
+            }
+        }
+    }
+
+    public void makeListRequest() {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, roommateListUrl,
                 new Response.Listener<JSONObject>() {
 
@@ -121,6 +111,7 @@ public class RoommateActivity extends AppCompatActivity {
 //                        responseJSON = response;
                         try {
                             roommateList = response.getJSONArray("roommates");
+                            roommateArrayList.clear();
 
                             int numRoommates = roommateList.length();
 
@@ -129,6 +120,7 @@ public class RoommateActivity extends AppCompatActivity {
                                     JSONObject currJSON = roommateList.getJSONObject(i);
                                     UserModel userModel = new UserModel(currJSON);
                                     roommateArrayList.add(userModel);
+                                    roommateListAdapter.notifyDataSetChanged();
 
                                 } catch (Exception ex) {
                                     Log.e("ROOMMATES", "Cannot get roommates");

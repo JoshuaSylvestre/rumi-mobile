@@ -9,7 +9,7 @@
     </style>
 
     <style name="TextLabel" parent="TextAppearance.AppCompat">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColorHint">@color/colorAccentDark</item>
         <item name="colorAccent">@color/colorAccentDark</item>
     </style>
@@ -18,6 +18,11 @@
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:color">@color/colorAccent</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="EditTextStyleDark" parent="@android:style/Widget.EditText">
+        <item name="android:textColorHint">@color/colorLightGrey</item>
+        <item name="colorPrimary">@color/colorLightGrey</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

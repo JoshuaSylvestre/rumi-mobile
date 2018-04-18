@@ -46,7 +46,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.4.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
-    implementation files('/Users/dita/Downloads/json-simple-1.1.1.jar')
+//    implementation files('/Users/dita/Downloads/json-simple-1.1.1.jar')
 }
 
 //apply plugin: 'com.google.gms.google-services'

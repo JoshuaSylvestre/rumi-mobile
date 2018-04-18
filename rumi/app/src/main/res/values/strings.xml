@@ -70,7 +70,10 @@
     <string name="register_url">/register</string>
     <string name="find_user_by_id_url">/get_user_by_id</string>
     <string name="roommate_list_url">/user/roommates</string>
-    <string name="roommate_add_url">/user/friends/add</string>
+    <string name="find_users_url">/user/roommates/find</string>
+    <string name="roommate_add_url">/user/roommates/add</string>
+    <string name="roommate_delete_url">/user/roommates/delete</string>
+    <string name="roommate_add_static_url">/user/roommates/add/static</string>
     <string name="change_password_url">/user/setting/changepassword</string>
     <!-- Only exists on dev branch of rumi-web -->
     <string name="dashboard_url">/user/dashboard_mobile</string>

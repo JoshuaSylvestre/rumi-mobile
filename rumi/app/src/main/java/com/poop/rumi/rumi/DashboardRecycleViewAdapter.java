@@ -102,7 +102,7 @@ public class DashboardRecycleViewAdapter extends RecyclerView.Adapter<DashboardR
             this.subtitle = (TextView) view.findViewById(R.id.subtitle);
             this.desc = (TextView) view.findViewById(R.id.desc);
             this.desc2 = (TextView) view.findViewById(R.id.desc2);
-
+            view.findViewById(R.id.button).setVisibility(View.GONE);
         }
     }
 }

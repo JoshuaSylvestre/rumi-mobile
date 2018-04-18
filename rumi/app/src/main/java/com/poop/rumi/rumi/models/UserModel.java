@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 public class UserModel {
 
+    public String id;
     public String name;
     public String username;
     public String email;
@@ -30,6 +31,7 @@ public class UserModel {
             this.name = json.getString("name");
             this.email = json.getString("email");
             this.isRegistered = json.getBoolean("isRegistered");
+            this.id = json.getString("_id");
 
             if(this.isRegistered) {
                 this.username = json.getString("username");
