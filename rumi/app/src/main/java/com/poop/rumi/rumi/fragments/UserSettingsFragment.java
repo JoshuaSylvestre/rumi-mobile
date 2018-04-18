@@ -64,7 +64,7 @@ public class UserSettingsFragment extends DialogFragment {
 
         String currUser = getArguments().getString("user");
         currUserToken = getArguments().getString("token");
-        requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue = Volley.newRequestQueue(getActivity());
 
         try {
             currUserJSON = new JSONObject(currUser);

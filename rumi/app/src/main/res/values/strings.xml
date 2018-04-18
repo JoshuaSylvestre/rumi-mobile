@@ -69,14 +69,14 @@
     <string name="login_url">/login</string>
     <string name="register_url">/register</string>
     <string name="find_user_by_id_url">/get_user_by_id</string>
-    <string name="roommate_list_url">/user/friends</string>
+    <string name="roommate_list_url">/user/roommates</string>
     <string name="roommate_add_url">/user/friends/add</string>
     <string name="change_password_url">/user/setting/changepassword</string>
     <!-- Only exists on dev branch of rumi-web -->
     <string name="dashboard_url">/user/dashboard_mobile</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="add_roommate">Add roommate</string>
+    <string name="search_users">Search users</string>
     <string name="cancel">Cancel</string>
 
 </resources>

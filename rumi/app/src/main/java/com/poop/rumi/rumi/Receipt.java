@@ -1,14 +1,13 @@
 package com.poop.rumi.rumi;
 
 
-import android.icu.text.DateFormat;
-import android.icu.text.SimpleDateFormat;
-import android.icu.util.Calendar;
+import java.text.DateFormat;
+import java.util.Calendar;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;

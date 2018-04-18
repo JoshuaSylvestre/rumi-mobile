@@ -1,13 +1,7 @@
 package com.poop.rumi.rumi;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,15 +15,13 @@ import com.poop.rumi.rumi.models.ReceiptModel;
 import com.poop.rumi.rumi.models.RoommateModel;
 import com.poop.rumi.rumi.models.TransactionModel;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
-public class RecycleViewAdapter extends RecyclerView.Adapter<RecycleViewAdapter.CustomViewHolder> {
+public class DashboardRecycleViewAdapter extends RecyclerView.Adapter<DashboardRecycleViewAdapter.CustomViewHolder> {
     private List<DashboardContentModel> dashboardList;
     private Context mContext;
 
-    public RecycleViewAdapter(Context context, List<DashboardContentModel> dashboardList) {
+    public DashboardRecycleViewAdapter(Context context, List<DashboardContentModel> dashboardList) {
         this.dashboardList = dashboardList;
         this.mContext = context;
     }

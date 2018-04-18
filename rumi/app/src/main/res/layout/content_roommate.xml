@@ -10,8 +10,9 @@
     tools:context="com.poop.rumi.rumi.RoommateActivity"
     tools:showIn="@layout/activity_roommate">
 
-    <ListView
-        android:id="@+id/roommate_list_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/roommate_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
 </android.support.constraint.ConstraintLayout>

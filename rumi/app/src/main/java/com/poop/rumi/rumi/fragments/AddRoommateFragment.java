@@ -44,13 +44,7 @@ import java.util.Map;
 
 public class AddRoommateFragment extends DialogFragment {
 
-    private EditText mFirstName;
-    private EditText mLastName;
-    private EditText mPreferredName;
-    private EditText mEmail;
-    private EditText mAddress;
-    private EditText mHomePhone;
-    private EditText mCellPhone;
+    private EditText searchQuery;
 
     private View dialogView;
 
@@ -59,7 +53,7 @@ public class AddRoommateFragment extends DialogFragment {
     private RequestQueue requestQueue;
     private AlertDialog alertDialog;
 
-    HashMap<String, String> newRoommateMap;
+//    HashMap<String, String> newRoommateMap;
     private OnCompleteListener mListener;
 
     @Override
@@ -71,7 +65,7 @@ public class AddRoommateFragment extends DialogFragment {
 
         String currUser = getArguments().getString("user");
         currUserToken = getArguments().getString("token");
-        requestQueue = Volley.newRequestQueue(getContext());
+        requestQueue = Volley.newRequestQueue(getActivity());
 
         try {
             currUserJSON = new JSONObject(currUser);
@@ -79,21 +73,15 @@ public class AddRoommateFragment extends DialogFragment {
             Log.e("ADD-ROOMMATE", "Cannot create user JSON");
         }
 
-        mFirstName = dialogView.findViewById(R.id.add_roommate_first_name);
-        mLastName = dialogView.findViewById(R.id.add_roommate_last_name);
-        mPreferredName = dialogView.findViewById(R.id.add_roommate_preferred_name);
-        mEmail = dialogView.findViewById(R.id.add_roommate_email);
-        mAddress = dialogView.findViewById(R.id.add_roommate_address);
-        mHomePhone = dialogView.findViewById(R.id.add_roommate_home_phone);
-        mCellPhone = dialogView.findViewById(R.id.add_roommate_cell_phone);
+        searchQuery = dialogView.findViewById(R.id.search_roommate);
 
-        builder.setPositiveButton(R.string.add_roommate, null);
-        builder.setTitle("Add Roommate");
+        builder.setPositiveButton(R.string.search_users, null);
+        builder.setTitle("Search Users");
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(dialogView)
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNeutralButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         AddRoommateFragment.this.getDialog().cancel();
                     }
@@ -104,14 +92,14 @@ public class AddRoommateFragment extends DialogFragment {
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
+                alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(Color.WHITE);
                 alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.BLACK);
 
                 Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 positiveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        addRoommate();
+                        searchRoommates();
                     }
                 });
             }
@@ -120,24 +108,25 @@ public class AddRoommateFragment extends DialogFragment {
         return alertDialog;
     }
 
-    private void addRoommate() {
+    private void searchRoommates() {
         String roommateAddUrl = getString(R.string.base_url) + getString(R.string.roommate_add_url);
         JSONObject params = new JSONObject();
 
         try {
-            params.put(RoommateActivity.FIRST_NAME, mFirstName.getText().toString());
-            params.put(RoommateActivity.LAST_NAME, mLastName.getText().toString());
-            params.put(RoommateActivity.PREFERRED_NAME, mPreferredName.getText().toString());
-            params.put(RoommateActivity.ADDRESS, mAddress.getText().toString());
-            params.put(RoommateActivity.EMAIL, mEmail.getText().toString());
-            params.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
-            params.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
+//            params.put(RoommateActivity.FIRST_NAME, mFirstName.getText().toString());
+//            params.put(RoommateActivity.LAST_NAME, mLastName.getText().toString());
+//            params.put(RoommateActivity.PREFERRED_NAME, mPreferredName.getText().toString());
+//            params.put(RoommateActivity.ADDRESS, mAddress.getText().toString());
+//            params.put(RoommateActivity.EMAIL, mEmail.getText().toString());
+//            params.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
+//            params.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
             params.put("date", (new SimpleDateFormat("EEE MMM dd YYYY", Locale.US)).format(new Date()));
             params.put("user_id", currUserJSON.getString("id"));
+
         } catch(Exception ex) {
             Log.e("ADD-ROOMMATE", "Cannot create request params");
 
-            MessagePopups.showToast(AddRoommateFragment.this.getContext(), "Failed adding new roommate.");
+            MessagePopups.showToast(getActivity(), "Failed adding new roommate.");
 
             return;
         }
@@ -154,14 +143,15 @@ public class AddRoommateFragment extends DialogFragment {
                             boolean success = response.getBoolean("success");
 
                             if(success) {
-                                newRoommateMap = new HashMap<>();
-                                newRoommateMap.put(RoommateActivity.NAME, mFirstName.getText().toString() + " " + mLastName.getText().toString());
-                                newRoommateMap.put(RoommateActivity.PREFERRED_NAME, mPreferredName.getText().toString());
-                                newRoommateMap.put(RoommateActivity.ADDRESS, mAddress.getText().toString());
-                                newRoommateMap.put(RoommateActivity.EMAIL, mAddress.getText().toString());
-                                newRoommateMap.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
-                                newRoommateMap.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
-                                mListener.onComplete(newRoommateMap);
+//                                newRoommateMap = new HashMap<>();
+//                                newRoommateMap.put(RoommateActivity.NAME, mFirstName.getText().toString() + " " + mLastName.getText().toString());
+//                                newRoommateMap.put(RoommateActivity.PREFERRED_NAME, mPreferredName.getText().toString());
+//                                newRoommateMap.put(RoommateActivity.ADDRESS, mAddress.getText().toString());
+//                                newRoommateMap.put(RoommateActivity.EMAIL, mAddress.getText().toString());
+//                                newRoommateMap.put(RoommateActivity.HOME_PHONE, mHomePhone.getText().toString());
+//                                newRoommateMap.put(RoommateActivity.CELL_PHONE, mCellPhone.getText().toString());
+//                                mListener.onComplete(newRoommateMap);
+
                                 MessagePopups.showToast(AddRoommateFragment.this.getContext(), "Added new roommate!");
                                 AddRoommateFragment.this.getDialog().cancel();
                             }

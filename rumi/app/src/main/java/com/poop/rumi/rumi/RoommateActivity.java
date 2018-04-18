@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -30,6 +33,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.poop.rumi.rumi.fragments.AddRoommateFragment;
+import com.poop.rumi.rumi.models.UserModel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,7 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RoommateActivity extends AppCompatActivity implements AddRoommateFragment.OnCompleteListener{
+public class RoommateActivity extends AppCompatActivity {
 
     private String roommateListUrl;
     private String currUserToken;
@@ -50,8 +54,10 @@ public class RoommateActivity extends AppCompatActivity implements AddRoommateFr
     private JSONArray roommateList;
 
     private ListView contentRoommateListView;
-    private List<HashMap<String, String>> roommateArrayList = new ArrayList<>();
-    private ListAdapter roommateListAdapter;
+    private List<UserModel> roommateArrayList = new ArrayList<>();
+    private RoommateRecycleViewAdapter roommateListAdapter;
+    private RecyclerView roommateRecyclerView;
+    private boolean success = false;
 
     // User info mapping
     public static String NAME = "name";
@@ -76,19 +82,15 @@ public class RoommateActivity extends AppCompatActivity implements AddRoommateFr
         currUser = getIntent().getStringExtra("user");
 
         View contentRoommateView = findViewById(R.id.content_roommate_layout);
-        contentRoommateListView = contentRoommateView.findViewById(R.id.roommate_list_view);
+        roommateRecyclerView = contentRoommateView.findViewById(R.id.roommate_recycler_view);
+        roommateRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Map user info to the correct TextView item in UI
-        roommateListAdapter = new SimpleAdapter(this, roommateArrayList, R.layout.roommate_list_item,
-                new String[] {NAME, PREFERRED_NAME, ADDRESS, EMAIL, CELL_PHONE, HOME_PHONE},
-                new int[] {R.id.roommate_list_name, R.id.roommate_list_preferred_name, R.id.roommate_list_address,
-                        R.id.roommate_list_email, R.id.roommate_list_cell_phone, R.id.roommate_list_home_phone});
+        roommateListAdapter = new RoommateRecycleViewAdapter(getApplicationContext(), roommateArrayList);
 
         // Set list of roommates to the view in UI
-        contentRoommateListView.setAdapter(roommateListAdapter);
+        roommateRecyclerView.setAdapter(roommateListAdapter);
 
-        // TODO: RecycleView and onUpdateListener
-        makeListRequest();
+        (new RoommateTask()).execute((Void) null);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -118,30 +120,22 @@ public class RoommateActivity extends AppCompatActivity implements AddRoommateFr
                         Log.i("ROOMMATE", response.toString());
 //                        responseJSON = response;
                         try {
-                            roommateList = response.getJSONArray("contactlist");
+                            roommateList = response.getJSONArray("roommates");
 
                             int numRoommates = roommateList.length();
 
                             for(int i = 0; i < numRoommates; i++) {
-                                HashMap<String, String> currUserInfoMap = new HashMap<>();
-
                                 try {
                                     JSONObject currJSON = roommateList.getJSONObject(i);
+                                    UserModel userModel = new UserModel(currJSON);
+                                    roommateArrayList.add(userModel);
 
-                                    currUserInfoMap.put(NAME, currJSON.getString("firstName") + " " + currJSON.getString("lastName"));
-                                    currUserInfoMap.put(PREFERRED_NAME, currJSON.getString(PREFERRED_NAME));
-                                    currUserInfoMap.put(ADDRESS, currJSON.getString(ADDRESS));
-                                    currUserInfoMap.put(EMAIL, currJSON.getString(EMAIL));
-                                    currUserInfoMap.put(HOME_PHONE, currJSON.getString(HOME_PHONE));
-                                    currUserInfoMap.put(CELL_PHONE, currJSON.getString(CELL_PHONE));
-
-                                    roommateArrayList.add(currUserInfoMap);
-                                } catch(Exception ex) {
-                                    Log.i("ROOMMATE", "Cannot add roommate to list");
+                                } catch (Exception ex) {
+                                    Log.e("ROOMMATES", "Cannot get roommates");
                                 }
                             }
 
-                            ((BaseAdapter)roommateListAdapter).notifyDataSetChanged();
+                            success = true;
 
                         } catch(Exception ex) {
                             Log.e("ROOMMATE", "Error parsing JSON");
@@ -168,9 +162,38 @@ public class RoommateActivity extends AppCompatActivity implements AddRoommateFr
         requestQueue.add(request);
     }
 
-    public void onComplete(HashMap<String, String> newRoommate) {
-        roommateArrayList.add(newRoommate);
-        ((BaseAdapter)roommateListAdapter).notifyDataSetChanged();
+    public class RoommateTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+//            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            makeListRequest();
+
+            try {
+                Thread.sleep(2000);
+
+            } catch(Exception ex) {
+                Log.e("DASHBOARD", "Error fetching dashboard: " + ex.getMessage());
+            }
+
+            return success;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+//            progressBar.setVisibility(View.GONE);
+
+            if (success) {
+                roommateListAdapter.notifyDataSetChanged();
+            } else {
+                roommateListAdapter.notifyDataSetChanged();
+                Toast.makeText(RoommateActivity.this, "Failed to fetch data!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
 

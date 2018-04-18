@@ -40,6 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,7 @@ public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
     private RecyclerView mRecyclerView;
-    private RecycleViewAdapter adapter;
+    private DashboardRecycleViewAdapter adapter;
     private ProgressBar progressBar;
     private TextView sidebarName;
     private TextView sidebarEmail;
@@ -76,6 +77,7 @@ public class DashboardActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        dashboardList = new ArrayList<>();
         transactionsList = new ArrayList<>();
         roommatesList = new ArrayList<>();
         receiptsList = new ArrayList<>();
@@ -97,8 +99,7 @@ public class DashboardActivity extends AppCompatActivity
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         progressBar = findViewById(R.id.progress_bar);
 
-        dashboardList = new ArrayList<>();
-        adapter = new RecycleViewAdapter(getApplicationContext(), dashboardList);
+        adapter = new DashboardRecycleViewAdapter(getApplicationContext(), dashboardList);
         mRecyclerView.setAdapter(adapter);
 
         // Get nested view from sidebar
@@ -234,7 +235,7 @@ public class DashboardActivity extends AppCompatActivity
         this.dashboardList.addAll(receiptsList);
         this.dashboardList.addAll(transactionsList);
 
-        dashboardList.sort(new Comparator<DashboardContentModel>() {
+        Collections.sort(dashboardList, new Comparator<DashboardContentModel>() {
             @Override
             public int compare(DashboardContentModel dashboardContentModel, DashboardContentModel t1) {
                 return t1.getDate().compareTo(dashboardContentModel.getDate());
