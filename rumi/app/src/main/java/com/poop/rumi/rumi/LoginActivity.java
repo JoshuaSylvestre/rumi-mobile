@@ -438,13 +438,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            Intent getDashboardActivity = new Intent(getApplicationContext(), DashboardActivity.class);
-
             if (success) {
 
+                Intent getDashboardActivity = new Intent(getApplicationContext(), DashboardActivity.class);
+
                 // Put the user info JSON in the intent to pass it to the next activity
-                getDashboardActivity.putExtra("user", userJSON.toString());
-                getDashboardActivity.putExtra("token", userToken);
+                getDashboardActivity.putExtra(getString(R.string.current_user_json_to_string), userJSON.toString());
+                getDashboardActivity.putExtra(getString(R.string.current_user_token), userToken);
                 getDashboardActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                 startActivity(getDashboardActivity);

@@ -1,6 +1,7 @@
 package com.poop.rumi.rumi;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -49,6 +50,8 @@ import java.util.Map;
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
+    private Context mContext = this;
+
     private RecyclerView mRecyclerView;
     private DashboardRecycleViewAdapter adapter;
     private ProgressBar progressBar;
@@ -84,8 +87,8 @@ public class DashboardActivity extends AppCompatActivity
 
         // Create a new session for the logged user and grab their data from the last intent
         userSession = new UserSession(this);
-        currUser = getIntent().getStringExtra("user");
-        currUserToken = getIntent().getStringExtra("token");
+        currUser = getIntent().getStringExtra(getString(R.string.current_user_json_to_string));
+        currUserToken = getIntent().getStringExtra(getString(R.string.current_user_token));
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
         try {
@@ -129,8 +132,8 @@ public class DashboardActivity extends AppCompatActivity
             public void onClick(View view) {
 
                 Intent i = new Intent(view.getContext(), OcrCaptureActivity.class);
-                i.putExtra("curruser", currUser);
-                i.putExtra("usertoken", currUserToken);
+                i.putExtra(getString(R.string.current_user_json_to_string), currUser);
+                i.putExtra(getString(R.string.current_user_token), currUserToken);
 
                 startActivity(i);
                 onPause();
@@ -201,9 +204,13 @@ public class DashboardActivity extends AppCompatActivity
 
         if (id == R.id.nav_scan)
         {
-            Intent getOCRActivity = new Intent(getApplicationContext(), OcrCaptureActivity.class);
-            startActivity(getOCRActivity);
-            // Handle the camera action
+
+            Intent i = new Intent(mContext, OcrCaptureActivity.class);
+            i.putExtra("curruser", currUser);
+            i.putExtra("usertoken", currUserToken);
+
+            startActivity(i);
+            onPause();
         }
         else if (id == R.id.nav_roommates)
         {
@@ -217,8 +224,8 @@ public class DashboardActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_transactions)
         {
-            Intent getTransactionActivity = new Intent(getApplicationContext(), TransactionActivity.class);
-            startActivity(getTransactionActivity);
+//            Intent getTransactionActivity = new Intent(getApplicationContext(), TransactionActivity.class);
+//            startActivity(getTransactionActivity);
         }
         else if (id == R.id.nav_request)
         {

@@ -58,7 +58,7 @@ public class TransactionActivity extends AppCompatActivity {
 
     TextView store_restaurant;
 
-    Receipt mReceipt;
+    private Receipt mReceipt;
     private String currUserToken;
     private String currUser;
 
@@ -216,10 +216,11 @@ public class TransactionActivity extends AppCompatActivity {
                 System.out.println(editText_get_names.getText().toString());
                 System.out.println("====== Keep adding button clicked!! ========== ");
 
-                if(editText_get_names.getText().toString().length() >= 7){
+                if(editText_get_names.getText().toString().length() == 0) {
+                    Toast.makeText(TransactionActivity.this, "Name field is empty.", Toast.LENGTH_SHORT).show();
+                }else if(editText_get_names.getText().toString().length() >= 7){
                     Toast.makeText(TransactionActivity.this, "Please limit the name/nickname under 7-letter", Toast.LENGTH_SHORT).show();
                 }else if(mNames.contains(editText_get_names.getText().toString())) {
-
                     Toast.makeText(TransactionActivity.this, "Name already exists, please try a different name.", Toast.LENGTH_SHORT).show();
                 }
                 else{
@@ -237,8 +238,7 @@ public class TransactionActivity extends AppCompatActivity {
 
     }
 
-
-
+//
 //    public void openAddPersonDialog(){
 //
 //        AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);

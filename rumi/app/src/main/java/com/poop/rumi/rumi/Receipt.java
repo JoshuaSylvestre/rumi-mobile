@@ -22,9 +22,8 @@ public class Receipt implements Serializable{
 
     public final String TAG = "ReceiptClass";
 
-    private String currUserToken;
-
     private String currUser;
+    private String currUserToken;
 
     private String receiptImagePath;
 
@@ -122,7 +121,7 @@ public class Receipt implements Serializable{
 
             }
 
-            // TODO: ideally, have these constructed and initialized under var declerations
+            // TODO: ideally, have these constructed and initialized under var declarations
             boolean hasSave = Pattern.compile(Pattern.quote("save"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasSaving = Pattern.compile(Pattern.quote("saving"), Pattern.CASE_INSENSITIVE).matcher(str).find();
             boolean hasPromotion= Pattern.compile(Pattern.quote("promotion"), Pattern.CASE_INSENSITIVE).matcher(str).find();

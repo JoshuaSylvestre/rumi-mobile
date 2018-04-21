@@ -44,6 +44,11 @@
     </string>
     <string name="title_activity_main">Dashboard</string>
 
+
+    <!-- Strings related to passing current user JSON and token-->
+    <string name="current_user_json_to_string">CurrUserJsonString</string>
+    <string name="current_user_token">CurrUserToken</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 

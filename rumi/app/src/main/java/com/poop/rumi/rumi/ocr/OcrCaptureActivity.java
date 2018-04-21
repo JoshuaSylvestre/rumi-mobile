@@ -88,7 +88,6 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
     private String currUser;
     private String currUserToken;
-    private JSONObject currUserJSON;
 
 
     private String imagePath;
@@ -107,8 +106,8 @@ public class OcrCaptureActivity extends AppCompatActivity{
         super.onCreate(icicle);
         setContentView(R.layout.activity_ocr_capture);
 
-        currUser = getIntent().getStringExtra("curruser");
-        currUserToken = getIntent().getStringExtra("usertoken");
+        currUser = getIntent().getStringExtra(getString(R.string.current_user_json_to_string));
+        currUserToken = getIntent().getStringExtra(getString(R.string.current_user_token));
 
 
         mPreview = findViewById(R.id.preview);
@@ -265,9 +264,14 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
     public void openTransactionActivity() {
 
-        mReceipt.finalize();
+        //mReceipt.finalize();
 
         Intent intent = new Intent(this, TransactionActivity.class);
+
+        // Unnecessary because currUser and currUserToken reside in mReceipt
+//        intent.putExtra(getString(R.string.current_user_json_to_string), currUser);
+//        intent.putExtra(getString(R.string.current_user_token), currUserToken);
+
         intent.putExtra("RECEIPT", mReceipt);
         startActivity(intent);
     }
