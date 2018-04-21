@@ -1,27 +1,48 @@
 package com.poop.rumi.rumi.transaction;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.databind.type.ArrayType;
 import com.poop.rumi.rumi.R;
 import com.poop.rumi.rumi.Receipt;
+import com.poop.rumi.rumi.RoommateActivity;
+import com.poop.rumi.rumi.models.UserModel;
 import com.poop.rumi.rumi.summary.SummaryActivity;
 
 import android.app.AlertDialog;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class TransactionActivity extends AppCompatActivity {
 
@@ -38,9 +59,15 @@ public class TransactionActivity extends AppCompatActivity {
     TextView store_restaurant;
 
     Receipt mReceipt;
-    ArrayList<String> clean_input_items;
-    ArrayList<Float> clean_input_prices;
+    private String currUserToken;
+    private String currUser;
 
+    private RequestQueue requestQueue;
+    private JSONArray roommateList;
+    private boolean success = false;
+
+    private List<UserModel> roommateArrayList = new ArrayList<>();
+    private ArrayList<String> roommateNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,13 +77,22 @@ public class TransactionActivity extends AppCompatActivity {
 
 
         mReceipt = (Receipt) getIntent().getSerializableExtra("RECEIPT");
+        currUserToken = mReceipt.getCurrUserToken();
+        currUser = mReceipt.getCurrUser();
+
+        requestQueue = Volley.newRequestQueue(this);
+
+        roommateNames = new ArrayList<>();
+
+        populateRoommateList();
 
 
-        Log.d("TEST 2" ,"==============================================");
-        Log.d("TEST 2" ,mReceipt.getStoreName());
-        Log.d("TEST 2" ,mReceipt.printItems());
-        Log.d("TEST 2" ,mReceipt.printPrices());
-        Log.d("TEST 2" ,"==============================================");
+//        Log.d("TEST 2" ,"==============================================");
+//        Log.d("TEST 2" ,mReceipt.getStoreName());
+//        Log.d("TEST 2" ,mReceipt.printItems());
+//        Log.d("TEST 2" ,mReceipt.printPrices());
+//        Log.d("TEST 2" ,"==============================================");
+
 
 
         // Add transactions to the arraylist: take Transactions objects
@@ -90,64 +126,6 @@ public class TransactionActivity extends AppCompatActivity {
 
         String storeName = mReceipt.getStoreName();
         String date = mReceipt.getDateOfCapture();
-
-
-
-//        if(!storeName.equals(null))
-//        {
-//            int len = Math.min(inputItems.size(), inputPrices.size());
-//            clean_input_items = new ArrayList<>();
-//            clean_input_prices = new ArrayList<>();
-//
-//            for(int i = 0; i < len; i++){
-//
-//                String inputItem = inputItems.get(i);
-//
-//                if(!inputItem.equals("")
-//                    && !inputItem.toLowerCase().equals("subtotal")
-//                    && !inputItem.toLowerCase().equals("total")
-//                    && !inputItem.toLowerCase().equals("debit")
-//                    && !inputItem.toLowerCase().equals("debit tend")
-//                    && !inputItem.toLowerCase().equals("change")
-//                    && !inputItem.toLowerCase().equals("change due")
-//                    && !inputItem.toLowerCase().equals("debit")
-//                    && !inputItem.toLowerCase().equals("you saved")
-//                    && !inputItem.toLowerCase().equals("tax")
-//                    && !inputItem.toLowerCase().equals("tax 1")
-//                    && !inputItem.toLowerCase().equals("tax 2")
-//                    && !inputItem.toLowerCase().equals("order")
-//                    && !inputItem.toLowerCase().equals("order total")
-//                    && !inputItem.toLowerCase().equals("regular tax")
-//                    && !inputItem.toLowerCase().equals("food tax")
-//                    && !inputItem.toLowerCase().equals("grand total")
-//                    && !inputItem.toLowerCase().equals("payment")
-//                    && !inputItem.toLowerCase().equals("sales")
-//                    && !inputItem.toLowerCase().equals("sale total")
-//                    && !inputItem.toLowerCase().equals("ycu saved"))
-//                {
-//                    clean_input_items.add(inputItems.get(i));
-//                }
-//
-//                if(!String.valueOf(inputPrices.get(i)).equals("")){
-//                    clean_input_prices.add(inputPrices.get(i));
-//                }
-//            }
-//
-//            int clean_len = Math.min(clean_input_items.size(), clean_input_prices.size());
-//
-//            for(int i = 0; i < clean_len; i++)
-//            {
-//                transactionList.add(
-//                        new Transaction(
-//                                clean_input_items.get(i),
-//                                Float.parseFloat(String.valueOf(clean_input_prices.get(i)))
-//                        )
-//
-//                );
-//            }
-//
-//
-//        }
 
 
         final ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
@@ -224,7 +202,10 @@ public class TransactionActivity extends AppCompatActivity {
         // Finally, display the alert dialog
         dialog.show();
 
-        final EditText editText_get_names = (EditText)dialogView.findViewById(R.id.editText_add_name);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, roommateNames);
+        final AutoCompleteTextView editText_get_names = (AutoCompleteTextView) dialogView.findViewById(R.id.editText_add_name);
+        editText_get_names.setThreshold(1);
+        editText_get_names.setAdapter(adapter);
 
         Button keep_adding = (Button)dialogView.findViewById(R.id.button_keep_adding);
         keep_adding.setOnClickListener(new View.OnClickListener() {
@@ -251,9 +232,65 @@ public class TransactionActivity extends AppCompatActivity {
                     editText_get_names.setText(null);
                 }
 
-
             }
         });
+
+    }
+
+
+
+//    public void openAddPersonDialog(){
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
+//
+//        LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
+//
+//        final View dialogView = inflater.inflate(R.layout.dialog_add_person,null);
+//
+//        builder.setView(dialogView);
+//
+//        // Create the alert dialog
+//        final AlertDialog dialog = builder.create();
+//
+//        // Finally, display the alert dialog
+//        dialog.show();
+//
+//        final EditText editText_get_names = (EditText)dialogView.findViewById(R.id.editText_add_name);
+//
+//        Button keep_adding = (Button)dialogView.findViewById(R.id.button_keep_adding);
+//        keep_adding.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                System.out.println("====== Keep adding button clicked!! ========== ");
+//                System.out.println(editText_get_names.getText().toString());
+//                System.out.println("====== Keep adding button clicked!! ========== ");
+//
+//                if(editText_get_names.getText().toString().length() >= 7){
+//                    Toast.makeText(TransactionActivity.this, "Please limit the name/nickname under 7-letter", Toast.LENGTH_SHORT).show();
+//                }else if(mNames.contains(editText_get_names.getText().toString())) {
+//
+//                    Toast.makeText(TransactionActivity.this, "Name already exists, please try a different name.", Toast.LENGTH_SHORT).show();
+//                }
+//                else{
+//
+//                    mImageUrls.add("");
+//                    mNames.add(editText_get_names.getText().toString());
+//
+//                    Toast.makeText(TransactionActivity.this, editText_get_names.getText().toString() + " added!", Toast.LENGTH_SHORT).show();
+//
+//                    editText_get_names.setText(null);
+//                }
+//
+//
+//            }
+//        });
+//
+//    }
+
+    public void populateRoommateList (){
+
+        (new RoommateTask()).execute((Void) null);
 
     }
 
@@ -343,29 +380,20 @@ public class TransactionActivity extends AppCompatActivity {
 
         Log.d(TAG, "initImageBitmaps: preparing bitmaps.");
 
-        mImageUrls.add("");
-        mNames.add("Steve");
+        String currUserName = "";
+        try{
+            JSONObject jsonName= new JSONObject(currUser);
+            currUserName = jsonName.getString("name");
+        }
+        catch (Exception e){
+            Log.e(TAG, "in initImageBitmaps");
+
+        }
 
         mImageUrls.add("");
-        mNames.add("Abe");
-
-        mImageUrls.add("");
-        mNames.add("Dita");
-
-        mImageUrls.add("");
-        mNames.add("Alana");
-
-        mImageUrls.add("");
-        mNames.add("Joshua");
-
-        mImageUrls.add("");
-        mNames.add("John");
-
-        mImageUrls.add("");
-        mNames.add("Subhash");
+        mNames.add(currUserName);
 
 
-        //initRecyclerView();
 
     }
 
@@ -392,6 +420,99 @@ public class TransactionActivity extends AppCompatActivity {
 
     }
 
+
+
+    protected void makeListRequest() {
+
+        final String roommateListUrl = getString(R.string.base_url) + getString(R.string.roommate_list_url);
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, roommateListUrl,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // Success callback
+                        Log.i("ROOMMATE", response.toString());
+//                        responseJSON = response;
+                        try {
+                            roommateList = response.getJSONArray("roommates");
+
+                            int numRoommates = roommateList.length();
+
+                            for(int i = 0; i < numRoommates; i++) {
+                                try {
+                                    JSONObject currJSON = roommateList.getJSONObject(i);
+                                    UserModel userModel = new UserModel(currJSON);
+                                    roommateArrayList.add(userModel);
+
+                                } catch (Exception ex) {
+                                    Log.e("ROOMMATES", "Cannot get roommates");
+                                }
+                            }
+
+                            success = true;
+
+
+                        } catch(Exception ex) {
+                            Log.e("ROOMMATE", "Error parsing JSON");
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // Error callback
+                        Log.i("ROOMMATE", error.toString());
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+//                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", currUserToken);
+
+                return headers;
+            }
+        };
+
+        requestQueue.add(request);
+    }
+
+
+    @SuppressLint("StaticFieldLeak")
+    private class RoommateTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            makeListRequest();
+
+            try {
+                Thread.sleep(2000);
+
+            } catch(Exception ex) {
+                Log.e(TAG, "Error fetching roommates: " + ex.getMessage());
+            }
+
+            return success;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+
+
+            for(UserModel u : roommateArrayList)
+                roommateNames.add(u.name);
+
+//                Log.d("TESTIESS", roommateNames.toString());
+
+        }
+    }
+//
 
 
 }

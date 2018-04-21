@@ -127,7 +127,12 @@ public class DashboardActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), OcrCaptureActivity.class));
+
+                Intent i = new Intent(view.getContext(), OcrCaptureActivity.class);
+                i.putExtra("curruser", currUser);
+                i.putExtra("usertoken", currUserToken);
+
+                startActivity(i);
                 onPause();
             }
         });

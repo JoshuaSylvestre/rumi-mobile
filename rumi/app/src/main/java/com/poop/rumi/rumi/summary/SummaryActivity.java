@@ -1,5 +1,6 @@
 package com.poop.rumi.rumi.summary;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.poop.rumi.rumi.DashboardActivity;
 import com.poop.rumi.rumi.R;
 import com.poop.rumi.rumi.transaction.Transaction;
 
@@ -79,6 +81,11 @@ public class SummaryActivity extends AppCompatActivity {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Intent intent = new Intent(getApplicationContext(),DashboardActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+
             }
         });
 
@@ -115,7 +122,7 @@ public class SummaryActivity extends AppCompatActivity {
             eachPay = t.getPrice() / numParticipants;
             df.format(eachPay);
 
-            Toast.makeText(this, "ITEM :" + t.getItem() + "<= " + curNames.toString(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(this, "ITEM :" + t.getItem() + "<= " + curNames.toString(), Toast.LENGTH_LONG).show();
 
             for (String name : curNames)
                 for (ParticipantInfo p : participantList)
