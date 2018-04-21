@@ -34,7 +34,7 @@ import com.poop.rumi.rumi.models.ReceiptModel;
 import com.poop.rumi.rumi.models.RoommateModel;
 import com.poop.rumi.rumi.models.TransactionModel;
 import com.poop.rumi.rumi.ocr.OcrCaptureActivity;
-import com.poop.rumi.rumi.transaction.TransactionActivity;
+import com.poop.rumi.rumi.TransactionActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -138,9 +138,6 @@ public class DashboardActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-//        String url = "http://stacktips.com/?json=get_category_posts&slug=news&count=30";
-//
-//        new DownloadTask().execute(url);
     }
 
     @Override
@@ -213,6 +210,8 @@ public class DashboardActivity extends AppCompatActivity
         else if (id == R.id.nav_transactions)
         {
             Intent getTransactionActivity = new Intent(getApplicationContext(), TransactionActivity.class);
+            getTransactionActivity.putExtra("token", currUserToken);
+            getTransactionActivity.putExtra("user", currUser);
             startActivity(getTransactionActivity);
         }
         else if (id == R.id.nav_request)

@@ -90,16 +90,6 @@ public class RoommateActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == SearchRoommateFragment.SEARCH_REQUEST_CODE) {
-            if(resultCode == Activity.RESULT_OK) {
-                finish();
-                startActivity(getIntent());
-            }
-        }
-    }
-
     public void makeListRequest() {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, roommateListUrl,
                 new Response.Listener<JSONObject>() {

@@ -37,36 +37,6 @@ public class DashboardRecycleViewAdapter extends RecyclerView.Adapter<DashboardR
     public void onBindViewHolder(CustomViewHolder customViewHolder, int i) {
         final DashboardContentModel currItem = dashboardList.get(i);
 
-        if(currItem instanceof ReceiptModel) {
-            String imageUrl = ((ReceiptModel) currItem).link;
-            customViewHolder.image.setVisibility(View.VISIBLE);
-            RequestOptions options = new RequestOptions();
-//            options.override(customViewHolder.image.getWidth() / 2, customViewHolder.image.getHeight() / 2);
-//            options.placeholder(R.drawable.rumi_logo);
-
-            // Why is this shit not working. The image loaded once and disappeared like a leprechaun
-            Glide.with(customViewHolder.image.getContext())
-                    .load(imageUrl)
-                    .apply(options.override(customViewHolder.image.getWidth(), customViewHolder.image.getHeight() / 2))
-                    .into(customViewHolder.image);
-
-            customViewHolder.title.setText("New Receipt");
-            customViewHolder.subtitle.setText(((ReceiptModel) currItem).name);
-            customViewHolder.desc.setText(((ReceiptModel) currItem).key);
-//            customViewHolder.desc2.setText(((ReceiptModel) currItem).link);
-        } else if(currItem instanceof RoommateModel) {
-            customViewHolder.image.setVisibility(View.GONE);
-            customViewHolder.title.setText("New Roommate");
-            customViewHolder.subtitle.setText(((RoommateModel) currItem).firstName + ((RoommateModel) currItem).lastName);
-            customViewHolder.desc.setText(((RoommateModel) currItem).preferredName);
-            customViewHolder.desc2.setText(((RoommateModel) currItem).email);
-        } else if(currItem instanceof TransactionModel){
-            customViewHolder.image.setVisibility(View.GONE);
-            customViewHolder.title.setText("New Transaction: " + ((TransactionModel) currItem).transactionType);
-            customViewHolder.subtitle.setText(((TransactionModel) currItem).companyName);
-            customViewHolder.desc.setText(formatStringArray(((TransactionModel) currItem).roommateNames));
-            customViewHolder.desc2.setText(formatStringArray(((TransactionModel) currItem).items));
-        }
     }
 
     private String formatStringArray(String[] arr) {
