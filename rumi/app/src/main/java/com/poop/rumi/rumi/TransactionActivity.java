@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +49,7 @@ public class TransactionActivity extends AppCompatActivity implements Navigation
     private RecyclerView transactionRecyclerView;
     private TransactionRecycleViewAdapter transactionAdapter;
     private List<TransactionModel> transactionsList = new ArrayList<>();
-
+    private ProgressBar progressBar;
     private RequestQueue requestQueue;
     private String currUserToken;
     private String currUser;
@@ -79,7 +80,7 @@ public class TransactionActivity extends AppCompatActivity implements Navigation
         View transactionListView = findViewById(R.id.content_transaction_view);
         transactionRecyclerView = transactionListView.findViewById(R.id.transaction_list_recycler_view);
         transactionRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
+        progressBar = findViewById(R.id.progress_bar);
         transactionAdapter = new TransactionRecycleViewAdapter(this, transactionsList);
 
         transactionRecyclerView.setAdapter(transactionAdapter);
@@ -231,6 +232,8 @@ public class TransactionActivity extends AppCompatActivity implements Navigation
                                     transactionsList.add(new TransactionModel(arr.getJSONObject(i)));
                                     transactionAdapter.notifyDataSetChanged();
                                 }
+
+                                progressBar.setVisibility(View.GONE);
                             }
                         } catch(Exception ex) {
                             Log.e("ROOMMATE", "Error parsing JSON");
@@ -261,7 +264,7 @@ public class TransactionActivity extends AppCompatActivity implements Navigation
 
         @Override
         protected void onPreExecute() {
-//            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -280,7 +283,7 @@ public class TransactionActivity extends AppCompatActivity implements Navigation
 
         @Override
         protected void onPostExecute(Boolean success) {
-//            progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
 
             if (success) {
                 transactionAdapter.notifyDataSetChanged();

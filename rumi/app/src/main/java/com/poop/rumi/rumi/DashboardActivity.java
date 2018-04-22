@@ -112,7 +112,6 @@ public class DashboardActivity extends AppCompatActivity
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         progressBar = findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.GONE);
 
         adapter = new TransactionRecycleViewAdapter(getApplicationContext(), dashboardList);
         mRecyclerView.setAdapter(adapter);
@@ -272,6 +271,8 @@ public class DashboardActivity extends AppCompatActivity
                                         dashboardList.add(new TransactionModel(arr.getJSONObject(i)));
                                         adapter.notifyDataSetChanged();
                                     }
+
+                                    progressBar.setVisibility(View.GONE);
                                 }
                             } catch(Exception ex) {
                                 Log.e("DASHBOARD", "Failed parsing response: " + ex.getMessage());
@@ -310,7 +311,7 @@ public class DashboardActivity extends AppCompatActivity
 
         @Override
         protected void onPreExecute() {
-//            progressBar.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -329,7 +330,7 @@ public class DashboardActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(Boolean success) {
-//            progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
 
             if (success) {
                 adapter.notifyDataSetChanged();

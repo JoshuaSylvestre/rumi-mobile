@@ -11,6 +11,8 @@ public class ParticipantInfo {
     private ArrayList<Float> mOgPrices;    //for original prices
     private ArrayList<Float> mPrices;      //for split prices
 
+    public static final float DECIMAL_PLACES = (float)100.0;
+
     private ArrayList<ParticipantTriad> mTriad;
 
     public ParticipantInfo(String name) {
@@ -27,7 +29,7 @@ public class ParticipantInfo {
 
         mItems.add(item);
         mOgPrices.add(origPrice);
-        mPrices.add(splitPrice);
+        mPrices.add(Math.round(splitPrice * DECIMAL_PLACES) / DECIMAL_PLACES);
 
         mTriad.add(new ParticipantTriad(item, origPrice, splitPrice));
 

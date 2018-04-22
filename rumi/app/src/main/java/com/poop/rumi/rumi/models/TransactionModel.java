@@ -2,6 +2,8 @@ package com.poop.rumi.rumi.models;
 
 import android.util.Log;
 
+import com.poop.rumi.rumi.summary.ParticipantInfo;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +25,7 @@ public class TransactionModel extends DashboardContentModel {
     public String ownerId;
     public String[] transactionNames;
     public ArrayList<TransactionItemModel> transactionList;
+    public static String TOTAL_NAME = "Total:";
 
     private JSONObject json;
 
@@ -85,9 +88,20 @@ public class TransactionModel extends DashboardContentModel {
 
             itemsList = new ArrayList<>();
             int len = items.length;
+            Float ogTotal = Float.valueOf(0);
+            Float splitTotal = Float.valueOf(0);
 
-            for(int i = 0; i < len; i++)
+            for(int i = 0; i < len; i++) {
                 itemsList.add(new TransactionItemListModel(items[i], ogPrices[i], splitPrices[i]));
+                ogTotal += Float.parseFloat(ogPrices[i]);
+                splitTotal += Float.parseFloat(splitPrices[i]);
+            }
+
+            ogTotal = Math.round(ogTotal * ParticipantInfo.DECIMAL_PLACES) / ParticipantInfo.DECIMAL_PLACES;
+            splitTotal = Math.round(splitTotal * ParticipantInfo.DECIMAL_PLACES) / ParticipantInfo.DECIMAL_PLACES;
+
+            // Add the total
+            itemsList.add(new TransactionItemListModel(TOTAL_NAME, ogTotal.toString(), splitTotal.toString()));
         }
     }
 

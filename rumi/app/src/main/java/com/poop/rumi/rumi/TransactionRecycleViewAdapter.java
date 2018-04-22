@@ -5,6 +5,7 @@ package com.poop.rumi.rumi;
  */
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -182,8 +183,11 @@ public class TransactionRecycleViewAdapter extends RecyclerView.Adapter<Transact
 
     public class TransactionItemListAdapter extends ArrayAdapter<TransactionModel.TransactionItemListModel> {
 
+        private ArrayList<TransactionModel.TransactionItemListModel> list;
+
         public TransactionItemListAdapter(Context context, ArrayList<TransactionModel.TransactionItemListModel> models) {
             super(context, 0, models);
+            list = models;
         }
 
         @Override
@@ -197,6 +201,17 @@ public class TransactionRecycleViewAdapter extends RecyclerView.Adapter<Transact
             TextView itemName = convertView.findViewById(R.id.item_name);
             TextView ogPrice = convertView.findViewById(R.id.item_og_price);
             TextView splitPrice = convertView.findViewById(R.id.item_split_price);
+
+            // Bold the total, which is the last 'item' in the list
+            if(list.size() - 1 == position) {
+                itemName.setTypeface(itemName.getTypeface(), Typeface.BOLD);
+                ogPrice.setTypeface(ogPrice.getTypeface(), Typeface.BOLD);
+                splitPrice.setTypeface(splitPrice.getTypeface(), Typeface.BOLD);
+            } else {
+                itemName.setTypeface(itemName.getTypeface(), Typeface.NORMAL);
+                ogPrice.setTypeface(ogPrice.getTypeface(), Typeface.NORMAL);
+                splitPrice.setTypeface(splitPrice.getTypeface(), Typeface.NORMAL);
+            }
 
             itemName.setText(currModel.item);
             ogPrice.setText("$" + currModel.ogPrice);
