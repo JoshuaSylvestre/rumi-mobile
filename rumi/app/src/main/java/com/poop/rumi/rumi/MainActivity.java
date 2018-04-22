@@ -1,6 +1,8 @@
 package com.poop.rumi.rumi;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -34,6 +36,18 @@ public class MainActivity extends AppCompatActivity
 
 //        gButton = findViewById(R.id.sign_in_button);
 //        setGooglePlusButtonText(gButton, "Sign in with Google");
+
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.user_preferences_key), Context.MODE_PRIVATE);
+        String currSessionToken = preferences.getString(getString(R.string.current_user_token), "");
+        String currSessionUserJson = preferences.getString(getString(R.string.current_user_json_to_string), "");
+
+        // If the user isn't logged in, take them to the login page
+        if(!currSessionToken.isEmpty() && !currSessionUserJson.isEmpty()) {
+            startActivity(new Intent(MainActivity.this, DashboardActivity.class));
+            finish();
+
+            return;
+        }
 
         Button signInButton = findViewById(R.id.signInButton);
         signInButton.setOnClickListener(new OnClickListener() {

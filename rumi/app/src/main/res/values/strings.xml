@@ -44,20 +44,19 @@
     </string>
     <string name="title_activity_main">Dashboard</string>
 
+
+    <!-- Strings related to passing current user JSON and token-->
+    <string name="current_user_json_to_string">CurrUserJsonString</string>
+    <string name="current_user_token">CurrUserToken</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
     <string name="user_name">Android Studio</string>
     <string name="user_email">android.studio@android.com</string>
+    <string name="user_preferences_key">com.poop.rumi.rumi.user.preferences</string>
 
-    <!-- Strings related to DB -->
-    <string name="stitch_api_key">rumi-mxzfh</string>
-    <string name="stitch_user_email">dita.dewindita@knights.ucf.edu</string>
-    <string name="stitch_user_password">RUMIRUMI</string>
-    <string name="stitch_service">mongodb-atlas</string>
-    <string name="stitch_db_name">RUMI</string>
-    <string name="stitch_users_collection">users</string>
     <string name="title_activity_register">Register</string>
     <string name="title_activity_roommate">RoommateActivity</string>
 
@@ -77,7 +76,7 @@
     <string name="transactions_list_url">/user/transactions</string>
     <string name="change_password_url">/user/setting/changepassword</string>
     <!-- Only exists on dev branch of rumi-web -->
-    <string name="dashboard_url">/user/dashboard_mobile</string>
+    <string name="dashboard_url">/user/transactions/recent</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="search_users">Search users</string>

@@ -12,6 +12,7 @@ public class Transaction implements Parcelable {
 
     ArrayList<String> names;
 
+
     // Alt + Insert/Constructor/Select all to make the constructor
     public Transaction(String item, Float price) {
 

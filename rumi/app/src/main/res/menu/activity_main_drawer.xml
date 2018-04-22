@@ -6,29 +6,16 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_scan"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Scan Receipt" />
+            android:icon="@drawable/ic_home"
+            android:title="Home" />
         <item
             android:id="@+id/nav_roommates"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_people"
             android:title="Roommates" />
         <item
             android:id="@+id/nav_transactions"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_transactions"
             android:title="Transactions" />
     </group>
-
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_request"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Request Payment" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send Payment" />
-        </menu>
-    </item>
 
 </menu>

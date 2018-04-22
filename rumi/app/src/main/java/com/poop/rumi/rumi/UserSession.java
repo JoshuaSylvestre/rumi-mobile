@@ -1,5 +1,6 @@
 package com.poop.rumi.rumi;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -10,18 +11,23 @@ import android.preference.PreferenceManager;
 
 public class UserSession {
 
-    private SharedPreferences prefs;
+    private SharedPreferences preferences;
 
-    public UserSession(Context cntx) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(cntx);
+    public UserSession(Context context) {
+        preferences = ((Activity)context).getPreferences(Context.MODE_PRIVATE);
     }
 
-    public void setUser(String user) {
-        prefs.edit().putString("user", user).apply();
+    public void setUserToken(Context context, String userToken) {
+        preferences = ((Activity)context).getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(context.getString(R.string.current_user_token), userToken);
+        editor.commit();
     }
 
-    public String getUser() {
-        return prefs.getString("user", "");
+    public String getUserToken(Context context) {
+        preferences = ((Activity)context).getPreferences(Context.MODE_PRIVATE);
+        return preferences.getString(context.getString(R.string.current_user_token), "");
     }
+
 
 }

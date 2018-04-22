@@ -3,7 +3,9 @@ package com.poop.rumi.rumi;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -438,13 +440,17 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
 
-            Intent getDashboardActivity = new Intent(getApplicationContext(), DashboardActivity.class);
-
             if (success) {
+                // Create a new session for the logged user and grab their data from the last intent
+                SharedPreferences preferences = getSharedPreferences(getString(R.string.user_preferences_key), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(getString(R.string.current_user_token), userToken);
+                editor.putString(getString(R.string.current_user_json_to_string), userJSON.toString());
+                editor.commit();
+
+                Intent getDashboardActivity = new Intent(getApplicationContext(), DashboardActivity.class);
 
                 // Put the user info JSON in the intent to pass it to the next activity
-                getDashboardActivity.putExtra("user", userJSON.toString());
-                getDashboardActivity.putExtra("token", userToken);
                 getDashboardActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
                 startActivity(getDashboardActivity);

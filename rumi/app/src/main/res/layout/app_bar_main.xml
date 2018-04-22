@@ -24,12 +24,15 @@
         android:id="@+id/content_main_layout"
         layout="@layout/content_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
+        tools:layout_editor_absoluteY="38dp" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -37,6 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        app:backgroundTint="@color/colorPrimary"
+        app:srcCompat="@drawable/ic_camera_white" />
 
 </android.support.design.widget.CoordinatorLayout>

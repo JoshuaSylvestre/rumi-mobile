@@ -1,7 +1,10 @@
 package com.poop.rumi.rumi;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -49,8 +52,10 @@ import java.util.Map;
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
 {
+    private Context mContext = this;
+
     private RecyclerView mRecyclerView;
-    private DashboardRecycleViewAdapter adapter;
+    private TransactionRecycleViewAdapter adapter;
     private ProgressBar progressBar;
     private TextView sidebarName;
     private TextView sidebarEmail;
@@ -66,7 +71,7 @@ public class DashboardActivity extends AppCompatActivity
     private ArrayList<TransactionModel> transactionsList;
     private ArrayList<RoommateModel> roommatesList;
     private ArrayList<ReceiptModel> receiptsList;
-    private List<DashboardContentModel> dashboardList;
+    private List<TransactionModel> dashboardList;
 
     private UserSettingsFragment userSettingsFragment;
 
@@ -82,10 +87,20 @@ public class DashboardActivity extends AppCompatActivity
         roommatesList = new ArrayList<>();
         receiptsList = new ArrayList<>();
 
-        // Create a new session for the logged user and grab their data from the last intent
-        userSession = new UserSession(this);
-        currUser = getIntent().getStringExtra("user");
-        currUserToken = getIntent().getStringExtra("token");
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.user_preferences_key), Context.MODE_PRIVATE);
+        String currSessionToken = preferences.getString(getString(R.string.current_user_token), "");
+        String currSessionUserJson = preferences.getString(getString(R.string.current_user_json_to_string), "");
+
+        // If the user isn't logged in, take them to the login page
+        if(currSessionToken.isEmpty() || currSessionUserJson.isEmpty()) {
+            startActivity(new Intent(DashboardActivity.this, LoginActivity.class));
+            finish();
+
+            return;
+        }
+
+        currUser = currSessionUserJson;
+        currUserToken = currSessionToken;
         requestQueue = Volley.newRequestQueue(getApplicationContext());
 
         try {
@@ -93,13 +108,13 @@ public class DashboardActivity extends AppCompatActivity
         } catch(Exception ex) {
             Log.i("DASHBOARD", "Error creating JSON");
         }
-        userSession.setUser(currUser);
 
         mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(View.GONE);
 
-        adapter = new DashboardRecycleViewAdapter(getApplicationContext(), dashboardList);
+        adapter = new TransactionRecycleViewAdapter(getApplicationContext(), dashboardList);
         mRecyclerView.setAdapter(adapter);
 
         // Get nested view from sidebar
@@ -119,6 +134,7 @@ public class DashboardActivity extends AppCompatActivity
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Recent Transactions");
         setSupportActionBar(toolbar);
 
         new DashboardTask().execute((Void) null);
@@ -127,7 +143,12 @@ public class DashboardActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(view.getContext(), OcrCaptureActivity.class));
+
+                Intent i = new Intent(view.getContext(), OcrCaptureActivity.class);
+                i.putExtra(getString(R.string.current_user_json_to_string), currUser);
+                i.putExtra(getString(R.string.current_user_token), currUserToken);
+
+                startActivity(i);
                 onPause();
             }
         });
@@ -175,6 +196,12 @@ public class DashboardActivity extends AppCompatActivity
             userSettingsFragment.show(getFragmentManager(), "Add Roommate Fragment");
         }
         if(id == R.id.action_logout){
+            // Take the user's token out
+            SharedPreferences preferences = getSharedPreferences(getString(R.string.user_preferences_key), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(getString(R.string.current_user_token), "");
+            editor.apply();
+
             Intent logoutIntent = new Intent(DashboardActivity.this, LoginActivity.class);
             logoutIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
@@ -193,60 +220,35 @@ public class DashboardActivity extends AppCompatActivity
 
         if (id == R.id.nav_scan)
         {
-            Intent getOCRActivity = new Intent(getApplicationContext(), OcrCaptureActivity.class);
-            startActivity(getOCRActivity);
-            // Handle the camera action
+
+            Intent i = new Intent(mContext, DashboardActivity.class);
+            i.putExtra(getString(R.string.current_user_json_to_string), currUser);
+            i.putExtra(getString(R.string.current_user_token), currUserToken);
+
+            startActivity(i);
+            onPause();
         }
         else if (id == R.id.nav_roommates)
         {
             Intent getRoommateActivity = new Intent(getApplicationContext(), RoommateActivity.class);
 
             // Put the user info JSON in the intent to pass it to the next activity
-            getRoommateActivity.putExtra("user", currUser);
-            getRoommateActivity.putExtra("token", currUserToken);
+            getRoommateActivity.putExtra(getString(R.string.current_user_json_to_string), currUser);
+            getRoommateActivity.putExtra(getString(R.string.current_user_token), currUserToken);
 
             startActivity(getRoommateActivity);
         }
         else if (id == R.id.nav_transactions)
         {
             Intent getTransactionActivity = new Intent(getApplicationContext(), TransactionActivity.class);
-            getTransactionActivity.putExtra("token", currUserToken);
-            getTransactionActivity.putExtra("user", currUser);
+            getTransactionActivity.putExtra(getString(R.string.current_user_token), currUserToken);
+            getTransactionActivity.putExtra(getString(R.string.current_user_json_to_string), currUser);
             startActivity(getTransactionActivity);
-        }
-        else if (id == R.id.nav_request)
-        {
-
-        }
-        else if (id == R.id.nav_send)
-        {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @TargetApi(24)
-    private void prepareDashboardList() {
-        int max = MAX_DASHBOARD_ITEMS;
-
-        this.dashboardList.addAll(roommatesList);
-        this.dashboardList.addAll(receiptsList);
-        this.dashboardList.addAll(transactionsList);
-
-        Collections.sort(dashboardList, new Comparator<DashboardContentModel>() {
-            @Override
-            public int compare(DashboardContentModel dashboardContentModel, DashboardContentModel t1) {
-                return t1.getDate().compareTo(dashboardContentModel.getDate());
-            }
-        });
-
-        if(dashboardList.size() < max)
-            max = dashboardList.size();
-
-        this.dashboardList = dashboardList.subList(0, max);
     }
 
     private void getDashboard() {
@@ -263,22 +265,13 @@ public class DashboardActivity extends AppCompatActivity
                                 success = response.getBoolean("success");
 
                                 if(success) {
-                                    JSONArray transactions = response.getJSONArray("transactions");
-                                    JSONArray receipts = response.getJSONArray("receipts");
-                                    JSONArray roommates = response.getJSONArray("roommates");
+                                    JSONArray arr = response.getJSONArray("transactions");
+                                    int len = arr.length();
 
-                                    int lenTrans = transactions.length();
-                                    int lenRec = receipts.length();
-                                    int lenRoom = roommates.length();
-
-                                    for(int i = 0; i < lenTrans; i++)
-                                        transactionsList.add(new TransactionModel(transactions.getJSONObject(i)));
-
-                                    for(int i = 0; i < lenRec; i++)
-                                        receiptsList.add(new ReceiptModel(receipts.getJSONObject(i)));
-
-                                    for(int i = 0; i < lenRoom; i++)
-                                        roommatesList.add(new RoommateModel(roommates.getJSONObject(i)));
+                                    for(int i = 0; i < len; i++) {
+                                        dashboardList.add(new TransactionModel(arr.getJSONObject(i)));
+                                        adapter.notifyDataSetChanged();
+                                    }
                                 }
                             } catch(Exception ex) {
                                 Log.e("DASHBOARD", "Failed parsing response: " + ex.getMessage());
@@ -317,7 +310,7 @@ public class DashboardActivity extends AppCompatActivity
 
         @Override
         protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
+//            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -326,8 +319,6 @@ public class DashboardActivity extends AppCompatActivity
 
             try {
                 Thread.sleep(2000);
-
-                prepareDashboardList();
 
             } catch(Exception ex) {
                 Log.e("DASHBOARD", "Error fetching dashboard: " + ex.getMessage());
@@ -338,7 +329,7 @@ public class DashboardActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(Boolean success) {
-            progressBar.setVisibility(View.GONE);
+//            progressBar.setVisibility(View.GONE);
 
             if (success) {
                 adapter.notifyDataSetChanged();

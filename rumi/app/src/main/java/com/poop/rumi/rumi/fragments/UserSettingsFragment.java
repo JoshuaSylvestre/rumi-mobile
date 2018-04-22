@@ -43,8 +43,6 @@ public class UserSettingsFragment extends DialogFragment {
     private EditText mNewPassword;
     private Button mChangePasswordButton;
     private Button mNewPasswordButton;
-    private TableRow mChangePasswordRow;
-    private TableRow mNewPasswordRow;
 
     private String currUserToken;
     private RequestQueue requestQueue;
@@ -77,11 +75,11 @@ public class UserSettingsFragment extends DialogFragment {
         mEmail = dialogView.findViewById(R.id.user_email);
         mNewPassword = dialogView.findViewById(R.id.user_new_password);
         mNewPasswordButton = dialogView.findViewById(R.id.new_password_button);
-        mNewPasswordRow = dialogView.findViewById(R.id.new_password_table_row);
         mChangePasswordButton = dialogView.findViewById(R.id.change_password_button);
-        mChangePasswordRow = dialogView.findViewById(R.id.change_password_table_row);
 
-        mNewPasswordRow.setVisibility(View.GONE);
+        mNewPassword.setVisibility(View.GONE);
+        mNewPasswordButton.setVisibility(View.GONE);
+        mChangePasswordButton.setVisibility(View.VISIBLE);
 
         try {
             mName.setText(currUserJSON.getString("name"));
@@ -94,8 +92,9 @@ public class UserSettingsFragment extends DialogFragment {
         mChangePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mNewPasswordRow.setVisibility(View.VISIBLE);
-                mChangePasswordRow.setVisibility(View.INVISIBLE);
+                mNewPasswordButton.setVisibility(View.VISIBLE);
+                mNewPassword.setVisibility(View.VISIBLE);
+                mChangePasswordButton.setVisibility(View.GONE);
             }
         });
 
@@ -154,9 +153,10 @@ public class UserSettingsFragment extends DialogFragment {
                             }
 
                             if(success) {
-                                MessagePopups.showToast(UserSettingsFragment.this.getContext(), "Updated password");
-                                mNewPasswordRow.setVisibility(View.GONE);
-                                mChangePasswordRow.setVisibility(View.VISIBLE);
+                                MessagePopups.showToast(UserSettingsFragment.this.getContext(), "Updated password!");
+                                mNewPassword.setVisibility(View.GONE);
+                                mNewPasswordButton.setVisibility(View.GONE);
+                                mChangePasswordButton.setVisibility(View.VISIBLE);
                             }
                             else {
                                 MessagePopups.showToast(UserSettingsFragment.this.getContext(), "Failed updating password");

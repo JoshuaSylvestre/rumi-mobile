@@ -17,9 +17,16 @@
     <ImageView
         android:id="@+id/logo"
         android:layout_width="350dp"
-        android:layout_height="400dp"
+        android:layout_height="wrap_content"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/rumi_logo" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:text="Organize receipts, bills, and roommates so the only clutter you have is in the sink. "
+        android:textAlignment="center" />
 
     <Button
         android:id="@+id/registerButton"

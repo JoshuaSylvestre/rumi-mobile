@@ -140,9 +140,9 @@ public class RoommateRecycleViewAdapter extends RecyclerView.Adapter<RoommateRec
             this.desc = (TextView) view.findViewById(R.id.desc);
             this.deleteRoommate =  view.findViewById(R.id.button);
 
-            deleteRoommate.setTextColor(Color.WHITE);
+            deleteRoommate.setTextColor(Color.BLACK);
             deleteRoommate.setText("Delete Roommate");
-            deleteRoommate.setBackgroundColor(mContext.getResources().getColor(R.color.colorPrimary));
+            deleteRoommate.setBackgroundColor(Color.WHITE);
         }
     }
 }

@@ -9,7 +9,7 @@
     android:background="@color/colorPrimary"
     >
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/editText_add_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

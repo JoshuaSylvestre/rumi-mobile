@@ -15,29 +15,32 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/roommate_search_results_recycler_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="56dp">
-
-    </android.support.v7.widget.RecyclerView>
-
-    <TextView
-        android:id="@+id/add_static_roommate_form_title"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Can't find user? Add them below!"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/add_static_roommate_form_view"
-        layout="@layout/content_add_static_roommate_form"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/roommate_search_results_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteX="0dp"
+                tools:layout_editor_absoluteY="56dp">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <include
+                android:id="@+id/add_static_roommate_form_view"
+                layout="@layout/content_add_static_roommate_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
 </LinearLayout>

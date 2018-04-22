@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,8 @@ public class TransactionModel extends DashboardContentModel {
     public String receiptLink;
     public String billDate;
     public String ownerId;
-    public List<TransactionItemModel> transactionList;
+    public String[] transactionNames;
+    public ArrayList<TransactionItemModel> transactionList;
 
     private JSONObject json;
 
@@ -40,9 +42,12 @@ public class TransactionModel extends DashboardContentModel {
             this.ownerId = json.getString("owner_id");
             JSONArray arr = json.getJSONArray("transaction_list");
             int len = arr.length();
+            transactionNames = new String[len];
 
             for(int i = 0; i < len; i++) {
-                transactionList.add(new TransactionItemModel(arr.getJSONObject(i)));
+                TransactionItemModel t = new TransactionItemModel(arr.getJSONObject(i));
+                transactionList.add(t);
+                transactionNames[i] = t.name;
             }
         } catch(Exception ex) {
             Log.e("TRANSACTION-MODEL", "Error parsing JSON");
@@ -66,6 +71,7 @@ public class TransactionModel extends DashboardContentModel {
         public String[] items;
         public String[] ogPrices;
         public String[] splitPrices;
+        public ArrayList<TransactionItemListModel> itemsList;
 
         TransactionItemModel(JSONObject json) {
             try {
@@ -76,6 +82,24 @@ public class TransactionModel extends DashboardContentModel {
             } catch(Exception ex) {
                 Log.e("TRANSACTION-ITEM-MODEL", "Failed parsing JSON");
             }
+
+            itemsList = new ArrayList<>();
+            int len = items.length;
+
+            for(int i = 0; i < len; i++)
+                itemsList.add(new TransactionItemListModel(items[i], ogPrices[i], splitPrices[i]));
+        }
+    }
+
+    public class TransactionItemListModel {
+        public String item;
+        public String ogPrice;
+        public String splitPrice;
+
+        TransactionItemListModel(String item, String o, String s) {
+            this.item = item;
+            this.ogPrice = o;
+            this.splitPrice = s;
         }
     }
 }

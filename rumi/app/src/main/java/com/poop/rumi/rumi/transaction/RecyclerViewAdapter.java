@@ -99,6 +99,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         });
 
 
+        //TODO: enable deleting a name from horizontal drawer
+//        holder.parentLayout.isLongClickable();
+//
+//        holder.parentLayout.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//
+//
+//
+//
+//            }
+//        });
+
+
 
 
     }

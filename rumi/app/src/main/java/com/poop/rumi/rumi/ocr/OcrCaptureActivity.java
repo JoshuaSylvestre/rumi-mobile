@@ -39,6 +39,8 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.vision.text.TextRecognizer;
 import com.poop.rumi.rumi.R;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -84,6 +86,10 @@ public class OcrCaptureActivity extends AppCompatActivity{
     // Helper object for detecting taps
     private GestureDetector gestureDetector;
 
+    private String currUser;
+    private String currUserToken;
+
+
     private String imagePath;
 
     private Receipt mReceipt;
@@ -99,6 +105,9 @@ public class OcrCaptureActivity extends AppCompatActivity{
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_ocr_capture);
+
+        currUser = getIntent().getStringExtra(getString(R.string.current_user_json_to_string));
+        currUserToken = getIntent().getStringExtra(getString(R.string.current_user_token));
 
 
         mPreview = findViewById(R.id.preview);
@@ -220,12 +229,12 @@ public class OcrCaptureActivity extends AppCompatActivity{
     // implemented in Receipt class
     private void startDialogSequence(){
 
-        mReceipt = new Receipt(imagePath);
+        mReceipt = new Receipt(currUserToken, currUser, imagePath);
 
         // Would be nice to highlight words that change. eg, ITEMS, PRICES, etc.
-        final String [] promptMsg = {"TAP ON ITEMS PLS AND TAP TICK MARK WHEN FINISHED",
-                "TAP ON PRICES PLS AND TAP TICK MARK WHEN FINISHED",
-                "TAP ON STORE NAME PLS AND TAP TICK MARK WHEN FINISHED"};
+        final String [] promptMsg = {"Tap on items from the top down pls",
+                                    "Tap on prices from top down pls",
+                                    "Tap on store name pls"};
 
         invokeDialog(promptMsg[promptDialogStage++]);
 
@@ -255,9 +264,14 @@ public class OcrCaptureActivity extends AppCompatActivity{
 
     public void openTransactionActivity() {
 
-        mReceipt.finalize();
+        //mReceipt.finalize();
 
         Intent intent = new Intent(this, TransactionActivity.class);
+
+        // Unnecessary because currUser and currUserToken reside in mReceipt
+//        intent.putExtra(getString(R.string.current_user_json_to_string), currUser);
+//        intent.putExtra(getString(R.string.current_user_token), currUserToken);
+
         intent.putExtra("RECEIPT", mReceipt);
         startActivity(intent);
     }
