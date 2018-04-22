@@ -50,7 +50,7 @@ public class TransactionActivity extends AppCompatActivity {
 
     private ArrayList<Transaction> transactionList;
     private ArrayList<UserModel> addedNamesUM;
-    private ArrayList<String> mNames = new ArrayList<>(); // to disallow duplicate names
+    private ArrayList<String> mNames = new ArrayList<>(); // to disallow duplicate names & display names in summary
     private ArrayList<String> mImageUrls = new ArrayList<>();
 
     TextView store_restaurant;
@@ -394,10 +394,10 @@ public class TransactionActivity extends AppCompatActivity {
 
     public void openSummaryActivity() {
 
-
         Intent intent = new Intent(this, SummaryActivity.class);
 
         intent.putExtra("TRANSACTION", transactionList);
+        intent.putExtra("CURR_USER_ID", currUserModel.id);
         intent.putExtra("PARTICIPANTS", addedNamesUM);
         intent.putExtra("NAMES", mNames);
 

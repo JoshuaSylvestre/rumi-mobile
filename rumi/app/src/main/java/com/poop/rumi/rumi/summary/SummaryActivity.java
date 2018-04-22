@@ -15,6 +15,10 @@ import com.poop.rumi.rumi.R;
 import com.poop.rumi.rumi.models.UserModel;
 import com.poop.rumi.rumi.transaction.Transaction;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Random;
@@ -27,10 +31,13 @@ public class SummaryActivity extends AppCompatActivity {
     private RecyclerViewAdapter nameListAdapter;
     private SummaryListAdapter summaryListAdapter;
 
+    private String currUserID;
+
     //
     private ArrayList<Transaction> transactionList;
     private ArrayList<UserModel> addedNamesUM;
     private ArrayList<String> mNames;       // to pass to nameListAdapter
+    private ArrayList<String >mIDs;
     private ArrayList<String> mImageUrls;
 
     //
@@ -56,13 +63,20 @@ public class SummaryActivity extends AppCompatActivity {
 
         assert transData != null;
 
+        currUserID = transData.getString("CURR_USER_ID");
+
         transactionList = transData.getParcelableArrayList("TRANSACTION");
         addedNamesUM = transData.getParcelableArrayList("PARTICIPANTS");
         mNames = transData.getStringArrayList("NAMES");
 
+        mIDs = new ArrayList<>();
+        for(UserModel u: addedNamesUM){
+            mIDs.add(u.id);
+        }
 
-        currUser = getIntent().getStringExtra(getString(R.string.current_user_json_to_string));
-        currUserToken = getIntent().getStringExtra(getString(R.string.current_user_token));
+
+        currUser = transData.getString(getString(R.string.current_user_json_to_string));
+        currUserToken = transData.getString(getString(R.string.current_user_token));
 
         storeName = transData.getString("STORE_NAME");
         receiptImagePath = transData.getString("RECEIPT_IMAGE_PATH");
@@ -191,6 +205,46 @@ public class SummaryActivity extends AppCompatActivity {
 
 
     private void generateJSONSchema() {
+
+        JSONArray participantInfoSchema = new JSONArray();
+
+        for(ParticipantInfo p : participantList){
+
+            JSONObject obj = new JSONObject();
+
+            try{
+                obj.put("name", p.getName());
+                obj.put("items", p.getItems());
+                obj.put("ogPrices", p.getOgPrices());
+                obj.put("splitPrices", p.getOwedPrices());
+
+                participantInfoSchema.put(obj);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        JSONObject transactionSchema= new JSONObject();
+        try {
+
+            transactionSchema.put("bill_code", billCode);
+            transactionSchema.put("roommates", mIDs);
+            transactionSchema.put("store_name", storeName);
+//            transactionSchema.put("receipt_link", <firebaselink>);
+            transactionSchema.put("bill_date", dateOfCapture);
+            transactionSchema.put("owner_id", currUserID);
+            transactionSchema.put("transaction_list", participantInfoSchema);
+
+
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        
+
+
 
 
 
