@@ -1,5 +1,7 @@
 package com.poop.rumi.rumi.summary;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 
 public class ParticipantInfo {
@@ -36,16 +38,41 @@ public class ParticipantInfo {
         return name;
     }
 
-    public ArrayList<String> getItems() {
-        return mItems;
+    public JSONArray getItems() {
+
+//        return mItems;
+
+        return new JSONArray(mItems);
     }
 
-    public ArrayList<Float> getOgPrices() {
-        return mOgPrices;
+    public JSONArray getOgPrices() {
+
+//        String [] retArr = new String[mOgPrices.size()];
+//        for(int i = 0; i < mOgPrices.size(); i++){
+//
+//            retArr[i] = mOgPrices.get(i).toString();
+//
+//        }
+//
+//        return retArr;
+
+        return new JSONArray(mOgPrices);
+
     }
 
-    public ArrayList<Float> getOwedPrices() {
-        return mPrices;
+    public JSONArray getOwedPrices() {
+
+//        String [] retArr = new String[mPrices.size()];
+//        for(int i = 0; i < mPrices.size(); i++){
+//
+//            retArr[i] = mPrices.get(i).toString();
+//
+//        }
+//
+//        return retArr;
+
+        return new JSONArray(mPrices);
+
     }
 
     public ArrayList<ParticipantTriad> getTriadList(){ return mTriad;}

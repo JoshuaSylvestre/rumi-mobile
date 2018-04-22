@@ -124,11 +124,13 @@ public class TransactionActivity extends AppCompatActivity {
         }
 
 
+
         // Adding current user to nameListAdapter
         addedNamesUM = new ArrayList<>();
         mImageUrls.add("");
         addedNamesUM.add(currUserModel);
         mNames.add(currUserModel.name);
+//        roommateIDs.add(currUserModel.id);
 
 
         //initImageBitmaps();
@@ -244,7 +246,7 @@ public class TransactionActivity extends AppCompatActivity {
                     //Toast.makeText(TransactionActivity.this, "Tapped on item: " + addedName + "ID: " + addedID, Toast.LENGTH_SHORT).show();
 
                     for(UserModel u : currUserRoommatesUM) {
-                        if (addedID == u.id) {
+                        if (addedID.equals(u.id)) {
                             userToAdd = u;
                             addedFromDB = true;
 
@@ -360,26 +362,6 @@ public class TransactionActivity extends AppCompatActivity {
         dialog.show();
 
     }
-
-
-//    private void initImageBitmaps(){
-//
-//        Log.d(TAG, "initImageBitmaps: preparing bitmaps.");
-//
-//        String currUserName = "";
-//        try{
-//            JSONObject jsonName= new JSONObject(currUser);
-//            currUserName = jsonName.getString("name");
-//        }
-//        catch (Exception e){
-//            Log.e(TAG, "in initImageBitmaps");
-//
-//        }
-//
-//        mImageUrls.add("");
-//        mNames.add(currUserName);
-//
-//    }
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview.");

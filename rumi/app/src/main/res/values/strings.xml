@@ -80,6 +80,7 @@
     <string name="roommate_delete_url">/user/roommates/delete</string>
     <string name="roommate_add_static_url">/user/roommates/add/static</string>
     <string name="change_password_url">/user/setting/changepassword</string>
+    <string name="transaction_add">/user/transactions/add</string>
     <!-- Only exists on dev branch of rumi-web -->
     <string name="dashboard_url">/user/dashboard_mobile</string>
 
