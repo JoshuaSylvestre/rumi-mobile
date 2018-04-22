@@ -37,9 +37,7 @@ public class TransactionListAdapter extends ArrayAdapter<Transaction> {
     private final int secondayColor = Color.rgb(238, 238, 255);
 
 
-    ViewGroup parent;
-
-    String names_toString = "";
+    private ViewGroup parent;
 
     public TransactionListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Transaction> objects) {
         super(context, resource, objects);

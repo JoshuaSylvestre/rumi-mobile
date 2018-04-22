@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.poop.rumi.rumi.R;
+import com.poop.rumi.rumi.models.UserModel;
 
 
 import java.util.ArrayList;
@@ -25,9 +26,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
-    private ArrayList<String> mImageNames;
+    private final Context mContext;
+
+//    private ArrayList<String> mImageNames;
     private ArrayList<String> mImagesURL;
-    private Context mContext;
+    private ArrayList<UserModel> namesUm;
 
     private int lastNamePos;
     private String lastNameTapped;
@@ -38,8 +41,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private final int primaryColor = Color.rgb(87, 188, 150);
     private final int secondaryColor = Color.rgb(238, 238, 255);
 
-    public RecyclerViewAdapter(Context mContext, ArrayList<String> mImageNames, ArrayList<String> mImagesURL) {
-        this.mImageNames = mImageNames;
+    public RecyclerViewAdapter(Context mContext, ArrayList<UserModel> mImageNames, ArrayList<String> mImagesURL) {
+        this.namesUm = mImageNames;
         this.mImagesURL = mImagesURL;
         this.mContext = mContext;
 
@@ -73,13 +76,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 .load(mImagesURL.get(position))
                 .into(holder.image);
 
-        holder.name.setText(mImageNames.get(position));
+        holder.name.setText(namesUm.get(position).name);
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Log.d(TAG, "onClick: Clicked on: " + mImageNames.get(position));
-                //Toast.makeText(mContext, "NAME " +position+ " " +mImageNames.get(position), Toast.LENGTH_SHORT).show();
+                //Log.d(TAG, "onClick: Clicked on: " + namesUm.get(position).name);
+                //Toast.makeText(mContext, "NAME " +position+ " " +namesUm.get(position).name, Toast.LENGTH_SHORT).show();
 
                 // Set to primary color to indicate which participant is selected
                 holder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(primaryColor);
@@ -89,12 +92,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     lastViewHolder.parentLayout.findViewById(R.id.name_layout).setBackgroundColor(secondaryColor);
 
                 }
-                lastNameTapped = mImageNames.get(position);
+                lastNameTapped = namesUm.get(position).name;
                 lastViewHolder = holder;
                 lastNamePos = position;
 
                 transListAdapter.highlightRowsAppropriately();
-
             }
         });
 
@@ -119,7 +121,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return mImageNames.size();
+        return namesUm.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

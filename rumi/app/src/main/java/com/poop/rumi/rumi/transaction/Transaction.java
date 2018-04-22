@@ -10,7 +10,7 @@ public class Transaction implements Parcelable {
     private String item;
     private Float price;
 
-    ArrayList<String> names;
+    private ArrayList<String> names;
 
 
     // Alt + Insert/Constructor/Select all to make the constructor

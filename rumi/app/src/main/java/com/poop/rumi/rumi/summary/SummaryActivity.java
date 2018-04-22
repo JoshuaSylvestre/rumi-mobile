@@ -1,20 +1,18 @@
 package com.poop.rumi.rumi.summary;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.poop.rumi.rumi.DashboardActivity;
 import com.poop.rumi.rumi.R;
+import com.poop.rumi.rumi.models.UserModel;
 import com.poop.rumi.rumi.transaction.Transaction;
 
 import java.text.DecimalFormat;
@@ -31,19 +29,22 @@ public class SummaryActivity extends AppCompatActivity {
 
     //
     private ArrayList<Transaction> transactionList;
+    private ArrayList<UserModel> addedNamesUM;
+    private ArrayList<String> mNames;       // to pass to nameListAdapter
+    private ArrayList<String> mImageUrls;
+
+    //
     private ArrayList<ParticipantInfo> participantList;
 
     //
-    private ArrayList<String> names;
-    private ArrayList<String> mImageUrls = new ArrayList<>();
+    private String currUserToken;
+    private String currUser;
 
-
+    private String receiptImagePath;
     private String storeName;
+    private String dateOfCapture;
 
-
-    int numTapped = 0;
-
-    private String share_code;
+    private String billCode;
 
 
     @Override
@@ -54,10 +55,20 @@ public class SummaryActivity extends AppCompatActivity {
         Bundle transData = getIntent().getExtras();
 
         assert transData != null;
+
         transactionList = transData.getParcelableArrayList("TRANSACTION");
-        names = transData.getStringArrayList("PARTICIPANTS");
-        storeName = transData.getString("STORENAME");
-        //TODO: get store name and data
+        addedNamesUM = transData.getParcelableArrayList("PARTICIPANTS");
+        mNames = transData.getStringArrayList("NAMES");
+
+
+        currUser = getIntent().getStringExtra(getString(R.string.current_user_json_to_string));
+        currUserToken = getIntent().getStringExtra(getString(R.string.current_user_token));
+
+        storeName = transData.getString("STORE_NAME");
+        receiptImagePath = transData.getString("RECEIPT_IMAGE_PATH");
+        dateOfCapture = transData.getString("DATE_OF_CAPTURE");
+
+
         participantList = new ArrayList<>();
 
         tooDeepToGetIntoThis(); // .. to fill participantList []
@@ -74,7 +85,7 @@ public class SummaryActivity extends AppCompatActivity {
         nameListAdapter.passSummaryData(summaryListAdapter, participantList, listViewItems);
 
 
-
+        generateSharedCode();
 
 
         Button nextButton = (Button)findViewById(R.id.button_next);
@@ -82,7 +93,11 @@ public class SummaryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                generateJSONSchema();
+
                 Intent intent = new Intent(getApplicationContext(),DashboardActivity.class);
+                intent.putExtra(getString(R.string.current_user_json_to_string), currUser);
+                intent.putExtra(getString(R.string.current_user_token), currUserToken);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
 
@@ -93,21 +108,21 @@ public class SummaryActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 finish();
             }
         });
 
 
-        generateSharedCode();
-
     }
+
 
     private void tooDeepToGetIntoThis() {
 
         DecimalFormat df = new DecimalFormat("#.00");
 
-        for (String name : names)
-            participantList.add(new ParticipantInfo(name));
+        for (UserModel um : addedNamesUM)
+            participantList.add(new ParticipantInfo(um.name));
 
 
         int numParticipants;
@@ -135,7 +150,9 @@ public class SummaryActivity extends AppCompatActivity {
 
     private void initImageBitmaps(){
 
-        for(int i = 0; i <  names.size(); i++)
+        mImageUrls = new ArrayList<>();
+
+        for(int i = 0; i <  addedNamesUM.size(); i++)
             mImageUrls.add("");
 
     }
@@ -146,11 +163,8 @@ public class SummaryActivity extends AppCompatActivity {
                 LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.horizontal_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
-        nameListAdapter = new RecyclerViewAdapter(this, names, mImageUrls);
+        nameListAdapter = new RecyclerViewAdapter(this, mNames, mImageUrls);
         recyclerView.setAdapter(nameListAdapter);
-
-        // highlighting first element of names
-//        layoutManager.findViewByPosition(0).setBackgroundColor(Color.rgb(238, 238, 255));
 
 
     }
@@ -163,16 +177,23 @@ public class SummaryActivity extends AppCompatActivity {
             int index = (int) (rnd.nextFloat() * SALTCHARS.length());
             salt.append(SALTCHARS.charAt(index));
         }
-        String saltStr = salt.toString();
-        return saltStr;
+
+        return salt.toString();
 
     }
 
     public void generateSharedCode(){
 
         TextView textView = (TextView)findViewById(R.id.share_code);
-        share_code = getSaltString();
-        textView.setText(share_code);
+        billCode = getSaltString();
+        textView.setText(billCode);
+    }
+
+
+    private void generateJSONSchema() {
+
+
+
     }
 
 
