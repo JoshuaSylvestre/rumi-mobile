@@ -1,36 +1,15 @@
 package com.poop.rumi.rumi.transaction;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.fasterxml.jackson.databind.type.ArrayType;
-import com.poop.rumi.rumi.R;
-import com.poop.rumi.rumi.Receipt;
-import com.poop.rumi.rumi.RoommateActivity;
-import com.poop.rumi.rumi.models.UserModel;
-import com.poop.rumi.rumi.summary.SummaryActivity;
-
-import android.app.AlertDialog;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -41,19 +20,37 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.poop.rumi.rumi.R;
+import com.poop.rumi.rumi.Receipt;
+import com.poop.rumi.rumi.models.UserModel;
+import com.poop.rumi.rumi.summary.SummaryActivity;
+
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TransactionActivity extends AppCompatActivity {
 
     private static final String TAG = "TransactionActivity";
+    private final Context mContext = this;
 
     private RecyclerViewAdapter nameListAdapter;
     private TransactionListAdapter transListAdapter;
-    private ArrayList<Transaction> transactionList;
 
-    // vars:
-    private ArrayList<String> mNames = new ArrayList<>();
+    private ArrayList<Transaction> transactionList;
+    private ArrayList<UserModel> addedNamesUM;
+    private ArrayList<String> mNames = new ArrayList<>(); // to disallow duplicate names & display names in summary
     private ArrayList<String> mImageUrls = new ArrayList<>();
 
     TextView store_restaurant;
@@ -61,13 +58,17 @@ public class TransactionActivity extends AppCompatActivity {
     private Receipt mReceipt;
     private String currUserToken;
     private String currUser;
+    private UserModel currUserModel;
+
+    public ArrayList<UserModel> currUserRoommatesUM = new ArrayList<>();
+    private ArrayList<String> roommateNames;
+    private ArrayList<String> roommateIDs;
 
     private RequestQueue requestQueue;
     private JSONArray roommateList;
     private boolean success = false;
 
-    private List<UserModel> roommateArrayList = new ArrayList<>();
-    private ArrayList<String> roommateNames;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,22 +78,20 @@ public class TransactionActivity extends AppCompatActivity {
 
 
         mReceipt = (Receipt) getIntent().getSerializableExtra("RECEIPT");
+
         currUserToken = mReceipt.getCurrUserToken();
         currUser = mReceipt.getCurrUser();
+        try {
+            currUserModel = new UserModel(new JSONObject(currUser));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         requestQueue = Volley.newRequestQueue(this);
 
-        roommateNames = new ArrayList<>();
+//        roommateNames = new ArrayList<>();
 
-        populateRoommateList();
-
-
-//        Log.d("TEST 2" ,"==============================================");
-//        Log.d("TEST 2" ,mReceipt.getStoreName());
-//        Log.d("TEST 2" ,mReceipt.printItems());
-//        Log.d("TEST 2" ,mReceipt.printPrices());
-//        Log.d("TEST 2" ,"==============================================");
-
+        populateRoommateUserModelList();
 
 
         // Add transactions to the arraylist: take Transactions objects
@@ -124,14 +123,20 @@ public class TransactionActivity extends AppCompatActivity {
             transactionList.add(new Transaction(tempStr,tempFlt));
         }
 
-        String storeName = mReceipt.getStoreName();
-        String date = mReceipt.getDateOfCapture();
 
+
+        // Adding current user to nameListAdapter
+        addedNamesUM = new ArrayList<>();
+        mImageUrls.add("");
+        addedNamesUM.add(currUserModel);
+        mNames.add(currUserModel.name);
+//        roommateIDs.add(currUserModel.id);
+
+
+        //initImageBitmaps();
+        initRecyclerView();
 
         final ListView listViewItems = (ListView)findViewById(R.id.vertical_list_item_price_name);
-
-        initImageBitmaps();
-        initRecyclerView();
 
         // take in the context, custom layout that made, arraylist(which is transactionList)
         transListAdapter = new TransactionListAdapter(this, R.layout.layout_transaction_view, transactionList);
@@ -202,33 +207,65 @@ public class TransactionActivity extends AppCompatActivity {
         // Finally, display the alert dialog
         dialog.show();
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, roommateNames);
         final AutoCompleteTextView editText_get_names = (AutoCompleteTextView) dialogView.findViewById(R.id.editText_add_name);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, roommateNames);
+
         editText_get_names.setThreshold(1);
         editText_get_names.setAdapter(adapter);
+
 
         Button keep_adding = (Button)dialogView.findViewById(R.id.button_keep_adding);
         keep_adding.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                String addedName = editText_get_names.getText().toString();
+                String addedID = "";
+
                 System.out.println("====== Keep adding button clicked!! ========== ");
-                System.out.println(editText_get_names.getText().toString());
+                System.out.println(addedName);
                 System.out.println("====== Keep adding button clicked!! ========== ");
 
-                if(editText_get_names.getText().toString().length() == 0) {
+                if(addedName.length() == 0) {
                     Toast.makeText(TransactionActivity.this, "Name field is empty.", Toast.LENGTH_SHORT).show();
-                }else if(editText_get_names.getText().toString().length() >= 7){
-                    Toast.makeText(TransactionActivity.this, "Please limit the name/nickname under 7-letter", Toast.LENGTH_SHORT).show();
-                }else if(mNames.contains(editText_get_names.getText().toString())) {
+                }else if(mNames.contains(addedName)) {
                     Toast.makeText(TransactionActivity.this, "Name already exists, please try a different name.", Toast.LENGTH_SHORT).show();
-                }
-                else{
+                }else{
+
+                    UserModel userToAdd = null;
+                    boolean addedFromDB = false;
+
+
+                    for (int i = 0; i < roommateNames.size(); i++) {
+                        if (roommateNames.get(i).equals(addedName)) {
+                            addedID = roommateIDs.get(i);
+                            break;
+                        }
+                    }
+
+                    //Toast.makeText(TransactionActivity.this, "Tapped on item: " + addedName + "ID: " + addedID, Toast.LENGTH_SHORT).show();
+
+                    for(UserModel u : currUserRoommatesUM) {
+                        if (addedID.equals(u.id)) {
+                            userToAdd = u;
+                            addedFromDB = true;
+
+                            Toast.makeText(TransactionActivity.this, "added from db", Toast.LENGTH_SHORT).show();
+
+                            break;
+                        }
+                    }
+                    
+                    if(!addedFromDB){
+                        userToAdd = new UserModel(addedName);
+                        Toast.makeText(TransactionActivity.this, "added static user", Toast.LENGTH_SHORT).show();
+                    }
 
                     mImageUrls.add("");
-                    mNames.add(editText_get_names.getText().toString());
+                    addedNamesUM.add(userToAdd);
+                    mNames.add(userToAdd.name);
 
-                    Toast.makeText(TransactionActivity.this, editText_get_names.getText().toString() + " added!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TransactionActivity.this, addedName + " added!", Toast.LENGTH_SHORT).show();
 
                     editText_get_names.setText(null);
                 }
@@ -238,57 +275,8 @@ public class TransactionActivity extends AppCompatActivity {
 
     }
 
-//
-//    public void openAddPersonDialog(){
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
-//
-//        LayoutInflater inflater = LayoutInflater.from(TransactionActivity.this);
-//
-//        final View dialogView = inflater.inflate(R.layout.dialog_add_person,null);
-//
-//        builder.setView(dialogView);
-//
-//        // Create the alert dialog
-//        final AlertDialog dialog = builder.create();
-//
-//        // Finally, display the alert dialog
-//        dialog.show();
-//
-//        final EditText editText_get_names = (EditText)dialogView.findViewById(R.id.editText_add_name);
-//
-//        Button keep_adding = (Button)dialogView.findViewById(R.id.button_keep_adding);
-//        keep_adding.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                System.out.println("====== Keep adding button clicked!! ========== ");
-//                System.out.println(editText_get_names.getText().toString());
-//                System.out.println("====== Keep adding button clicked!! ========== ");
-//
-//                if(editText_get_names.getText().toString().length() >= 7){
-//                    Toast.makeText(TransactionActivity.this, "Please limit the name/nickname under 7-letter", Toast.LENGTH_SHORT).show();
-//                }else if(mNames.contains(editText_get_names.getText().toString())) {
-//
-//                    Toast.makeText(TransactionActivity.this, "Name already exists, please try a different name.", Toast.LENGTH_SHORT).show();
-//                }
-//                else{
-//
-//                    mImageUrls.add("");
-//                    mNames.add(editText_get_names.getText().toString());
-//
-//                    Toast.makeText(TransactionActivity.this, editText_get_names.getText().toString() + " added!", Toast.LENGTH_SHORT).show();
-//
-//                    editText_get_names.setText(null);
-//                }
-//
-//
-//            }
-//        });
-//
-//    }
 
-    public void populateRoommateList (){
+    public void populateRoommateUserModelList (){
 
         (new RoommateTask()).execute((Void) null);
 
@@ -375,47 +363,34 @@ public class TransactionActivity extends AppCompatActivity {
 
     }
 
-
-    private void initImageBitmaps(){
-
-        Log.d(TAG, "initImageBitmaps: preparing bitmaps.");
-
-        String currUserName = "";
-        try{
-            JSONObject jsonName= new JSONObject(currUser);
-            currUserName = jsonName.getString("name");
-        }
-        catch (Exception e){
-            Log.e(TAG, "in initImageBitmaps");
-
-        }
-
-        mImageUrls.add("");
-        mNames.add(currUserName);
-
-
-
-    }
-
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview.");
 
         LinearLayoutManager layoutManager = new LinearLayoutManager( TransactionActivity.this, LinearLayoutManager.HORIZONTAL, false);
         RecyclerView recyclerView = findViewById(R.id.horizontal_recycler_view);
         recyclerView.setLayoutManager(layoutManager);
-        nameListAdapter = new RecyclerViewAdapter(this, mNames, mImageUrls);
+        nameListAdapter = new RecyclerViewAdapter(this, addedNamesUM, mImageUrls);
         recyclerView.setAdapter(nameListAdapter);
 
     }
 
     public void openSummaryActivity() {
 
-
         Intent intent = new Intent(this, SummaryActivity.class);
+
         intent.putExtra("TRANSACTION", transactionList);
-        intent.putExtra("PARTICIPANTS", mNames);
-        intent.putExtra("STORENAME", store_restaurant.getText().toString());
-        //TODO: pass storename and date
+        intent.putExtra("CURR_USER_ID", currUserModel.id);
+        intent.putExtra("PARTICIPANTS", addedNamesUM);
+        intent.putExtra("NAMES", mNames);
+
+        intent.putExtra(getString(R.string.current_user_json_to_string), currUser);
+        intent.putExtra(getString(R.string.current_user_token), currUserToken);
+
+        intent.putExtra("STORE_NAME", store_restaurant.getText().toString());
+        intent.putExtra("RECEIPT_IMAGE_PATH", mReceipt.getReceiptImagePath());
+        intent.putExtra("DATE_OF_CAPTURE", mReceipt.getDateOfCapture());
+
+
         startActivity(intent);
 
     }
@@ -443,7 +418,7 @@ public class TransactionActivity extends AppCompatActivity {
                                 try {
                                     JSONObject currJSON = roommateList.getJSONObject(i);
                                     UserModel userModel = new UserModel(currJSON);
-                                    roommateArrayList.add(userModel);
+                                    currUserRoommatesUM.add(userModel);
 
                                 } catch (Exception ex) {
                                     Log.e("ROOMMATES", "Cannot get roommates");
@@ -504,10 +479,13 @@ public class TransactionActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean success) {
 
+            roommateNames = new ArrayList<>();
+            roommateIDs = new ArrayList<>();
 
-            for(UserModel u : roommateArrayList)
+            for(UserModel u : currUserRoommatesUM) {
                 roommateNames.add(u.name);
-
+                roommateIDs.add(u.id);
+            }
 //                Log.d("TESTIESS", roommateNames.toString());
 
         }

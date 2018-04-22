@@ -3,10 +3,14 @@ package com.poop.rumi.rumi.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by dita on 4/13/18.
@@ -19,14 +23,14 @@ public class UserModel implements Parcelable{
     public String username;
     public String email;
     public boolean isRegistered;
-    public String[] roommates;
+    public ArrayList<String> roommates;
 
-    public UserModel(String name, String username, String email, boolean isRegistered) {
+    public UserModel(String name) {
         this.id = "";
         this.name = name;
-        this.username = username;
-        this.email = email;
-        this.isRegistered = isRegistered;
+        this.username = "";
+        this.email = "";
+        this.isRegistered = false;
         this.roommates = null;
     }
 
@@ -39,8 +43,10 @@ public class UserModel implements Parcelable{
 
             if(this.isRegistered) {
                 this.username = json.getString("username");
-                this.roommates = convertToStringArr(json, "roommates");
-            }
+
+                String [] temp = convertToStringArr(json, "roommates");
+                this.roommates = (ArrayList<String>) Arrays.asList(temp);
+                }
         } catch(Exception ex) {
             Log.e("USER-MODEL", "Cannot parse user data");
         }
@@ -59,6 +65,10 @@ public class UserModel implements Parcelable{
         return res;
     }
 
+    public String getName() {
+        return name;
+    }
+
     /**
      *
      * Parcelable Methods
@@ -70,7 +80,7 @@ public class UserModel implements Parcelable{
         username = in.readString();
         email = in.readString();
         isRegistered = in.readByte() != 0;
-        roommates = in.createStringArray();
+        roommates = in.createStringArrayList();
     }
 
     public static final Creator<UserModel> CREATOR = new Creator<UserModel>() {
@@ -99,6 +109,6 @@ public class UserModel implements Parcelable{
         dest.writeString(username);
         dest.writeString(email);
         dest.writeByte((byte) (isRegistered ? 1 : 0));
-        dest.writeStringArray(roommates);
+        dest.writeStringList(roommates);
     }
 }
